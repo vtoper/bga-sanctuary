@@ -1,0 +1,251 @@
+<?php
+
+namespace Bga\Games\sanctuary\Framework\Db;
+
+class Collection extends \ArrayObject
+{
+    public function getIds()
+    {
+        return array_keys($this->getArrayCopy());
+    }
+
+    public function empty()
+    {
+        return empty($this->getArrayCopy());
+    }
+
+    public function first()
+    {
+        $arr = $this->toArray();
+        return isset($arr[0]) ? $arr[0] : null;
+    }
+
+    public function rand($number = 1, $alwaysArray = false)
+    {
+        $arr = $this->getArrayCopy();
+        $keys = array_rand($arr, $number);
+
+        if ($number == 1) {
+            if ($alwaysArray) {
+                return new Collection([$arr[$keys]]);
+            }
+            return $arr[$keys];
+        } else {
+            $result = [];
+            foreach ($keys as $key) {
+                $result[] = $arr[$key];
+            }
+            return new Collection($result);
+        }
+    }
+
+    public function toArray()
+    {
+        return array_values($this->getArrayCopy());
+    }
+
+    public function toAssoc()
+    {
+        return $this->getArrayCopy();
+    }
+
+    public function forEach($func)
+    {
+        foreach ($this->getArrayCopy() as $key => $elem) {
+            $func($elem, $key);
+        }
+        return $this;
+    }
+
+    public function map($func)
+    {
+        return new Collection(array_map($func, $this->toAssoc()));
+    }
+
+    public function merge($arr)
+    {
+        return new Collection($this->toAssoc() + $arr->toAssoc());
+    }
+
+    public function diff($arr)
+    {
+        return $this->filter(function ($item) use ($arr) {
+            return !$arr->includes($item);
+        });
+    }
+
+    public function reduce($func, $init)
+    {
+        return array_reduce($this->toArray(), $func, $init);
+    }
+
+    public function filter($func)
+    {
+        return new Collection(array_filter($this->toAssoc(), $func));
+    }
+
+    public function limit($n)
+    {
+        return new Collection(array_slice($this->toAssoc(), 0, $n, true));
+    }
+
+    public function includes($t)
+    {
+        return in_array($t, $this->getArrayCopy());
+    }
+
+    public function pluck($field)
+    {
+        return $this->map(function ($elem) use ($field) {
+            $method = 'get' . ucfirst($field);
+            return $elem->$method();
+        });
+    }
+
+    public function group(array|string $properties)
+    {
+        if (!is_array($properties)) {
+            $properties = [$properties];
+        }
+
+        return new Collection($this->reduce(function ($carry, $item) use ($properties) {
+            $currentLevel = &$carry;
+            foreach ($properties as $property) {
+                $method = 'get' . ucfirst($property);
+                $key = $item->$method();
+                if (!array_key_exists($key, $currentLevel)) {
+                    $currentLevel[$key] = [];
+                }
+
+                $currentLevel = &$currentLevel[$key];
+            }
+
+            $currentLevel[] = $item;
+            return $carry;
+        }, []));
+    }
+
+    public function ui()
+    {
+        return $this->map(function ($elem) {
+            return $elem->getUiData();
+        })->toArray();
+    }
+
+    public function uiAssoc()
+    {
+        return $this->map(function ($elem) {
+            return $elem->getUiData();
+        })->toAssoc();
+    }
+
+    public function order($callback)
+    {
+        $t = $this->getArrayCopy();
+        \uasort($t, $callback);
+        return new Collection($t);
+    }
+
+    public function unique()
+    {
+        $t = $this->getArrayCopy();
+        $t = array_unique($t, SORT_REGULAR);
+        return new Collection($t);
+    }
+
+    public function max()
+    {
+        $t = $this->getArrayCopy();
+        return max($t);
+    }
+
+    /*****
+     * Méthods for collection of object
+     */
+    public function where($field, $value)
+    {
+        return is_null($value)
+            ? $this
+            : $this->filter(function ($obj) use ($field, $value) {
+                $method = 'get' . ucfirst($field);
+                $objValue = $obj->$method();
+                return is_array($value)
+                    ? in_array($objValue, $value)
+                    : (strpos($value, '%') !== false
+                        ? like_match($value, $objValue)
+                        : $objValue == $value);
+            });
+    }
+
+    public function whereNot($field, $value)
+    {
+        return is_null($value)
+            ? $this
+            : $this->filter(function ($obj) use ($field, $value) {
+                $method = 'get' . ucfirst($field);
+                $objValue = $obj->$method();
+                return is_array($value)
+                    ? !in_array($objValue, $value)
+                    : (strpos($value, '%') !== false
+                        ? !like_match($value, $objValue)
+                        : $objValue != $value);
+            });
+    }
+
+    public function if($field)
+    {
+        return $this->where($field, true);
+    }
+
+    public function whereNull($field)
+    {
+        return $this->filter(function ($obj) use ($field) {
+            $method = 'get' . ucfirst($field);
+            $objValue = $obj->$method();
+            return is_null($objValue);
+        });
+    }
+
+    public function whereNotNull($field)
+    {
+        return $this->filter(function ($obj) use ($field) {
+            $method = 'get' . ucfirst($field);
+            $objValue = $obj->$method();
+            return !is_null($objValue);
+        });
+    }
+
+    public function orderBy($field, $asc = 'ASC')
+    {
+        return $this->order(function ($a, $b) use ($field, $asc) {
+            $method = 'get' . ucfirst($field);
+            $v1 = $a->$method();
+            $v2 = $b->$method();
+            return $asc == 'ASC' ? (is_int($v1) ? $v1 - $v2 : strcmp($v1, $v2)) : (is_int($v1) ? $v2 - $v1 : strcmp($v2, $v1));
+        });
+    }
+
+    public function update($field, $value)
+    {
+        $method = 'set' . ucfirst($field);
+        foreach ($this->getArrayCopy() as $obj) {
+            if (is_callable($value)) {
+                $obj->$method($value($obj));
+            } else {
+                $obj->$method($value);
+            }
+        }
+        return $this;
+    }
+
+    public static function from(array $arr): Collection
+    {
+        return new Collection($arr);
+    }
+}
+
+function like_match($pattern, $subject)
+{
+    $pattern = str_replace('%', '.*', preg_quote($pattern, '/'));
+    return (bool) preg_match("/^{$pattern}$/i", $subject);
+}
