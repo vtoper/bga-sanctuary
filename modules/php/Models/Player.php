@@ -33,6 +33,7 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
         $data['handCount'] = $this->getHand()->count();
         $data['actionCards'] = $this->getActionCards()->ui();
         $data['icons'] = $this->countCardIcons();
+        $data['map'] = $this->map() ? $this->map()->getUiData() : null;
         // $data['newScore'] = $this->getNewScore();
         // $data['mapStatus'] = $this->getMapStatus();
         // $data['handStatus'] = $this->getHandStatus();
@@ -91,7 +92,7 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
     public function getTileRange()
     {
         $card = $this->getActionCardOfType('Project');
-        if ($card->getLevel() == 1) {
+        if ($card->getLevel() == 2) {
             return $card->getStrength() + 1;
         } else {
             return $card->getStrength();

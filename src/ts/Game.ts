@@ -37,6 +37,7 @@ export class Game {
 
   setup(gamedatas: SanctuaryGamedatas) {
     console.log('Starting game setup');
+    console.debug(gamedatas);
     this.gamedatas = gamedatas;
 
     // Example to add a div on the game area
@@ -117,6 +118,10 @@ export class Game {
 
   onEnteringState(stateName: string, args: Gamestate) {
     console.debug('Entering state', stateName, args);
+  }
+
+  async notif_fillPool(args) {
+    console.debug(args);
   }
 
   // TODO: from this point and below, you can write your game notifications handling methods

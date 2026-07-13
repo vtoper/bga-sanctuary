@@ -47,7 +47,8 @@ class Tiles extends CachedPieces
   public static function getUiData(): array
   {
     return self::getPool()
-      ->merge(self::getInLocationOrdered('inPlay'))
+      ->merge(self::getInLocationOrdered('pool%'))
+      ->merge(self::getInLocationOrdered('board'))
       // ->merge(self::getInLocation('base_%'))
       // ->merge(self::getInLocation('projects_%'))
       // ->merge(self::getInLocation('rescueStation'))
@@ -89,6 +90,7 @@ class Tiles extends CachedPieces
     // Create the cards
     self::create($cards, null);
     self::shuffle('deck');
+    self::fillPool();
   }
 
   // Used once the players are done with choosing their zoo map
@@ -202,11 +204,11 @@ class Tiles extends CachedPieces
   }
 
 
-  public static function getOfPlayer(int $pId): Collection
+  public static function getOfPlayer(int $pId, string $location = 'board'): Collection
   {
     return self::getSelectQuery()
       ->wherePlayer($pId)
-      ->where('tiles_location', '!=', 'hand')
+      ->where('tiles_location', $location)
       ->orderBy('tiles_id', 'ASC') // to get first animals and then the release
       ->get();
   }

@@ -136,9 +136,9 @@ class ZooMap
     //   ];
     // }
 
-    $this->tiles = Tiles::getOfPlayer($this->pId);
-    foreach ($this->tiles as &$tile) {
-      $this->grid[$tile['x']][$tile['y']]['tile'] = &$tile;
+    $this->tiles = Tiles::getOfPlayer($this->pId, 'board');
+    foreach ($this->tiles as $tile) {
+      $this->grid[$tile->getX()][$tile->getY()]['tile'] = $tile;
     }
   }
 

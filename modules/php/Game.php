@@ -100,10 +100,9 @@ class Game extends \Bga\GameFramework\Table
                 $args['player_name2'] = Players::get($args['player_id2'])->getName();
             }
 
-            if (isset($data['cards'])) {
-                $args = [];
+            if (isset($args['cards'])) {
                 $logs = [];
-                foreach ($data['cards'] as $i => $card) {
+                foreach ($args['cards'] as $i => $card) {
                     $logs[] = '${card_name_' . $i . '}';
                     $args['i18n'][] = 'card_name_' . $i;
                     $args['card_name_' . $i] = [
@@ -116,11 +115,11 @@ class Game extends \Bga\GameFramework\Table
                         ],
                     ];
                 }
-                $data['card_names'] = [
+                $args['card_names'] = [
                     'log' => join(', ', $logs),
                     'args' => $args,
                 ];
-                $data['i18n'][] = 'card_names';
+                $args['i18n'][] = 'card_names';
             }
 
             return $args;
@@ -200,6 +199,7 @@ class Game extends \Bga\GameFramework\Table
         return [
             'players' => Players::getUiData($playerId),
             'globals' => Globals::getUiData($playerId),
+            'tiles' => Tiles::getUiData(),
         ];
     }
 
@@ -250,4 +250,9 @@ class Game extends \Bga\GameFramework\Table
         $this->cards->moveCard($card['id'], 'hand', $playerId);
     }
     */
+
+    public function debug_pool()
+    {
+        Tiles::fillPool();
+    }
 }
