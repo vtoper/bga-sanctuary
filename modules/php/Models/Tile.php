@@ -14,8 +14,8 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
 {
   protected $implemented = true; // For DEV only
 
-  protected string $table = 'tiles';
-  protected string $primary = 'tiles_id';
+  protected ?string $table = 'tiles';
+  protected ?string $primary = 'tiles_id';
   protected array $attributes = [
     'id' => ['tiles_id', 'str'],
     'location' => 'tiles_location',
@@ -37,9 +37,11 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
     ['supported', 'obj'],
     ['prerequisites', 'obj'],
     ['continents', 'obj'],
+
   ];
   protected array $prerequisite;
   protected array $continents;
+  protected int $strength = 1;
 
   public function getIcons()
   {
@@ -229,4 +231,5 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
   const TILE_ANIMAL = 'animal';
   const TILE_BUILDING = 'building';
   const TILE_PROJECT = 'project';
+  const TILE_OPEN_AREA = 'openArea';
 }

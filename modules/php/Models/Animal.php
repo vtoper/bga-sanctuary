@@ -12,19 +12,28 @@ class Animal extends Tile
     'type',
     'name',
     ['number', 'int'],
-    ['appeal', 'int'],
-    ['openArea', 'obj'],
+    ['appeal', 'obj'],
+    ['openAreas', 'obj'],
     ['prerequisites', 'obj'],
     ['continents', 'obj'],
     ['ability', 'obj'],
     ['soloAbility', 'obj'],
+    ['pair', 'str'],
+    ['gender', 'str'],
+    ['strength', 'int'],
+    ['categories', 'obj'],
+
   ];
   protected string $name;
   protected int $number;
-  protected int $appeal;
+  protected int|string $appeal;
   protected array $prerequisites;
   protected array $ability;
-
+  protected ?string $pair = null;
+  protected ?string $gender = null;
+  protected array $categories = [];
+  protected array $continents = [];
+  protected array $openAreas = [];
 
   // public function getBonuses()
   // {

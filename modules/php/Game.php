@@ -29,6 +29,7 @@ use Bga\Games\sanctuary\Managers\ActionCards;
 use Bga\Games\Sanctuary\Managers\Players;
 use Bga\Games\Sanctuary\Managers\Meeples;
 use Bga\Games\Sanctuary\States\Flow\SetupTurn;
+use Bga\Games\Sanctuary\Managers\Tiles;
 
 class Game extends \Bga\GameFramework\Table
 {
@@ -210,9 +211,8 @@ class Game extends \Bga\GameFramework\Table
     {
         Globals::setupNewGame($players, $options);
         Players::setupNewGame($players, $options);
+        Tiles::setupNewGame($players, $options);
         foreach ($players as $pId => $player) {
-
-
             ActionCards::setupPlayer($pId);
             Meeples::setupPlayer($pId);
         }

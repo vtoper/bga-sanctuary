@@ -21,12 +21,18 @@ class Tiles extends CachedPieces
 
   protected static function cast(array $card): Tile
   {
-    return self::getCardInstance($card['card_id'], $card);
+    if (explode($card['tiles_id'], '_')[0] == 'openArea') {
+      return new \Bga\Games\sanctuary\Tiles\OpenArea($card);
+    }
+    return self::getCardInstance($card['tiles_id'], $card);
   }
 
   public static function getCardInstance(string $id, array $data = null): Tile
   {
     $t = explode('_', $id);
+    if ($t[0] == 'openArea') {
+      return new \Bga\Games\sanctuary\Tiles\OpenArea($data);
+    }
     // First part before _ specify the type and the numbering
     $prefixes = [
       'A' => 'Animals',
@@ -200,8 +206,8 @@ class Tiles extends CachedPieces
   {
     return self::getSelectQuery()
       ->wherePlayer($pId)
-      ->where(['location', '!=', 'hand'])
-      ->orderBy('id', 'ASC') // to get first animals and then the release
+      ->where('tiles_location', '!=', 'hand')
+      ->orderBy('tiles_id', 'ASC') // to get first animals and then the release
       ->get();
   }
 

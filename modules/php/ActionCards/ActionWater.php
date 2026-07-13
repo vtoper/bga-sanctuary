@@ -26,34 +26,26 @@ class ActionWater extends \Bga\Games\sanctuary\Models\ActionCard
   public function getBaseNode($strength = null)
   {
     $strength = $strength ?? $this->getCurrentStrength();
-    $node = [
-      "type" => Engine::NODE_SEQUENTIAL,
-      "children" => [
-        [
-          "state" => TakeTile::class,
-          "args" => ['inRange' => true]
-        ],
-        [
-          'type' => Engine::NODE_XOR,
-          'children' => [
-            [
-              "state" => PlayCard::class,
-              "args" => [
-                'strength' => $strength,
-                'nb' => $this->getLevel(),
-                'habitat' => Icons::WATER
-              ]
-            ],
-            [
-              "state" => DrawTile::class,
-              "args" => [
-                'n' => 2
-              ]
-            ],
-          ]
+    $node =
+      [
+        'type' => Engine::NODE_XOR,
+        'children' => [
+          [
+            "state" => PlayCard::class,
+            "args" => [
+              'strength' => $strength,
+              'nb' => $this->getLevel(),
+              'habitat' => Icons::WATER
+            ]
+          ],
+          [
+            "state" => DrawTile::class,
+            "args" => [
+              'n' => 2
+            ]
+          ],
         ]
-      ]
-    ];
+      ];
 
     return $node;
   }

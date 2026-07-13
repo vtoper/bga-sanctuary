@@ -88,6 +88,16 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
         return is_null($card) ? false : $card->getLevel() == 2;
     }
 
+    public function getTileRange()
+    {
+        $card = $this->getActionCardOfType('Project');
+        if ($card->getLevel() == 1) {
+            return $card->getStrength() + 1;
+        } else {
+            return $card->getStrength();
+        }
+    }
+
     /*
     ███████╗ ██████╗ ██████╗ ██████╗ ██╗███╗   ██╗ ██████╗
     ██╔════╝██╔════╝██╔═══██╗██╔══██╗██║████╗  ██║██╔════╝
@@ -233,18 +243,12 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
         return Tiles::hasPlayedCard($this->id, $id);
     }
 
-    public function getMaxFolderInRange()
-    {
-        $reputationMap = [1 => 1, 2 => 2, 3 => 2, 4 => 3, 5 => 3, 6 => 3, 7 => 4, 8 => 4, 9 => 4, 10 => 5, 11 => 5, 12 => 5];
-        $maxFolder = $reputationMap[$this->getReputation()] ?? 6;
-        return $maxFolder;
-    }
 
-    public function getCardsInReputationRange($type = null)
+    public function getTilesInReputationRange($type = null)
     {
-        $maxFolder = $this->getMaxFolderInRange();
-        return Tiles::getPool($maxFolder)->filter(function ($card) use ($type) {
-            return is_null($type) || $card->getType() == $type;
+        $maxRange = $this->getTileRange();
+        return Tiles::getPool($maxRange)->filter(function ($tile) use ($type) {
+            return is_null($type) || $tile->getType() == $type;
         });
     }
 

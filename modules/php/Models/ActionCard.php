@@ -49,24 +49,9 @@ class ActionCard extends \Bga\Games\sanctuary\Framework\Db\DB_Model
   {
     $strength = $this->getStrength();
     $player = Players::get($this->pId);
-
-    // MAP 12
-    // if ($player->getMapId() == 12) {
-    //   $status = $player->getMapStatus();
-    //   $n = $status['bonusStrength'];
-    //   if ($n >= 1 && $strength == 1) $strength = 2;
-    //   if ($n >= 2 && $strength <= 2) $strength = 3;
-    //   if ($n >= 3 && $strength == 4) $strength = 5;
-    //   if ($n >= 4 && $strength == 5) $strength = 6;
-    // }
-
-    // // MAP 14
-    // if (Globals::isActiveT1Effect()) {
-    //   $strength++;
-    // }
-
-    // // Constriction
-    // $strength -= count($this->getMeeplesOnIt(CONSTRICTION)) * 2;
+    if ($this->getLevel() == 2) {
+      $strength++;
+    }
 
     return $strength;
   }

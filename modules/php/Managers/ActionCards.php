@@ -59,8 +59,8 @@ class ActionCards extends CachedPieces
     shuffle($startCards);
     $i = 1;
     foreach ($startCards as $type) {
-      if ($i == $position + 1) {
-        $i = 1;
+      if ($i == ($position + 1)) {
+        $i++;;
       }
       $cards[] = [
         'type' => $type,

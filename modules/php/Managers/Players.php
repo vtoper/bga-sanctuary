@@ -23,7 +23,9 @@ class Players extends \Bga\Games\sanctuary\Framework\Managers\Players
     {
         parent::setupNewGame($players);
         // do custom setup by using self::getAll() or similar
-
+        foreach (self::getAll() as $player) {
+            $player->map()->setupPlayer($player);
+        }
     }
 
     private static function getColorName($color)

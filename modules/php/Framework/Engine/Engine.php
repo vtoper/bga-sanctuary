@@ -356,6 +356,58 @@ class Engine
     }
 
     /**
+     * Insert a new node at root level at the end of seq node
+     */
+    public static function insertAtRoot($t, $last = true)
+    {
+        self::ensureSeqRootNode();
+        $node = self::buildTree($t);
+        if ($last) {
+            self::$tree->pushChild($node);
+        } else {
+            self::$tree->unshiftChild($node);
+        }
+        self::save();
+        return $node;
+    }
+
+    /**
+     * Get the "next after finishing action node", create a new if needed
+     */
+    public static function getAfterFinishingNode()
+    {
+        self::ensureSeqRootNode();
+        // Go through root children
+        $childs = self::$tree->getChilds();
+        for ($i = 0; $i < count($childs); $i++) {
+            if ($childs[$i]->getFlag() == self::AFTER_FINISHING_ACTION) {
+                return $childs[$i];
+            }
+        }
+
+        return self::insertAtRoot([
+            'type' => self::NODE_PARALLEL,
+            'flag' => self::AFTER_FINISHING_ACTION,
+            'childs' => [],
+        ]);
+    }
+
+    /**
+     * Insert after finishing action
+     */
+    public static function pushAfterFinishingChilds(array $childs)
+    {
+        if (empty($childs)) {
+            return;
+        }
+
+        $node = self::getAfterFinishingNode();
+        foreach ($childs as $child) {
+            $node->pushChild(self::buildTree($child));
+        }
+    }
+
+    /**
      * insertAsChild: turn the node into a SEQ if needed, then insert the flow tree as a child
      */
     public static function insertAsChild($t, &$node = null)
@@ -459,6 +511,7 @@ class Engine
     const NODE_XOR = 'xor';
     const NODE_PARALLEL = 'parallel';
     const NODE_LEAF = 'leaf';
+    const AFTER_FINISHING_ACTION = 'afterFinishing';
 
     const CANCEL = 97;
     const ZOMBIE = 98;

@@ -24,4 +24,5 @@ class States
 
     // Automatic state
     const ST_DRAW_TILE = 200;
+    const ST_CLEANUP = 210;
 }

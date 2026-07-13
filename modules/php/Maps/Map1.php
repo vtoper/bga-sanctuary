@@ -17,6 +17,11 @@ class Map1 extends \Bga\Games\Sanctuary\Models\ZooMap
     parent::__construct($player);
   }
 
+  protected $startingOpenAreas = [
+    ['x' => 5, 'y' => 0],
+    ['x' => 3, 'y' => 1],
+  ];
+
   protected $bonuses = [
     // '0_1' => [XTOKEN => 1],
     // '0_11' => [MONEY => 5],

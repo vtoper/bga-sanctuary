@@ -16,11 +16,12 @@ class Building extends Tile
     ['openArea', 'obj'],
     ['prerequisites', 'obj'],
     ['continents', 'obj'],
-    ['effects', 'obj']
+    ['effects', 'obj'],
+    ['strength', 'int'],
   ];
   protected string $name;
   protected int $number;
-  protected int $appeal;
+  protected int|string $appeal;
   protected array $openArea;
   protected array $prerequisites;
   protected array $continents;
@@ -28,8 +29,9 @@ class Building extends Tile
   protected ?array $listeningIcon = null;
   protected string $listeningMode = self::MY_ZOO;
   protected ?array $listeningBonuses = null;
+  protected int $strength;
 
-  protected bool $implemented = true;
+
 
   public function countIcon($icon)
   {

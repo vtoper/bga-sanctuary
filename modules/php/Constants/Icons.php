@@ -22,13 +22,15 @@ class Icons
     const REPTILE = 'Reptile';
     const PET = 'Pet';
     const PRIMATE = 'Primate';
-    const ANIMAL_TYPES = [self::BIRD, self::PREDATOR, self::HERBIVORE, self::BEAR, self::REPTILE, self::PET, self::PRIMATE];
+    const PETTING_ZOO = 'PettingZoo';
+    const ANIMAL_TYPES = [self::BIRD, self::PREDATOR, self::HERBIVORE, self::BEAR, self::REPTILE, self::PET, self::PRIMATE, self::PETTING_ZOO];
 
-    const CONTINENTS_AND_TYPES = [self::AFRICA, self::EUROPE, self::ASIA, self::AMERICAS, self::AUSTRALIA, self::BIRD, self::PREDATOR, self::HERBIVORE, self::BEAR, self::REPTILE, self::PET, self::PRIMATE];
+    const CONTINENTS_AND_TYPES = [self::AFRICA, self::EUROPE, self::ASIA, self::AMERICAS, self::AUSTRALIA, self::BIRD, self::PREDATOR, self::HERBIVORE, self::BEAR, self::REPTILE, self::PET, self::PRIMATE, self::PETTING_ZOO];
 
     // Habitat
     const ROCK = 'Rock';
     const WATER = 'Water';
     const FOREST = 'Forest';
-    const HABITATS = [self::ROCK, self::WATER, self::FOREST];
+    const UNDEFINED = 'Undefined';
+    const HABITATS = [self::ROCK, self::WATER, self::FOREST, self::UNDEFINED];
 }

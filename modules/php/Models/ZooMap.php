@@ -78,6 +78,26 @@ class ZooMap
     ];
   }
 
+  public function setupPlayer(Player $player): null
+  {
+    $this->player = $player;
+    $this->pId = $player->getId();
+    $openAreas = [];
+    // creating the open areas
+    foreach ($this->startingOpenAreas as $cell) {
+      $openAreas[] = [
+        'id' => 'openArea_' . $player->getId() . '_' . $cell['x'],
+        'player_id' => $player->getId(),
+        'location' => 'board',
+        'x' => $cell['x'],
+        'y' => $cell['y'],
+        'state' => 3 // cannot be selected for placement
+      ];
+    }
+    Tiles::create($openAreas, null);
+    return null;
+  }
+
   public function getStatus()
   {
     return null;
@@ -108,13 +128,13 @@ class ZooMap
       }
     }
 
-    foreach ($this->startingOpenAreas as $cell) {
-      $this->grid[$cell['x']][$cell['y']]['tile'] = [
-        'x' => $cell['x'],
-        'y' => $cell['y'],
-        'id' => 'openArea_' . $cell['x'] . '_' . $cell['y'],
-      ];
-    }
+    // foreach ($this->startingOpenAreas as $cell) {
+    //   $this->grid[$cell['x']][$cell['y']]['tile'] = [
+    //     'x' => $cell['x'],
+    //     'y' => $cell['y'],
+    //     'id' => 'openArea_' . $cell['x'] . '_' . $cell['y'],
+    //   ];
+    // }
 
     $this->tiles = Tiles::getOfPlayer($this->pId);
     foreach ($this->tiles as &$tile) {

@@ -15,6 +15,8 @@ use Bga\Games\Sanctuary\Managers\ActionCards;
 use Bga\Games\Sanctuary\Framework\Db\Log;
 use Bga\Games\Sanctuary\Framework\Engine\AbstractNode;
 use Bga\Games\Sanctuary\Framework\Engine\ActionStateWithRevert;
+use Bga\Games\Sanctuary\Framework\Engine\Engine;
+use Bga\Games\Sanctuary\Managers\Globals;
 
 class ChooseActionCard extends ActionStateWithRevert
 {
@@ -61,21 +63,6 @@ class ChooseActionCard extends ActionStateWithRevert
         }
 
         $data = [
-            'cards' => $cards
-                ->map(function ($card) use ($player, $forcedStrength) {
-                    // Forced strength = 0 => must take a xtoken again
-                    if ($forcedStrength === 0) {
-                        return [0];
-                    }
-
-                    // Otherwise, cannot take xtoken if a forcedStrength is given
-                    $strengths = $card->getPlayableStrengths($player);
-
-                    return $strengths;
-                })
-                ->filter(function ($card) {
-                    return !empty($card);
-                }),
             'strengths' => $cards->map(function ($card) {
                 return $card->getCurrentStrength();
             }),
@@ -92,84 +79,54 @@ class ChooseActionCard extends ActionStateWithRevert
         return $data;
     }
 
-    /**
-     * Player action, example content.
-     *
-     * In this scenario, each time a player plays a card, this method will be called. This method is called directly
-     * by the action trigger on the front side with `bgaPerformAction`.
-     *
-     * @throws UserException
-     */
     #[PossibleAction]
-    public function actPlayCard(int $card_id, int $activePlayerId, array $args)
+    public function actChooseActionCard($cardId)
     {
-        // check input values
-        $playableCardsIds = $args['playableCardsIds'];
-        if (!in_array($card_id, $playableCardsIds)) {
-            throw new UserException('Invalid card choice');
+        $player = Players::getActive();
+        $args = $this->getArgs();
+
+        if (!isset($args['cards'][$cardId])) {
+            throw new \BgaVisibleSystemException('Card action not doable. Should not happen');
         }
 
-        // Add your game logic to play a card here.
-        $card_name = Game::$CARD_TYPES[$card_id]['card_name'];
+        // Activate the card
+        $card = ActionCards::get($cardId);
+        $card->setStatus(1);
 
-        // Notify all players about the card played.
-        $this->bga->notify->all("cardPlayed", clienttranslate('${player_name} plays ${card_name}'), [
-            "player_id" => $activePlayerId,
-            "player_name" => $this->game->getPlayerNameById($activePlayerId), // remove this line if you uncomment notification decorator
-            "card_name" => $card_name, // remove this line if you uncomment notification decorator
-            "card_id" => $card_id,
-            "i18n" => ['card_name'], // remove this line if you uncomment notification decorator
+        // Notify
+        $this->notify->all(
+            'chooseActionCard',
+            clienttranslate(
+                '${player_name} chooses action card ${action_card_name}${action_card_icon}${action_card_level}'
+            ),
+            [
+                'player' => $player,
+                'actionCard' => $card,
+            ]
+        );
+        // Do action
+        $flow = $card->getTaggedFlow($player);
+        Engine::insertAsChild($flow);
+        // After finishing flow 
+        $afterFlow = $card->getAfterFinishingTaggedFlow($player);
+        if (!empty($afterFlow)) {
+            Engine::pushAfterFinishingChilds([$afterFlow]);
+        }
+
+        $methodName = 'incAction' . $card->getName();
+        // Stats::$methodName($player);
+        Globals::setActiveActionCard([
+            'type' => $card->getType(),
+            'pId' => $card->getPId(),
+            'lvl' => $card->getLevel(),
         ]);
 
-        // in this example, the player gains 1 points each time he plays a card
-        $this->bga->playerScore->inc($activePlayerId, 1);
-
-        // at the end of the action, move to the next state
-        return NextPlayer::class;
-    }
-
-    /**
-     * Player action, example content.
-     *
-     * In this scenario, each time a player pass, this method will be called. This method is called directly
-     * by the action trigger on the front side with `bgaPerformAction`.
-     */
-    #[PossibleAction]
-    public function actPass(int $activePlayerId)
-    {
-        // Notify all players about the choice to pass.
-        $this->notify->all("pass", clienttranslate('${player_name} passes'), [
-            "player_id" => $activePlayerId,
-            "player_name" => $this->game->getPlayerNameById($activePlayerId), // remove this line if you uncomment notification decorator
+        // Insert cleanup actionName
+        Engine::insertAsChild([
+            'action' => States::ST_CLEANUP,
+            'pId' => $player->getId(),
+            'args' => ['card' => $cardId],
         ]);
-
-        // in this example, the player gains 1 energy each time he passes
-        $this->game->playerEnergy->inc($activePlayerId, 1);
-
-        // at the end of the action, move to the next state
-        return NextPlayer::class;
-    }
-
-    /**
-     * This method is called each time it is the turn of a player who has quit the game (= "zombie" player).
-     * You can do whatever you want in order to make sure the turn of this player ends appropriately
-     * (ex: play a random card).
-     * 
-     * See more about Zombie Mode: https://en.doc.boardgamearena.com/Zombie_Mode
-     *
-     * Important: your zombie code will be called when the player leaves the game. This action is triggered
-     * from the main site and propagated to the gameserver from a server, not from a browser.
-     * As a consequence, there is no current player associated to this action. In your zombieTurn function,
-     * you must _never_ use `getCurrentPlayerId()` or `getCurrentPlayerName()`, 
-     * but use the $playerId passed in parameter and $this->game->getPlayerNameById($playerId) instead.
-     */
-    function zombie(int $playerId)
-    {
-        // Example of zombie level 0: return NextPlayer::class; or $this->actPass($playerId);
-
-        // Example of zombie level 1:
-        $args = $this->getArgs();
-        $zombieChoice = $this->getRandomZombieChoice($args['playableCardsIds']); // random choice over possible moves
-        return $this->actPlayCard($zombieChoice, $playerId, $args); // this function will return the transition to the next state
+        $this->resolve(['card' => $cardId]);
     }
 }

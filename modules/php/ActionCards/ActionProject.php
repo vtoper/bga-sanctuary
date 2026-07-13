@@ -22,34 +22,26 @@ class ActionProject extends \Bga\Games\sanctuary\Models\ActionCard
   public function getBaseNode($strength = null)
   {
     $strength = $strength ?? $this->getCurrentStrength();
-    $node = [
-      "type" => Engine::NODE_SEQUENTIAL,
-      "children" => [
-        [
-          "state" => TakeTile::class,
-          "args" => ['inRange' => true]
-        ],
-        [
-          'type' => Engine::NODE_XOR,
-          'children' => [
-            [
-              "state" => Project::class,
-              "args" => [
-                'strength' => $strength,
-                'lvl' => $this->getLevel(),
-              ]
-            ],
-            [
-              "state" => TakeTile::class,
-              "args" => [
-                'inRange' => false,
-                'max' => $this->getLevel()
-              ]
-            ],
-          ]
+    $node =
+      [
+        'type' => Engine::NODE_XOR,
+        'children' => [
+          [
+            "state" => Project::class,
+            "args" => [
+              'strength' => $strength,
+              'lvl' => $this->getLevel(),
+            ]
+          ],
+          [
+            "state" => TakeTile::class,
+            "args" => [
+              'inRange' => false,
+              'max' => $this->getLevel()
+            ]
+          ],
         ]
-      ]
-    ];
+      ];
 
     return $node;
   }

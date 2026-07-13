@@ -28,6 +28,9 @@ class Globals extends \Bga\Games\sanctuary\Framework\Db\Globals
         'firstGame' => 'bool',
         'beginner' => 'bool',
 
+        'activeActionCard' => 'obj',
+
+
         // end of game
         'endRemainingPlayers' => 'obj',
         'endFinalScoringDone' => 'bool',

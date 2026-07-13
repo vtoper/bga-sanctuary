@@ -10,6 +10,9 @@ use Bga\Games\Sanctuary\Framework\Engine\Engine;
 use Bga\Games\Sanctuary\Game;
 use Bga\Games\Sanctuary\Constants\States;
 use Bga\Games\Sanctuary\States\Actions\ChooseActionCard;
+use Bga\Games\Sanctuary\States\Actions\TakeTile;
+use Bga\Games\Sanctuary\States\Actions\PlayCard;
+use Bga\Games\Sanctuary\Models\Tile;
 
 class SetupTurn extends GameState
 {
@@ -27,8 +30,41 @@ class SetupTurn extends GameState
     {
         $this->game->giveExtraTime($activePlayerId);
         $newNode = [
-            "state" => ChooseActionCard::class,
-            "args" => []
+            "type" => Engine::NODE_SEQUENTIAL,
+            "children" => [
+                [
+                    "state" => TakeTile::class,
+                    "args" => ['inRange' => true]
+                ],
+                [
+                    "state" => ChooseActionCard::class,
+                    "args" => []
+                ],
+                [
+                    "state" => PlayCard::class,
+                    "args" => [
+                        'type' => Tile::TILE_BUILDING,
+                    ],
+                    'optional' => true
+                ],
+                // [
+                //     "state" => Conservation::class,
+                //     "args" => [
+                //     ]
+                //      "optional"=>true,
+                // ],
+                // [
+                //     "state" => Upgrade::class,
+                //     "args" => [
+                //     ]
+                //      "optional"=>true,
+                // ],
+                // // [
+                //     "state" => Administration::class,
+                //     "args" => [
+                //     ]
+                // ],
+            ]
         ];
 
         Engine::setup($newNode, ['order' => "turn"]);

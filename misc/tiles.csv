@@ -1,0 +1,136 @@
+id;type;name;level;habitat;continent;animal class;open areas;gender;immediate effect;ongoing effect;prerequisite;appeal;pair
+1;animal;lion;4;rock;africa;predator;;male;;;;2 per predator;2
+2;animal;lion;4;rock;africa;predator;;female;;;;2 per predator;1
+3;animal;australian dingo;2;rock;australia;predator;;male;;;;1 per predator;4
+4;animal;australian dingo;2;rock;australia;predator;;female;;;;1 per predator;3
+5;animal;eurasian otter;3;water;europe;predator;;male;; ;;2 per connected water;6
+6;animal;eurasian otter;3;water;europe;predator;;female;; ;;2 per connected water;5
+7;animal;caracal;2;rock;africa;predator;SW;;draw 3 tiles from the pile, keep 1 animal;;;3;
+8;animal;australian sea lion;4;water;australia;predator;N;;draw 3 tiles from the pile, keep 1 animal;;;2 per predator;
+9;animal;eurasian brown bear;5;forest;europe;predator;N;;take all projects from the display;;;8;
+10;animal;sumatran tiger;5;water;asia;predator;NW, NE;female;take 1 conservation token;;;8;11
+11;animal;sumatran tiger;5;water;asia;predator;SW, SE;male;take 1 conservation token;;;8;10
+12;animal;jaguar;4;forest;americas;predator;SW;male;draw 3 tiles from the pile, keep 1 animal;;;7;13
+13;animal;jaguar;4;forest;americas;predator;NE;female;draw 3 tiles from the pile, keep 1 animal;;;7;12
+14;animal;great hornbill;3;forest;asia;bird;;;;;;2 per connected asia;
+15;animal;laughing kookaburra;3;rock;australia;bird;;;;;;2 per connected australia;
+16;animal;toco toucan;3;rock;americas;bird;;;;;;2 per connected americas;
+17;animal;snowy owl;3;rock;europe;bird;;;;;;2 per connected europe;
+18;animal;common ostrich;5;rock;africa;bird;;;place 2 open areas from the pile in your zoo;;;6;
+19;animal;greater flamingo;3;water;africa;bird;;;;;;2 per connected africa;
+20;animal;white stork;3;forest;europe;bird;;female;place 1 open area from the pile in your zoo;;;1 per open area;21
+21;animal;white stork;3;forest;europe;bird;;male;place 1 open area from the pile in your zoo;;;1 per open area;20
+22;animal;scarlet macaw;4;forest;americas;bird;;male;;;;4;23
+23;animal;scarlet macaw;4;forest;americas;bird;;female;;;;4;22
+24;animal;australian pelican;4;water;australia;bird;;male;place 1 open area from the pile in your zoo;;;6;25
+25;animal;australian pelican;4;water;australia;bird;;female;place 1 open area from the pile in your zoo;;;6;24
+26;animal;green peafowl;5;Undefined;asia;bird;;;;;;3 per project;
+27;animal;giant panda;5;rock;asia;herbivore;N, NE, SE;;take all buildings from the display;;;9;
+28;animal;indian rhinoceros;4;water;asia;herbivore;NW;female;;;;2 per building;29
+29;animal;indian rhinoceros;4;water;asia;herbivore;NE;male;;;;2 per building;28
+30;animal;african bush elephant;5;Undefined;africa;herbivore;NW, SW, SE;;;;;10;
+31;animal;alpine ibex;3;rock;europe;herbivore;;male;;;;2 per connected rock;32
+32;animal;alpine ibex;3;rock;europe;herbivore;;female;;;;2 per connected rock;31
+33;animal;red-necked wallaby;2;water;australia;herbivore;;;discard up to 2 tiles, gain 1 pouch marker for each;;;3;
+34;animal;capybara;2;water;americas;herbivore;;male;;;;4;35
+35;animal;capybara;2;water;americas;herbivore;;female;;;;4;34
+36;animal;northern giraffe;4;forest;africa;herbivore;NE;female;take 1 building from the display;;;7;37
+37;animal;northern giraffe;4;forest;africa;herbivore;SW;male;take 1 building from the display;;;7;36
+38;animal;koala;3;forest;australia;herbivore;;male;discard up to 2 tiles, gain 1 pouch marker for each;;;5;39
+39;animal;koala;3;forest;australia;herbivore;;female;discard up to 2 tiles, gain 1 pouch marker for each;;;5;38
+40;animal;thorny devil;2;rock;australia;reptile;;female;;;;4;41
+41;animal;thorny devil;2;rock;australia;reptile;;male;;;;4;40
+42;animal;chinese water dragon;2;water;asia;reptile;;;;;;1 per connected water;
+43;animal;galapagos giant tortoise;5;Undefined;americas;reptile;;;take 1 conservation token;;;7;
+44;animal;nile crocodile;4;water;africa;reptile;NW;female;take 1 tile from the display;;;6;45
+45;animal;nile crocodile;4;water;africa;reptile;SE;male;take 1 tile from the display;;;6;44
+46;animal;green iguana;3;forest;americas;reptile;;;take 1 tile from the display;;;4;
+47;animal;american anole;2;forest;americas;reptile;;;;;;1 per connected forest;
+48;animal;european pond turtle;3;water;europe;reptile;;;take 1 conservation token;;;2;
+49;animal;common wall lizard;2;rock;europe;reptile;;;;;;1 per connected rock;
+50;animal;indian python;3;rock;asia;reptile;;male;relocate 1 tile in your zoo;;;4;51
+51;animal;indian python;3;rock;asia;reptile;;female;relocate 1 tile in your zoo;;;4;50
+52;animal;inland taipan;4;rock;australia;reptile;;;relocate 1 tile in your zoo;;;6;
+53;animal;barbary macaque;3;water;europe;primate;;female;move 1 action to position 1;;;5;54
+54;animal;barbary macaque;3;water;europe;primate;;male;move 1 action to position 1;;;5;53
+55;animal;guiana spider monkey;5;forest;americas;primate;N, SW;male;take 1 conservation token;;;2 per tile in hand;56
+56;animal;guiana spider monkey;5;forest;americas;primate;N, NE;female;take 1 conservation token;;;2 per tile in hand;55
+57;animal;hamadryas baboon;4;rock;africa;primate;NE, SW;male;draw 1 tile from the pile;;;8;58
+58;animal;hamadryas baboon;4;rock;africa;primate;NE, SW;female;draw 1 tile from the pile;;;8;57
+59;animal;japanese macaque;4;water;asia;primate;NE;;draw 2 tiles from the pile;;;6;
+60;animal;dusky leaf monkey;3;forest;asia;primate;;female;;;;2 per connected forest;61
+61;animal;dusky leaf monkey;3;forest;asia;primate;;male;;;;2 per connected forest;60
+62;animal;mantled guereza;3;forest;africa;primate;NW;;move 1 action to position 1;;;6;
+63;animal;squirrel monkey;2;forest;americas;primate;;;;;;1 per tile in hand;
+64;animal;minipig;2;Undefined;;petting_zoo;;;;;;3/9/18 for connected group;
+65;animal;donkey;2;Undefined;;petting_zoo;;;;;;3/9/18 for connected group;
+66;animal;sheep;2;Undefined;;petting_zoo;;;;;;3/9/18 for connected group;
+67;animal;pony;2;Undefined;;petting_zoo;;;;;;3/9/18 for connected group;
+68;animal;goat;2;Undefined;;petting_zoo;;;;;;3/9/18 for connected group;
+69;animal;alpaca;2;Undefined;;petting_zoo;;;;;;3/9/18 for connected group;
+70;animal;domestic rabbit;2;Undefined;;petting_zoo;;;;;;3/9/18 for connected group;
+71;project;hydrologist;4;water;;;;;;play water tile with 1 less action strength;;1 per connected water;
+72;project;geologist;4;rock;;;;;;play rock tile with 1 less action strength;;1 per connected rock;
+73;project;dendrologist;4;forest;;;;;;play forest tile with 1 less action strength;;1 per connected forest;
+74;project;expert in predators;4;;;predator;;;;when you play a predator, draw 3 tiles from the pile, keep 1 animal;;1 per predator;
+75;project;herpetologist;4;;;reptile;;;;when you play a reptile, take 1 tile from the display;;1 per reptile;
+76;project;primatologist;4;;;primate;;;;when you play a primate, relocate 1 tile in your zoo;;1 per primate;
+77;project;expert in herbivores;4;;;herbivore;;;;when you play a herbivore, take 1 building from the display;;1 per herbivore;
+78;project;ornithologist;4;;;bird;;;;when you play a bird, place 1 open area from the pile in your zoo;;1 per bird;
+79;project;expert in small animals;4;;;;;;take 1 small animal from the display;play small animal tile with 1 less action strength;;;
+80;project;expert in large animals;4;;;;;;take 1 large animal from the display;play large animal tile with 1 less action strength;;;
+81;project;partner zoo africa;3;;africa;;;;take 1 africa tile from the display;play africa tile with 2 less action strength;;;
+82;project;partner zoo asia;3;;asia;;;;take 1 asia tile from the display;play asia tile with 2 less action strength;;;
+83;project;partner zoo europe;3;;europe;;;;take 1 europe tile from the display;play europe tile with 2 less action strength;;;
+84;project;partner zoo americas;3;;americas;;;;take 1 americas tile from the display;play americas tile with 2 less action strength;;;
+85;project;partner zoo australia;3;;australia;;;;take 1 australia tile from the display;play australia tile with 2 less action strength;;;
+86;project;amboseli national park;4;rock;africa;;;;release 1 africa animal, get 2/3 conservation tokens;;;4;
+87;project;chitwan national park;4;water;asia;;;;release 1 asia animal, get 2/3 conservation tokens;;;4;
+88;project;yellowstone national park;4;forest;americas;;;;release 1 americas animal, get 2/3 conservation tokens;;;4;
+89;project;lake district national park;4;water;europe;;;;release 1 europe animal, get 2/3 conservation tokens;;;4;
+90;project;port campbell national park;4;rock;australia;;;;release 1 australia animal, get 2/3 conservation tokens;;;4;
+91;project;canyon;4;water and rock;;;;;release 1 reptile, get 2/3 conservation tokens;;;4;
+92;project;savanna;4;forest and rock;;;;;release 1 predator, get 2/3 conservation tokens;;;4;
+93;project;low mountain range;4;forest and rock;;;;;release 1 bird, get 2/3 conservation tokens;;;4;
+94;project;jungle;4;forest and water;;;;;release 1 primate, get 2/3 conservation tokens;;;4;
+95;project;bamboo forest;4;forest and water;;;;;release 1 herbivore, get 2/3 conservation tokens;;;4;
+96;project;bird breeding;3;;;bird;;;;;;2 per connected bird;
+97;project;herbivore breeding;3;;;herbivore;;;;;;2 per connected herbivore;
+98;project;primate breeding;3;;;primate;;;;;;2 per connected primate;
+99;project;predator breeding;3;;;predator;;;;;;2 per connected predator;
+100;project;reptile breeding;3;;;reptile;;;;;;2 per connected reptile;
+101;building;outback area;;;australia;;;;;;next to 2 australia tiles;2 per connected australia;
+102;building;alpine area;;;europe;;;;;;next to 2 europe tiles;2 per connected europe;
+103;building;sumatra area;;;asia;;;;;;next to 2 asia tiles;2 per connected asia;
+104;building;okavango area;;;africa;;;;;;next to 2 africa tiles;2 per connected africa;
+105;building;amazon area;;;americas;;;;;;next to 2 americas tiles;2 per connected americas;
+106;building;predator house;;;;predator;;;;;next to 1 predator;2 per adjacent predator;
+107;building;primate house;;;;primate;;;;;next to 1 primate;2 per adjacent primate;
+108;building;bird trees;;;;bird;;;;;next to 1 bird;2 per adjacent bird;
+109;building;reptile house;;;;reptile;;;;;next to 1 reptile;2 per adjacent reptile;
+110;building;herbivore house;;;;herbivore;;;;;next to 1 herbivore;2 per adjacent herbivore;
+111;building;climbing forest;;forest;;;;;;;next to 4 connected forest tiles;8;
+112;building;aerial cableway;;rock;;;;;;;next to 4 connected rock tiles;8;
+113;building;aquarium;;water;;;;;;;next to 4 connected water tiles;8;
+114;building;water playground;;water;;;;;;;next to 2 water tiles;4;
+115;building;tree house;;forest;;;;;;;next to 2 forest tiles;4;
+116;building;adventure playground;;rock;;;;;;;next to 2 rock tiles;4;
+117;building;observation deck;;rock;;;;;;;next to 4 different animal or continent icons;1 per different adjacent icon;
+118;building;observation deck;;forest;;;;;;;next to 4 different animal or continent icons;1 per different adjacent icon;
+119;building;observation deck;;water;;;;;;;next to 4 different animal or continent icons;1 per different adjacent icon;
+120;building;administration;;;;;;;;;next to 2 building tiles;2 per building;
+121;building;hidden glass wall;;;;;;;;;next to 2 large animals;6;
+122;building;asia pavilion;;;asia;;;;;when you play a asia tile, take 1 project from the display;by the river;1 per connected asia;
+123;building;americas pavilion;;;americas;;;;;when you play an americas tile, move 1 action to position 1;by the river;1 per connected americas;
+124;building;africa pavilion;;;africa;;;;;when you play an africa tile, draw 1 tile from the pile;by the river;1 per connected africa;
+125;building;europe pavilion;;;europe;;;;;when you play a europe tile, take 1 animal from the display;by the river;1 per connected europe;
+126;building;australia pavilion;;;australia;;;;;when you play an australia tile, discard 1 tile to gain 1 pouch token;by the river;1 per connected australia;
+127;building;park;;;;;;;;;next to 2 open areas;5;
+128;building;conference hall;;;;;;;take 2 conservation tokens;;have 5 different continent icons;1 per project;
+129;building;zoo kitchen;;;;;;;take 2 conservation tokens;;have 5 different animal icons;;
+130;building;exhibition hall;;;;;;;;;have 10 different animal and continent icons;10;
+131;building;library;;;;;;;;;next to 2 projects;2 per project;
+132;building;zoo school;;;;;;;take 1 project from the display, take 1 conservation token;;by the river;4;
+133;building;fountain;;;;;;;;;have tiles on all spaces by the river;6;
+134;building;excavation site;;;;;;;;;have 7+ tiles in hand;1 per tile in hand;
+135;building;statue;;;;;;;;;discard 4 tiles;8;
