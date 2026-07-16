@@ -300,7 +300,7 @@ class CachedPieces extends DB_Manager
     public static function getFiltered(?int $pId, ?string $location = null, null|string|array $type = null): Collection
     {
         return self::getSelectWhere(null, $location)
-            ->where('playerId', $pId)
+            ->where('pId', $pId)
             ->where('type', $type);
     }
 

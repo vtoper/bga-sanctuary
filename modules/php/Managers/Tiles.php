@@ -277,15 +277,10 @@ class Tiles extends CachedPieces
   /**
    * Add a card to a player hand
    */
-  public static function addToHand(string $cId, int|object $pId): ZooCard
+  public static function addToHand(string $cId, int|object $pId): Tile
   {
     $card = self::getSingle($cId);
     $pId = is_int($pId) ? $pId : $pId->getId();
-
-    // MARKED ?
-    if ($card->isMarked()) {
-      Engine::insertOrUpdateParallelChilds([$card->removeMarkForMoney($pId)]);
-    }
 
     $card->setPId($pId);
     $card->setLocation('hand');

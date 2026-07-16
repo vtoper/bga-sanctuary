@@ -255,4 +255,10 @@ class Game extends \Bga\GameFramework\Table
     {
         Tiles::fillPool();
     }
+
+    public function debug_vt()
+    {
+        $titi = new \Bga\Games\Sanctuary\States\Actions\TakeTile($this, Engine::getNextUnresolved());
+        $titi->actTakeTile(['B116_AdventurePlayground_N']);
+    }
 }

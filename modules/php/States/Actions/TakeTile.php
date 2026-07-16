@@ -99,6 +99,15 @@ class TakeTile extends ActionStateWithRevert
         ];
     }
 
+    public function onEnteringState(int $activePlayerId)
+    {
+        $args = $this->getActionArgs($activePlayerId);
+        // Only one tile to take, do it automatically
+        if (count($args['cardIds']) == 1) {
+            return $this->actTakeTile($args['cardIds']);
+        }
+    }
+
     #[PossibleAction]
     public function actTakeTile($cardIds)
     {
@@ -127,7 +136,8 @@ class TakeTile extends ActionStateWithRevert
             'player' => $player,
             'cards' => $tiles,
         ]);
-
+        // \Bga\Games\Sanctuary\Framework\Engine\Engine::doResolve(["n" => count($cardIds)]);
+        // return ChooseActionCard::class;
         // Stats::incTilesTaken($player);
         return $this->resolve(["n" => count($cardIds)]);
     }
