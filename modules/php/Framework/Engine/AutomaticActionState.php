@@ -7,6 +7,7 @@ namespace Bga\Games\sanctuary\Framework\Engine;
 use Bga\GameFramework\StateType;
 use Bga\Games\sanctuary\Game;
 use Bga\Games\sanctuary\Managers\Players;
+use Bga\Games\sanctuary\Framework\Models\Player;
 
 
 class AutomaticActionState extends \Bga\GameFramework\States\GameState
@@ -81,7 +82,7 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
         return $this->getNode()->getInfo()["irreversible"] ?? false;
     }
 
-    public function isDoable(int $playerId): bool
+    public function isDoable(int|Player $playerId): bool
     {
         return true;
     }

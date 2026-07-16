@@ -86,6 +86,13 @@ class LeafNode extends AbstractNode
     private function getStateInstance()
     {
         $stateClass = $this->getState();
+        // try {
+        //     $c = new $stateClass(Game::get(), node: $this);
+        // } catch (\Throwable $e) {
+        //     throw new \feException("State class $stateClass does not exist");
+        // }
+        // $c = $stateClass(Game::get(), node: $this);
+
         return new $stateClass(Game::get(), node: $this);
     }
 }

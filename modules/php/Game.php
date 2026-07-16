@@ -25,11 +25,14 @@ use Bga\Games\Sanctuary\Framework\Db\Log;
 use Bga\Games\Sanctuary\Framework\Db\WithGame;
 use Bga\Games\Sanctuary\Framework\Engine\Engine;
 use Bga\Games\Sanctuary\Framework\TurnOrderManager;
-use Bga\Games\sanctuary\Managers\ActionCards;
+use Bga\Games\Sanctuary\Managers\ActionCards;
 use Bga\Games\Sanctuary\Managers\Players;
 use Bga\Games\Sanctuary\Managers\Meeples;
 use Bga\Games\Sanctuary\States\Flow\SetupTurn;
 use Bga\Games\Sanctuary\Managers\Tiles;
+use Bga\GameFramework\States\PossibleAction;
+use Bga\GameFramework\Actions\CheckAction;
+use Bga\Games\Sanctuary\Framework\Managers\Config;
 
 class Game extends \Bga\GameFramework\Table
 {
@@ -120,6 +123,20 @@ class Game extends \Bga\GameFramework\Table
                     'args' => $args,
                 ];
                 $args['i18n'][] = 'card_names';
+            }
+
+            if (isset($args['actionCard'])) {
+                $lvlMapping = [
+                    1 => 'I',
+                    2 => 'II',
+                ];
+                $card = $args['actionCard'];
+                $args['i18n'][] = 'action_card_name';
+                $args['action_card_name'] = $card->getName();
+                $args['action_card_level'] = $lvlMapping[$card->getLevel()];
+                $args['action_card_icon'] = '';
+                $args['action_card_type'] = $card->getActionType();
+                $args['preserve'][] = 'action_card_type';
             }
 
             return $args;
@@ -260,5 +277,20 @@ class Game extends \Bga\GameFramework\Table
     {
         $titi = new \Bga\Games\Sanctuary\States\Actions\TakeTile($this, Engine::getNextUnresolved());
         $titi->actTakeTile(['B116_AdventurePlayground_N']);
+    }
+
+    #[PossibleAction]
+    #[CheckAction(false)]
+    public function actShowEngine(bool $previous = false)
+    {
+        if (!$previous) {
+            $this->notify->all('showEngine', '', [
+                'engine' => Config::getEngine()
+            ]);
+        } else {
+            $this->notify->all('showEngine', '', [
+                'engine' => Config::getLastEngine()
+            ]);
+        }
     }
 }

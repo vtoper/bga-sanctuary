@@ -32,7 +32,7 @@ class PlayCard extends ActionStateWithRevert
     {
         if (!is_null($this->getNodeArgs("sourceName"))) {
             return [
-                "description" => clienttranslate('${actplayer} must draw assignment cards (${sourceName})'),
+                "description" => clienttranslate('${actplayer} must play a WATER or undefined animal (${sourceName})'),
                 "descriptionMyTurn" => clienttranslate('${you} must draw assignment cards (${sourceName})'),
             ];
         }
@@ -43,13 +43,13 @@ class PlayCard extends ActionStateWithRevert
     {
         if (!is_null($this->getNodeArgs("sourceName"))) {
             return [
-                "log" => clienttranslate('Draw assignment cards (${sourceName})'),
+                "log" => clienttranslate('play card (${sourceName})'),
                 "args" => [
                     "sourceName" => $this->getNodeArgs("sourceName", "")
                 ]
             ];
         }
-        return clienttranslate('Draw assignment cards');
+        return clienttranslate('play card');
     }
 
 

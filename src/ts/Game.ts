@@ -1,7 +1,16 @@
 // import { PlayerTurn } from './States/PlayerTurn';
+import { ConfirmTurn } from './framework/states/ConfirmTurn';
 import { StateProcessor } from './framework/StateProcessor';
+import { clearPersistantActionButtonsNode, clearRestartActionButtonsNode, debug, initUtils } from './framework/utils';
+import { ResolveChoice } from './framework/states/ResolveChoice';
+import { overrideGamePrototype } from './framework/overrideGamePrototype';
+import { DummyEnd } from './framework/states/DummyEnd';
+import { showEngine } from './framework/engine';
+import { AnytimeActions } from './framework/states/AnytimeActions';
+
 import notifications from './notifications';
 import { TakeTile } from './states/TakeTile';
+import { ChooseActionCard } from './states/ChooseActionCard';
 
 export class Game {
   bga: ExtendedBga;
@@ -14,10 +23,21 @@ export class Game {
     console.log('sanctuary constructor');
     this.bga = bga;
 
+    // Framework
+    this.bga.states.register('ConfirmTurn', new ConfirmTurn(this, bga));
+    this.bga.states.register('ConfirmPartialTurn', new ConfirmTurn(this, bga));
+    this.bga.states.register('ResolveChoice', new ResolveChoice(this, bga));
+    this.bga.states.register('client_selectAnytimeAction', new AnytimeActions(this, bga));
+    this.bga.states.register('DummyEnd', new DummyEnd(this, bga));
+
     this.bga.states.register('TakeTile', new TakeTile(this, bga));
+    this.bga.states.register('ChooseActionCard', new ChooseActionCard(this, bga));
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
     this.bga.states.logger = console.log;
+
+    this.stateProcessor = new StateProcessor(this, bga);
+    initUtils(this.bga);
 
     // Here, you can init the global variables of your user interface
     // Example:
@@ -44,7 +64,7 @@ export class Game {
 
     // Setup game notifications to handle (see "setupNotifications" method below)
     this.setupNotifications();
-
+    overrideGamePrototype(this.bga.gameui);
     console.log('Ending game setup');
   }
 
@@ -88,9 +108,10 @@ export class Game {
     });
   }
 
-  // onEnteringState(stateName: string, args: Gamestate) {
-  //   console.debug('Entering state', stateName, args);
-  // }
+  onEnteringState(stateName: string, args: Gamestate) {
+    console.debug('Entering state', stateName, args);
+    this.stateProcessor.process(args.args, args);
+  }
 
   async notif_fillPool(args) {
     console.debug(args);
@@ -106,4 +127,8 @@ export class Game {
         // TODO: play the card in the user interface.
     }
     */
+
+  async notif_showEngine(args: EngineShownArgs) {
+    showEngine(args.engine);
+  }
 }

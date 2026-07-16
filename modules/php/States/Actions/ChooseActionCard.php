@@ -17,6 +17,7 @@ use Bga\Games\Sanctuary\Framework\Engine\AbstractNode;
 use Bga\Games\Sanctuary\Framework\Engine\ActionStateWithRevert;
 use Bga\Games\Sanctuary\Framework\Engine\Engine;
 use Bga\Games\Sanctuary\Managers\Globals;
+use Bga\Games\Sanctuary\States\Actions\Cleanup;
 
 class ChooseActionCard extends ActionStateWithRevert
 {
@@ -64,8 +65,8 @@ class ChooseActionCard extends ActionStateWithRevert
 
         $data = [
             'strengths' => $cards->map(function ($card) {
-                return $card->getCurrentStrength();
-            }),
+                return ['strength' => $card->getCurrentStrength(), 'type' => $card->getActionType(), 'id' => $card->getId()];
+            })->toArray(),
         ];
 
 
@@ -80,12 +81,12 @@ class ChooseActionCard extends ActionStateWithRevert
     }
 
     #[PossibleAction]
-    public function actChooseActionCard($cardId)
+    public function actChooseActionCard(int $cardId)
     {
         $player = Players::getActive();
-        $args = $this->getArgs();
+        $args = $this->getArgs($player->getId());
 
-        if (!isset($args['cards'][$cardId])) {
+        if (!isset($args['strengths'][$cardId])) {
             throw new \BgaVisibleSystemException('Card action not doable. Should not happen');
         }
 
@@ -123,10 +124,10 @@ class ChooseActionCard extends ActionStateWithRevert
 
         // Insert cleanup actionName
         Engine::insertAsChild([
-            'action' => States::ST_CLEANUP,
+            'state' => Cleanup::class,
             'pId' => $player->getId(),
             'args' => ['card' => $cardId],
         ]);
-        $this->resolve(['card' => $cardId]);
+        return $this->resolve(['card' => $cardId]);
     }
 }
