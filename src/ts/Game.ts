@@ -1,21 +1,23 @@
 // import { PlayerTurn } from './States/PlayerTurn';
+import { StateProcessor } from './framework/StateProcessor';
+import notifications from './notifications';
+import { TakeTile } from './states/TakeTile';
 
 export class Game {
-  public bga: Bga<SanctuaryPlayer, SanctuaryGamedatas>;
-  private gamedatas: SanctuaryGamedatas;
+  bga: ExtendedBga;
+  stateProcessor: StateProcessor;
+  gamedatas: SanctuaryGamedatas;
 
   //   private playerTurn: PlayerTurn;
 
-  constructor(bga: Bga<SanctuaryPlayer, SanctuaryGamedatas>) {
+  constructor(bga: ExtendedBga) {
     console.log('sanctuary constructor');
     this.bga = bga;
 
-    // Declare the State classes
-    // this.playerTurn = new PlayerTurn(this, bga);
-    // this.bga.states.register('PlayerTurn', this.playerTurn);
+    this.bga.states.register('TakeTile', new TakeTile(this, bga));
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
-    // this.bga.states.logger = console.log;
+    this.bga.states.logger = console.log;
 
     // Here, you can init the global variables of your user interface
     // Example:
@@ -39,45 +41,6 @@ export class Game {
     console.log('Starting game setup');
     console.debug(gamedatas);
     this.gamedatas = gamedatas;
-
-    // Example to add a div on the game area
-    this.bga.gameArea.getElement().insertAdjacentHTML(
-      'beforeend',
-      `
-            <div id="player-tables"></div>
-        `,
-    );
-
-    // Setting up player boards
-    Object.entries(gamedatas.players).forEach(([pId, player]) => {
-      const playerId = Number(pId);
-      // example of setting up players boards
-      this.bga.playerPanels.getElement(playerId).insertAdjacentHTML(
-        'beforeend',
-        `
-                <span id="energy-player-counter-${playerId}"></span> Energy
-            `,
-      );
-      const counter = new ebg.counter();
-      counter.create(`energy-player-counter-${playerId}`, {
-        value: player.energy,
-        playerCounter: 'energy',
-        playerId: playerId,
-      });
-
-      // example of adding a div for each player
-      document.getElementById('player-tables').insertAdjacentHTML(
-        'beforeend',
-        `
-                <div id="player-table-${player.id}">
-                    <strong>${player.name}</strong>
-                    <div>Player zone content goes here</div>
-                </div>
-            `,
-      );
-    });
-
-    // TODO: Set up your game interface here, according to "gamedatas"
 
     // Setup game notifications to handle (see "setupNotifications" method below)
     this.setupNotifications();
@@ -113,12 +76,21 @@ export class Game {
     // Uncomment the logger param to see debug information in the console about notifications.
     this.bga.notifications.setupPromiseNotifications({
       logger: console.log,
+      handlers: [this, ...this.bga.states.getStateClasses(), ...notifications],
+      onStart: (notifName, msg, args) => {
+        $('pagemaintitletext').innerHTML = msg;
+        $('gameaction_status').innerHTML = msg;
+      },
+      onEnd: (notifName, msg, args) => {
+        $('pagemaintitletext').innerHTML = '';
+        $('gameaction_status').innerHTML = '';
+      },
     });
   }
 
-  onEnteringState(stateName: string, args: Gamestate) {
-    console.debug('Entering state', stateName, args);
-  }
+  // onEnteringState(stateName: string, args: Gamestate) {
+  //   console.debug('Entering state', stateName, args);
+  // }
 
   async notif_fillPool(args) {
     console.debug(args);
