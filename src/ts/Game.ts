@@ -1,7 +1,13 @@
 // import { PlayerTurn } from './States/PlayerTurn';
 import { ConfirmTurn } from './framework/states/ConfirmTurn';
 import { StateProcessor } from './framework/StateProcessor';
-import { clearPersistantActionButtonsNode, clearRestartActionButtonsNode, debug, initUtils } from './framework/utils';
+import {
+  clearPersistantActionButtonsNode,
+  clearRestartActionButtonsNode,
+  debug,
+  getRestartActionButtonsNode,
+  initUtils,
+} from './framework/utils';
 import { ResolveChoice } from './framework/states/ResolveChoice';
 import { overrideGamePrototype } from './framework/overrideGamePrototype';
 import { DummyEnd } from './framework/states/DummyEnd';
@@ -110,6 +116,7 @@ export class Game {
 
   onEnteringState(stateName: string, args: Gamestate) {
     console.debug('Entering state', stateName, args);
+    getRestartActionButtonsNode().innerHTML = '';
     this.stateProcessor.process(args.args, args);
   }
 

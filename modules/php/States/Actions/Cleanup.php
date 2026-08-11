@@ -60,6 +60,6 @@ class Cleanup extends AutomaticActionState
         );
 
         Globals::setActiveActionCard([]);
-        $this->resolve(['cleanup' => 'done']);
+        return $this->resolve(['cleanup' => 'done']);
     }
 }

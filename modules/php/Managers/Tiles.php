@@ -78,7 +78,7 @@ class Tiles extends CachedPieces
       }
 
       $type = $card->getType();
-      $location = 'deck';
+      $location = self::DECK;
 
 
       $cards[$cId] = [
@@ -298,6 +298,25 @@ class Tiles extends CachedPieces
       self::insertOnTop($cId, $toLocation);
       $c->setPId($player->getId());
     }
+
+    Game::get()->notify->all(
+      'drawTiles',
+      clienttranslate('${player_name} draws ${n} tile(s) from the deck'),
+      [
+        'player' => $player,
+        'n' => count($cards),
+      ]
+    );
+    Game::get()->notify->player(
+      $player->getId(),
+      'pDrawCards',
+      clienttranslate('You draw ${card_names} from the deck'),
+      [
+        'player' => $player,
+        'cards' => is_array($cards) ? $cards : $cards->toArray(),
+      ]
+    );
+
     return $cards;
   }
 
@@ -604,4 +623,8 @@ class Tiles extends CachedPieces
 
     return $statuses;
   }
+
+  const HAND = 'hand';
+  const DECK = 'deck';
+  const DISCARD = 'discard';
 }

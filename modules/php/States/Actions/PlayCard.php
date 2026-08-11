@@ -53,7 +53,10 @@ class PlayCard extends ActionStateWithRevert
     }
 
 
-    public function getActionArgs(int $activePlayerId): array {}
+    public function getActionArgs(int $activePlayerId): array
+    {
+        return [];
+    }
 
     /**
      * Player action, example content.

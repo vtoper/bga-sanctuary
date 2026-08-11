@@ -207,7 +207,7 @@ class Game extends \Bga\GameFramework\Table
      * - when the game starts
      * - when a player refreshes the game page (F5)
      */
-    protected function getAllDatas($playerId = null): array
+    public function getAllDatas($playerId = null): array
     {
         if ($playerId === null) {
             $playerId = Players::getCurrentId();

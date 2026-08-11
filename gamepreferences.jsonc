@@ -1,6 +1,20 @@
 {
   // user preferences ids should be between 100 and 199
   // See https://en.doc.boardgamearena.com/Options_and_preferences:_gameoptions.json,_gamepreferences.json for more details
+
+  "104": {
+    "name": "Undoable actions confirmation",
+    "needReload": false,
+    "values": {
+      "2": {
+        "name": "Enabled",
+      },
+      "0": {
+        "name": "Disabled",
+      },
+    },
+  },
+
   /*
   EXAMPLE:
 
