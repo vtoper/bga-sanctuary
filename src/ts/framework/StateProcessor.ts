@@ -87,7 +87,10 @@ export class StateProcessor {
       currentState.description = customStateDescription.description;
     }
 
-    this.bga.statusBar.setTitle(isCurrentPlayerActive() ? currentState.descriptionmyturn : currentState.description);
+    this.bga.statusBar.setTitle(
+      isCurrentPlayerActive() ? currentState.descriptionmyturn : currentState.description,
+      this.bga.gameui.gamedatas.gamestate.args,
+    );
   };
 
   openAnytimeActions(this: StateProcessor, anytimeActions: AnytimeAction[]) {

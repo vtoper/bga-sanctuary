@@ -3,6 +3,7 @@
 namespace Bga\Games\sanctuary\Models;
 
 use Bga\Games\sanctuary\Managers\Globals;
+use Bga\Games\sanctuary\Constants\Icons;
 
 class Animal extends Tile
 {
@@ -87,6 +88,32 @@ class Animal extends Tile
   public function getContinent()
   {
     return $this->getContinents()[0] ?? null;
+  }
+
+  /**
+   * Return the animal's habitat (one of Icons::HABITATS), or null if it has no habitat (undefined)
+   */
+  public function getHabitat(): ?string
+  {
+    foreach ($this->getCategories() as $category) {
+      if (in_array($category, Icons::HABITATS)) {
+        return $category;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Whether this animal can be played given the state constraints (max strength and required habitat)
+   */
+  public function matchesPlayConstraints(int $maxStrength, ?string $habitat): bool
+  {
+    if ($this->getStrength() > $maxStrength) {
+      return false;
+    }
+
+    $animalHabitat = $this->getHabitat();
+    return is_null($animalHabitat) || is_null($habitat) || $habitat === '' || $animalHabitat === $habitat;
   }
 
   // public function isSmall()

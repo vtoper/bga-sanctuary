@@ -34,6 +34,8 @@ use Bga\GameFramework\States\PossibleAction;
 use Bga\GameFramework\Actions\CheckAction;
 use Bga\Games\Sanctuary\Framework\Managers\Config;
 
+use Bga\Games\Sanctuary\States\Actions\PlayAnimal;
+
 class Game extends \Bga\GameFramework\Table
 {
     public static $instance = null;
@@ -256,6 +258,11 @@ class Game extends \Bga\GameFramework\Table
     public function debug_playOneMove()
     {
         $this->bga->debug->playUntil(fn(int $count) => $count == 1);
+    }
+
+    public function debug_test()
+    {
+        Players::getCurrent()->map()->getAvailableLocations();
     }
 
     /*

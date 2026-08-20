@@ -45,7 +45,7 @@ class ActionState extends AutomaticActionState
     {
         return array_merge(
             $this->getGeneralArgs($activePlayerId),
-            $this->getActionArgs($activePlayerId)
+            $this->getActionArgs($activePlayerId),
         );
     }
 

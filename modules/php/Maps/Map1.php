@@ -18,8 +18,8 @@ class Map1 extends \Bga\Games\Sanctuary\Models\ZooMap
   }
 
   protected $startingOpenAreas = [
+    ['x' => 1, 'y' => 6],
     ['x' => 5, 'y' => 0],
-    ['x' => 3, 'y' => 1],
   ];
 
   protected $bonuses = [

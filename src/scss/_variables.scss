@@ -1,0 +1,14 @@
+// Hex cell size for the zoo map grid, adapted from Ark Nova's player-board.scss
+$cellWidth: 22.6px;
+$cellHeight: 1.732050808 * $cellWidth;
+
+// Must stay in sync with ZooMap::createGrid dimensions in ZooMap.php
+$zooMapGridDimX: 7;
+$zooMapGridDimY: 4;
+
+// Same formulas as Ark Nova's grid-template-columns/rows sizing
+$zooMapColumns: 3 * $zooMapGridDimX + 1;
+$zooMapRows: 2 * $zooMapGridDimY;
+
+$zooMapWidth: $zooMapColumns * $cellWidth;
+$zooMapHeight: $zooMapRows * $cellHeight;

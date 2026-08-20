@@ -17,6 +17,7 @@ import { AnytimeActions } from './framework/states/AnytimeActions';
 import notifications from './notifications';
 import { TakeTile } from './states/TakeTile';
 import { ChooseActionCard } from './states/ChooseActionCard';
+import { players } from './Players';
 
 export class Game {
   bga: ExtendedBga;
@@ -67,7 +68,7 @@ export class Game {
     console.log('Starting game setup');
     console.debug(gamedatas);
     this.gamedatas = gamedatas;
-
+    players.init(gamedatas, this, this.bga);
     // Setup game notifications to handle (see "setupNotifications" method below)
     this.setupNotifications();
     overrideGamePrototype(this.bga.gameui);

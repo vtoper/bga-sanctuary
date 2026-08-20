@@ -13,8 +13,12 @@ use Bga\Games\Sanctuary\Constants\States;
 use Bga\Games\Sanctuary\Framework\Db\Log;
 use Bga\Games\Sanctuary\Framework\Engine\AbstractNode;
 use Bga\Games\Sanctuary\Framework\Engine\ActionStateWithRevert;
+use Bga\Games\Sanctuary\Managers\Players;
+use Bga\Games\Sanctuary\Models\Player;
+use Bga\Games\Sanctuary\Models\Tile;
+use Bga\Games\Sanctuary\Models\ZooMap;
 
-class PlayCard extends ActionStateWithRevert
+class PlayAnimal extends ActionStateWithRevert
 {
     function __construct(
         protected Game $game,
@@ -25,6 +29,8 @@ class PlayCard extends ActionStateWithRevert
             node: $node,
             id: States::ST_PLAY_CARD,
             type: StateType::ACTIVE_PLAYER,
+            description: clienttranslate('${actplayer} must play a ${habitat} or undefined animal with max level ${level}'),
+            descriptionMyTurn: clienttranslate('${you} must play a ${habitat} or undefined animal with max level ${level}'),
         );
     }
 
@@ -32,8 +38,8 @@ class PlayCard extends ActionStateWithRevert
     {
         if (!is_null($this->getNodeArgs("sourceName"))) {
             return [
-                "description" => clienttranslate('${actplayer} must play a WATER or undefined animal (${sourceName})'),
-                "descriptionMyTurn" => clienttranslate('${you} must draw assignment cards (${sourceName})'),
+                "description" => clienttranslate('${actplayer} must play a ${habitat} or undefined animal with max level ${level} (${sourceName})'),
+                "descriptionMyTurn" => clienttranslate('${you} must play a ${habitat} or undefined animal with max level ${level} (${sourceName})'),
             ];
         }
         return null;
@@ -43,19 +49,65 @@ class PlayCard extends ActionStateWithRevert
     {
         if (!is_null($this->getNodeArgs("sourceName"))) {
             return [
-                "log" => clienttranslate('play card (${sourceName})'),
+                "log" => clienttranslate('Play card (${sourceName})'),
                 "args" => [
                     "sourceName" => $this->getNodeArgs("sourceName", "")
                 ]
             ];
         }
-        return clienttranslate('play card');
+        if (!is_null($this->getNodeArgs("habitat"))) {
+            return [
+                "log" => clienttranslate('Play ${habitat}'),
+                "args" => [
+                    "habitat" => $this->getNodeArgs("habitat", "")
+                ]
+            ];
+        }
+        return clienttranslate('Play card');
     }
 
 
     public function getActionArgs(int $activePlayerId): array
     {
-        return [];
+        $player = Players::get($activePlayerId);
+        $args = [
+            'habitat' => $this->getNodeArgs("habitat", ""),
+            'level' => $this->getNodeArgs("strength", 1),
+            'sourceName' => "truc",
+            'playableTiles' => $this->getPlayableTilesAndLocations($player),
+        ];
+        $args['playableCardsIds'] = array_keys($args['playableTiles']);
+        return $args;
+    }
+
+    /**
+     * Compute, for each animal tile in the player's hand that satisfies the strength/habitat constraints,
+     * the list of locations on the ZooMap where it could be placed.
+     *
+     * @return array<string, array<array{x:int,y:int}>> map of tile id => list of locations
+     */
+    protected function getPlayableTilesAndLocations(Player $player): array
+    {
+        $maxStrength = $this->getNodeArgs("strength", 1);
+        $habitat = $this->getNodeArgs("habitat", null);
+        $map = $player->map();
+        $locations = $map->getAvailableLocations();
+        if (empty($locations)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($player->getHand(Tile::TILE_ANIMAL) as $tileId => $animal) {
+            if ($animal->matchesPlayConstraints($maxStrength, $habitat)) {
+                $newLocations = $locations;
+                if ($animal->getOpenAreas() !== []) {
+                    $mandatoryOpenAreas = $animal->getOpenAreas();
+                    $newLocations = $map->checkMandatoryOpenAreas($mandatoryOpenAreas, $locations);
+                }
+                $result[$tileId] = $newLocations;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -67,7 +119,7 @@ class PlayCard extends ActionStateWithRevert
      * @throws UserException
      */
     #[PossibleAction]
-    public function actPlayCard(int $card_id, int $activePlayerId, array $args)
+    public function actPlayAnimal(int $card_id, int $activePlayerId, array $args)
     {
         // check input values
         $playableCardsIds = $args['playableCardsIds'];
@@ -136,6 +188,6 @@ class PlayCard extends ActionStateWithRevert
         // Example of zombie level 1:
         $args = $this->getArgs();
         $zombieChoice = $this->getRandomZombieChoice($args['playableCardsIds']); // random choice over possible moves
-        return $this->actPlayCard($zombieChoice, $playerId, $args); // this function will return the transition to the next state
+        return $this->actPlayAnimal($zombieChoice, $playerId, $args); // this function will return the transition to the next state
     }
 }

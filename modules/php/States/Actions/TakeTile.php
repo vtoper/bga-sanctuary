@@ -136,9 +136,7 @@ class TakeTile extends ActionStateWithRevert
             'player' => $player,
             'cards' => $tiles,
         ]);
-        // \Bga\Games\Sanctuary\Framework\Engine\Engine::doResolve(["n" => count($cardIds)]);
-        // return ChooseActionCard::class;
-        // Stats::incTilesTaken($player);
+
         return $this->resolve(["n" => count($cardIds)]);
     }
 

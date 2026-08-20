@@ -12,15 +12,6 @@ use Bga\Games\sanctuary\Managers\Tiles;
  * ZooMap: all utility functions concerning a Zoo Map
  */
 
-const DIRECTIONS = [
-  ['x' => -1, 'y' => -1],
-  ['x' => 0, 'y' => -2],
-  ['x' => 1, 'y' => -1],
-  ['x' => 1, 'y' => 1],
-  ['x' => 0, 'y' => 2],
-  ['x' => -1, 'y' => 1],
-];
-
 class ZooMap
 {
   // STATIC DATA
@@ -30,7 +21,14 @@ class ZooMap
   protected $desc = '';
   protected $bonuses = [];
   protected $startingOpenAreas = [];
-
+  public const DIRECTIONS = [
+    "NW" => ['x' => -1, 'y' => -1],
+    "N" => ['x' => 0, 'y' => -2],
+    "NE" => ['x' => 1, 'y' => -1],
+    "SE" => ['x' => 1, 'y' => 1],
+    "S" => ['x' => 0, 'y' => 2],
+    "SW" => ['x' => -1, 'y' => 1],
+  ];
 
   // CONSTRUCT
   protected $player = null;
@@ -94,6 +92,14 @@ class ZooMap
         'state' => 3 // cannot be selected for placement
       ];
     }
+    $openAreas[] = [
+      'id' => 'startingPosition_' . $player->getId(),
+      'player_id' => $player->getId(),
+      'location' => 'board',
+      'x' => 3,
+      'y' => 6,
+      'state' => 0 // cannot be selected for placement
+    ];
     Tiles::create($openAreas, null);
     return null;
   }
@@ -143,12 +149,12 @@ class ZooMap
   }
 
   ///////////////////////////////////////////////
-  //  ████████╗██╗██╗     ███████╗███████╗
-  // ╚══██╔══╝██║██║     ██╔════╝██╔════╝
-  //    ██║   ██║██║     █████╗  ███████╗
-  //    ██║   ██║██║     ██╔══╝  ╚════██║
-  //    ██║   ██║███████╗███████╗███████║
-  //    ╚═╝   ╚═╝╚══════╝╚══════╝╚══════╝                                 
+  // ████████╗ ██╗██╗     ███████╗███████╗
+  // ╚══██╔══╝ ██║██║     ██╔════╝██╔════╝
+  //    ██║    ██║██║     █████╗  ███████╗
+  //    ██║    ██║██║     ██╔══╝  ╚════██║
+  //    ██║    ██║███████╗███████╗███████║
+  //    ╚═╝    ╚═╝╚══════╝╚══════╝╚══════╝                                 
   ///////////////////////////////////////////////
   public function getTiles()
   {
@@ -157,36 +163,37 @@ class ZooMap
 
   public function addTile($tileId, $pos)
   {
-    $building = Tiles::add($tileId, $pos);
+    $building = Tiles::addToMap($tileId, $this->pId, $pos);
+
     return $this->addBuildingAux($building);
   }
 
-  protected function addBuildingAux($tile, $isRepositioning = false, $previousBonuses = [])
+  protected function addBuildingAux(Tile $tile, $isRepositioning = false, $previousBonuses = [])
   {
 
-    $this->tiles[$tile['id']] = &$tile;
+    $this->tiles[$tile->getId()] = &$tile;
     $bonuses = [];
     $this->invalidateCachedDatas();
     $isAlreadyFull = $this->countEmptySpaces() == 0 ? true : false;
 
 
     // Space already covered? ignore it (Conference on Australia)
-    if (!is_null($this->grid[$tile['x']][$tile['y']]['tile'])) {
+    if (!is_null($this->grid[$tile->getX()][$tile->getY()]['tile'])) {
       return [$tile, $bonuses];
     }
 
     $uid = self::getCellId($tile);
 
-    if (is_null($this->grid[$tile['x']][$tile['y']]['tile'])) {
-      $this->grid[$tile['x']][$tile['y']]['tile'] = $tile;
+    if (is_null($this->grid[$tile->getX()][$tile->getY()]['tile'])) {
+      $this->grid[$tile->getX()][$tile->getY()]['tile'] = $tile;
       $uid = self::getCellId($tile);
       foreach ($this->bonuses[$uid] ?? [] as $bonus => $n) {
         $bonuses[] = [$bonus => $n];
       }
     }
-    // Already a building here => no new bonus (CONFERENCE ON AUSTRALIA)
+    // Already a building here => no new bonus
     else {
-      $this->grid[$tile['x']][$tile['y']]['tile'] = $tile;
+      $this->grid[$tile->getX()][$tile->getY()]['tile'] = $tile;
     }
 
     if (!$isAlreadyFull) {
@@ -205,6 +212,66 @@ class ZooMap
   {
     return !is_null($this->getTileAtPos($hex));
   }
+
+  /**
+   * Positions of the tiles actually played by the player
+   */
+  protected function getPlayedTilePositions($excludeStartOpenAreas = true): array
+  {
+    $positions = [];
+    foreach ($this->tiles as $tile) {
+      if ($tile->getState() == 3) {
+        continue; // ignore starting open areas
+      }
+      $positions[] = ['x' => $tile->getX(), 'y' => $tile->getY()];
+    }
+    return $positions;
+  }
+
+  /**
+   * Locations available to place a new tile: cells adjacent to already played tiles, or,
+   * if none has been played yet, cells adjacent to the starting open areas.
+   */
+  public function getAvailableLocations(): array
+  {
+    $anchors = $this->getPlayedTilePositions();
+    $locations = [];
+    $seen = [];
+    foreach ($anchors as $anchor) {
+      foreach ($this->getNeighbours($anchor) as $cell) {
+        $uid = self::getCellId($cell);
+        if (isset($seen[$uid]) || $this->hasTileAtPos($cell)) {
+          continue;
+        }
+        $seen[$uid] = true;
+        $locations[] = $cell;
+      }
+    }
+    return $locations;
+  }
+
+  public function checkMandatoryOpenAreas($mandatoryOpenAreas, $locations): array
+  {
+    $newLocations = [];
+    foreach ($locations as $loc) {
+      foreach ($mandatoryOpenAreas as $direction) {
+        $dir = self::DIRECTIONS[$direction];
+        $adjacentCell = ['x' => $loc['x'] + $dir['x'], 'y' => $loc['y'] + $dir['y']];
+        if (!$this->isCellValid($adjacentCell)) {
+          continue 2; // skip this location not valid
+        }
+        if ($this->hasTileAtPos($adjacentCell) && !$this->getTileAtPos($adjacentCell)->isOpenArea()) {
+          continue 2; // skip this location, it doesn't satisfy the mandatory open area condition
+        }
+      }
+      $newLocations[] = $loc;
+    }
+    return $newLocations;
+  }
+
+
+
+  /*************************OLD ARKNOVA CODE *****************/
 
   public function hasBuilding($buildingType)
   {
@@ -1050,7 +1117,7 @@ class ZooMap
   public function getNeighbours($cell)
   {
     $cells = [];
-    foreach (DIRECTIONS as $dir) {
+    foreach (self::DIRECTIONS as $dirName => $dir) {
       $newCell = [
         'x' => $cell['x'] + $dir['x'],
         'y' => $cell['y'] + $dir['y'],

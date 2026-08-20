@@ -23,6 +23,8 @@ class Tiles extends CachedPieces
   {
     if (explode($card['tiles_id'], '_')[0] == 'openArea') {
       return new \Bga\Games\sanctuary\Tiles\OpenArea($card);
+    } elseif (explode($card['tiles_id'], '_')[0] == 'startingPosition') {
+      return new \Bga\Games\sanctuary\Tiles\StartingPosition($card);
     }
     return self::getCardInstance($card['tiles_id'], $card);
   }
@@ -32,6 +34,8 @@ class Tiles extends CachedPieces
     $t = explode('_', $id);
     if ($t[0] == 'openArea') {
       return new \Bga\Games\sanctuary\Tiles\OpenArea($data);
+    } elseif ($t[0] == 'startingPosition') {
+      return new \Bga\Games\sanctuary\Tiles\StartingPosition($data);
     }
     // First part before _ specify the type and the numbering
     $prefixes = [
@@ -318,6 +322,19 @@ class Tiles extends CachedPieces
     );
 
     return $cards;
+  }
+
+  public static function addToMap(string $cId, int|object $pId, array $pos): Tile
+  {
+    $card = self::getSingle($cId);
+    $pId = is_int($pId) ? $pId : $pId->getId();
+
+    $card->setPId($pId);
+    $card->setLocation('board');
+    $card->setX($pos['x']);
+    $card->setY($pos['y']);
+
+    return $card;
   }
 
   /**

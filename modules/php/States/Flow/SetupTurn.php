@@ -11,7 +11,7 @@ use Bga\Games\Sanctuary\Game;
 use Bga\Games\Sanctuary\Constants\States;
 use Bga\Games\Sanctuary\States\Actions\ChooseActionCard;
 use Bga\Games\Sanctuary\States\Actions\TakeTile;
-use Bga\Games\Sanctuary\States\Actions\PlayCard;
+use Bga\Games\Sanctuary\States\Actions\PlayAnimal;
 use Bga\Games\Sanctuary\Models\Tile;
 
 class SetupTurn extends GameState
@@ -41,7 +41,7 @@ class SetupTurn extends GameState
                     "args" => []
                 ],
                 [
-                    "state" => PlayCard::class,
+                    "state" => PlayAnimal::class,
                     "args" => [
                         'type' => Tile::TILE_BUILDING,
                     ],

@@ -6,6 +6,7 @@ use Bga\Games\sanctuary\Managers\Players;
 use Bga\Games\sanctuary\Managers\Globals;
 use Bga\Games\sanctuary\Managers\Meeples;
 use Bga\Games\sanctuary\Game;
+use Bga\Games\Sanctuary\Tiles\OpenArea;
 /*
  * ZooCard
  */
@@ -93,6 +94,13 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
     return false;
   }
 
+  public function isOpenArea(): bool
+  {
+    if ($this instanceof OpenArea) {
+      return true;
+    }
+    return false;
+  }
 
   public function getPlayer($checkPlayed = false)
   {
@@ -232,4 +240,5 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
   const TILE_BUILDING = 'building';
   const TILE_PROJECT = 'project';
   const TILE_OPEN_AREA = 'openArea';
+  const TILE_STARTING_POSITION = 'startingPosition';
 }

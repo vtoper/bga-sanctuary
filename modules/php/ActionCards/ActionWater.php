@@ -7,7 +7,7 @@ use \Bga\Games\sanctuary\States\Actions\TakeTile;
 
 use \Bga\Games\sanctuary\Framework\Engine\Engine;
 use \Bga\Games\Sanctuary\Constants\Icons;
-use \Bga\Games\Sanctuary\States\Actions\PlayCard;
+use \Bga\Games\Sanctuary\States\Actions\PlayTile;
 use \Bga\Games\Sanctuary\States\Actions\DrawTile;
 
 class ActionWater extends \Bga\Games\sanctuary\Models\ActionCard
@@ -31,7 +31,7 @@ class ActionWater extends \Bga\Games\sanctuary\Models\ActionCard
         'type' => Engine::NODE_XOR,
         'children' => [
           [
-            "state" => PlayCard::class,
+            "state" => PlayTile::class,
             "args" => [
               'strength' => $strength,
               'nb' => $this->getLevel(),

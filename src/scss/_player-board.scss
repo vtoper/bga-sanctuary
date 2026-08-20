@@ -1,0 +1,52 @@
+@import 'variables';
+
+.sanctuary-player-board {
+  display: inline-block;
+  vertical-align: top;
+  margin: 10px;
+}
+
+.zoo-map {
+  .zoo-map-board {
+    box-sizing: content-box;
+    width: $zooMapWidth;
+    height: $zooMapHeight;
+    padding: 10px;
+    background-color: #cfead1;
+    border: 4px solid #666246;
+    border-radius: 6px;
+  }
+
+  .zoo-board {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat($zooMapColumns, $cellWidth);
+    grid-template-rows: repeat($zooMapRows, $cellHeight);
+    width: $zooMapWidth;
+    height: $zooMapHeight;
+  }
+
+  // Hexagon shape, adapted from Ark Nova's .zoo-map-cell clip-path
+  .zoo-map-cell {
+    box-sizing: border-box;
+    background: #a9d18e;
+    border: 1px solid #557a46;
+    text-align: center;
+    clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
+    -webkit-clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
+
+    &.playable {
+      background: #ffe08a;
+      cursor: pointer;
+
+      &:hover {
+        background: #ffd35c;
+      }
+    }
+
+    &.has-tile {
+      background: transparent;
+      border: none;
+    }
+  }
+}
