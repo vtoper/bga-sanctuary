@@ -253,6 +253,7 @@ class ZooMap
   public function checkMandatoryOpenAreas($mandatoryOpenAreas, $locations): array
   {
     $newLocations = [];
+    $existingOpenAreas = [];
     foreach ($locations as $loc) {
       foreach ($mandatoryOpenAreas as $direction) {
         $dir = self::DIRECTIONS[$direction];
@@ -263,12 +264,16 @@ class ZooMap
         if ($this->hasTileAtPos($adjacentCell) && !$this->getTileAtPos($adjacentCell)->isOpenArea()) {
           continue 2; // skip this location, it doesn't satisfy the mandatory open area condition
         }
+        if ($this->hasTileAtPos($adjacentCell) && $this->getTileAtPos($adjacentCell)->isOpenArea()) {
+          $existingOpenAreas[$loc['x'] . '_' . $loc['y']][] = $adjacentCell;
+        }
       }
       $newLocations[] = $loc;
     }
-    return $newLocations;
+    return [$newLocations, $existingOpenAreas];
   }
 
+  public function getOpenAreasToPlace($locations, $animal) {}
 
 
   /*************************OLD ARKNOVA CODE *****************/

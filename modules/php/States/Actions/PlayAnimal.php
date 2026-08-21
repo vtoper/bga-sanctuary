@@ -70,11 +70,14 @@ class PlayAnimal extends ActionStateWithRevert
     public function getActionArgs(int $activePlayerId): array
     {
         $player = Players::get($activePlayerId);
+        $playable = $this->getPlayableTilesAndLocations($player);
         $args = [
             'habitat' => $this->getNodeArgs("habitat", ""),
             'level' => $this->getNodeArgs("strength", 1),
             'sourceName' => "truc",
-            'playableTiles' => $this->getPlayableTilesAndLocations($player),
+            'playableTiles' => $playable[0],
+            'existingOpenAreas' => $playable[1]
+
         ];
         $args['playableCardsIds'] = array_keys($args['playableTiles']);
         return $args;
@@ -97,17 +100,27 @@ class PlayAnimal extends ActionStateWithRevert
         }
 
         $result = [];
+        $openAreas  = [];
+        $handCount = $player->getHand()->count();
         foreach ($player->getHand(Tile::TILE_ANIMAL) as $tileId => $animal) {
             if ($animal->matchesPlayConstraints($maxStrength, $habitat)) {
                 $newLocations = $locations;
+                $existingOpenAreas = [];
                 if ($animal->getOpenAreas() !== []) {
                     $mandatoryOpenAreas = $animal->getOpenAreas();
-                    $newLocations = $map->checkMandatoryOpenAreas($mandatoryOpenAreas, $locations);
+                    list($newLocations, $existingOpenAreas) = $map->checkMandatoryOpenAreas($mandatoryOpenAreas, $locations);
+                    if (count($animal->getOpenAreas())  < count($existingOpenAreas)  && $handCount < (count($animal->getOpenAreas())  - count($existingOpenAreas))) {
+                        // card cannot be placed as not enough card in hands to place the open areas    
+                        $result[$tileId] = [];
+                        continue;
+                    }
+                    $openAreas[$tileId] = $existingOpenAreas;
                 }
+
                 $result[$tileId] = $newLocations;
             }
         }
-        return $result;
+        return [$result, $openAreas];
     }
 
     /**
