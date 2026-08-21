@@ -12,3 +12,7 @@ $zooMapRows: 2 * $zooMapGridDimY;
 
 $zooMapWidth: $zooMapColumns * $cellWidth;
 $zooMapHeight: $zooMapRows * $cellHeight;
+
+// Hand tiles are the same hexagons, displayed bigger than on the map
+$handTileWidth: 3 * $cellWidth;
+$handTileHeight: 1.732050808 * $handTileWidth;

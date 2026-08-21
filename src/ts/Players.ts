@@ -26,6 +26,81 @@ export class Players {
       const player = this.gamedatas.players[playerId];
       this.createPlayerBoard(player);
     }
+
+    this.createPlayerHand();
+  }
+
+  /**
+   * Create the hand of the current player (hexagonal tiles), below the boards.
+   */
+  private createPlayerHand() {
+    const currentPlayerId = getCurrentPlayerId();
+    const player = this.gamedatas.players[currentPlayerId];
+    if (!player) {
+      return; // spectator
+    }
+
+    const gamePlayArea = document.getElementById('game_play_area');
+    const handNode = insertDivElement(gamePlayArea, `player-hand-${player.id}`, 'sanctuary-player-hand');
+    handNode.insertAdjacentHTML('beforeend', `<div class="player-hand-tiles" id="hand-tiles-${player.id}"></div>`);
+
+    this.setHand(player.hand ?? []);
+  }
+
+  /**
+   * Replace the content of the current player's hand with the given tiles.
+   */
+  setHand(tiles: SanctuaryTile[]) {
+    const handTilesNode = document.getElementById(`hand-tiles-${getCurrentPlayerId()}`);
+    if (!handTilesNode) {
+      return;
+    }
+
+    handTilesNode.innerHTML = '';
+    for (const tile of tiles) {
+      handTilesNode.appendChild(this.createHandTile(tile));
+    }
+  }
+
+  private createHandTile(tile: SanctuaryTile): HTMLElement {
+    const node = createDivElement(`hand-tile-${tile.id}`, 'hand-tile', { id: tile.id });
+    node.innerText = this.getTileName(tile);
+    return node;
+  }
+
+  getHandTileIds(): string[] {
+    const handTilesNode = document.getElementById(`hand-tiles-${getCurrentPlayerId()}`);
+    if (!handTilesNode) {
+      return [];
+    }
+
+    return Array.from(handTilesNode.children).map((node) => (node as HTMLElement).dataset.id);
+  }
+
+  getHandTileNode(tileId: string): HTMLElement | null {
+    return document.getElementById(`hand-tile-${tileId}`);
+  }
+
+  getMapCellNode(playerId: string | number, x: number, y: number): HTMLElement | null {
+    return document.getElementById(`zoo-map-cell-${playerId}-${x}_${y}`);
+  }
+
+  /**
+   * Tile names are not sent by the server: they are derived from the tile id, eg B101_OutbackArea_N => Outback Area.
+   */
+  private getTileName(tile: SanctuaryTile): string {
+    const parts = tile.id.split('_');
+    if (parts.length > 1) {
+      parts.shift(); // numbering prefix, eg A001
+    }
+    if (parts.length > 1 && /^[MFN]$/.test(parts[parts.length - 1])) {
+      parts.pop(); // gender suffix
+    }
+
+    return parts
+      .join(' ')
+      .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+      .trim();
   }
 
   /**
@@ -44,6 +119,29 @@ export class Players {
     );
 
     this.renderZooMapGrid(player.id);
+    this.setBoardTiles(player.id);
+  }
+
+  /**
+   * Place on a player's zoo map the tiles sent in the gamedatas with the 'board' location.
+   */
+  private setBoardTiles(playerId: string) {
+    const tiles = (this.gamedatas.tiles ?? []).filter((tile) => tile.location === 'board' && `${tile.pId}` === `${playerId}`);
+
+    for (const tile of tiles) {
+      this.setTileOnBoard(playerId, tile);
+    }
+  }
+
+  setTileOnBoard(playerId: string | number, tile: SanctuaryTile) {
+    const cell = this.getMapCellNode(playerId, tile.x, tile.y);
+    if (!cell) {
+      return;
+    }
+
+    cell.classList.add('has-tile');
+    cell.dataset.tileId = tile.id;
+    cell.innerText = tile.id;
   }
 
   /**

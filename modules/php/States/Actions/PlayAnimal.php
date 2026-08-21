@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace Bga\Games\Sanctuary\States\Actions;
 
+use Bga\GameFramework\Actions\Types\JsonParam;
 use Bga\GameFramework\StateType;
 use Bga\GameFramework\States\GameState;
 use Bga\GameFramework\States\PossibleAction;
 use Bga\GameFramework\UserException;
+use Bga\GameFramework\SystemException;
 use Bga\Games\Sanctuary\Game;
 use Bga\Games\Sanctuary\Constants\States;
 use Bga\Games\Sanctuary\Framework\Db\Log;
 use Bga\Games\Sanctuary\Framework\Engine\AbstractNode;
 use Bga\Games\Sanctuary\Framework\Engine\ActionStateWithRevert;
 use Bga\Games\Sanctuary\Managers\Players;
+use Bga\Games\Sanctuary\Managers\Tiles;
 use Bga\Games\Sanctuary\Models\Player;
 use Bga\Games\Sanctuary\Models\Tile;
 use Bga\Games\Sanctuary\Models\ZooMap;
@@ -74,9 +77,9 @@ class PlayAnimal extends ActionStateWithRevert
         $args = [
             'habitat' => $this->getNodeArgs("habitat", ""),
             'level' => $this->getNodeArgs("strength", 1),
-            'sourceName' => "truc",
+            'sourceName' => $this->getNodeArgs("sourceName", null),
             'playableTiles' => $playable[0],
-            'existingOpenAreas' => $playable[1]
+            'neededOpenAreas' => $playable[1]
 
         ];
         $args['playableCardsIds'] = array_keys($args['playableTiles']);
@@ -96,90 +99,137 @@ class PlayAnimal extends ActionStateWithRevert
         $map = $player->map();
         $locations = $map->getAvailableLocations();
         if (empty($locations)) {
-            return [];
+            return [[], []];
         }
 
         $result = [];
-        $openAreas  = [];
-        $handCount = $player->getHand()->count();
+        $openAreasByTile = [];
         foreach ($player->getHand(Tile::TILE_ANIMAL) as $tileId => $animal) {
             if ($animal->matchesPlayConstraints($maxStrength, $habitat)) {
                 $newLocations = $locations;
-                $existingOpenAreas = [];
+                $openAreasByTile[$tileId] = [];
                 if ($animal->getOpenAreas() !== []) {
                     $mandatoryOpenAreas = $animal->getOpenAreas();
-                    list($newLocations, $existingOpenAreas) = $map->checkMandatoryOpenAreas($mandatoryOpenAreas, $locations);
-                    if (count($animal->getOpenAreas())  < count($existingOpenAreas)  && $handCount < (count($animal->getOpenAreas())  - count($existingOpenAreas))) {
-                        // card cannot be placed as not enough card in hands to place the open areas    
-                        $result[$tileId] = [];
-                        continue;
-                    }
-                    $openAreas[$tileId] = $existingOpenAreas;
+                    list($newLocations, $neededOpenAreas) = $map->checkMandatoryOpenAreas($mandatoryOpenAreas, $locations);
+                    $openAreasByTile[$tileId] = $neededOpenAreas;
                 }
 
                 $result[$tileId] = $newLocations;
             }
         }
-        return [$result, $openAreas];
+        return [$result, $openAreasByTile];
     }
 
-    /**
-     * Player action, example content.
-     *
-     * In this scenario, each time a player plays a card, this method will be called. This method is called directly
-     * by the action trigger on the front side with `bgaPerformAction`.
-     *
-     * @throws UserException
-     */
-    #[PossibleAction]
-    public function actPlayAnimal(int $card_id, int $activePlayerId, array $args)
+
+    private function parseLocation(string $location): array
     {
-        // check input values
-        $playableCardsIds = $args['playableCardsIds'];
-        if (!in_array($card_id, $playableCardsIds)) {
-            throw new UserException('Invalid card choice');
+        $parts = explode('_', $location);
+        if (count($parts) !== 2 || filter_var($parts[0], FILTER_VALIDATE_INT) === false || filter_var($parts[1], FILTER_VALIDATE_INT) === false) {
+            throw new UserException(clienttranslate('Invalid location'));
+        }
+        return ['x' => (int) $parts[0], 'y' => (int) $parts[1]];
+    }
+
+    private function containsCell(array $locations, array $needle): bool
+    {
+        foreach ($locations as $location) {
+            if ((int) $location['x'] === $needle['x'] && (int) $location['y'] === $needle['y']) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    #[PossibleAction]
+    public function actPlayAnimal(string $tileId, string $location, #[JsonParam(associative: null)] array $openAreas)
+    {
+        $player = Players::getCurrent();
+        if ($player != Players::getActive()) {
+            throw new UserException('Not your turn');
         }
 
-        // Add your game logic to play a card here.
-        $card_name = Game::$CARD_TYPES[$card_id]['card_name'];
+        $args = $this->getArgs($player->getId());
 
-        // Notify all players about the card played.
-        $this->bga->notify->all("cardPlayed", clienttranslate('${player_name} plays ${card_name}'), [
-            "player_id" => $activePlayerId,
-            "player_name" => $this->game->getPlayerNameById($activePlayerId), // remove this line if you uncomment notification decorator
-            "card_name" => $card_name, // remove this line if you uncomment notification decorator
-            "card_id" => $card_id,
-            "i18n" => ['card_name'], // remove this line if you uncomment notification decorator
+        if (!isset($args['playableTiles'][$tileId])) {
+            throw new UserException(clienttranslate('This animal cannot be played'));
+        }
+        $position = $this->parseLocation($location);
+        if (!$this->containsCell($args['playableTiles'][$tileId], $position)) {
+            throw new UserException(clienttranslate('This location is not available for this animal'));
+        }
+
+        $animal = $player->getHand(Tile::TILE_ANIMAL)[$tileId] ?? null;
+        if ($animal === null || !$animal->matchesPlayConstraints(
+            $this->getNodeArgs('strength', 1),
+            $this->getNodeArgs('habitat', null)
+        )) {
+            throw new UserException(clienttranslate('This animal is not playable'));
+        }
+
+        $locationKey = $position['x'] . '_' . $position['y'];
+        $requiredOpenAreas = $args['neededOpenAreas'][$tileId][$locationKey] ?? [];
+        $openBonuses = $this->processOpenAreas($player, $openAreas, $requiredOpenAreas);
+
+        $map = $player->map();
+        [$playedAnimal, $bonuses] = $map->addTile($tileId, $position);
+        $bonuses = array_merge($bonuses, $openBonuses);
+
+        $marker = $map->addConservationMarker($playedAnimal);
+
+        // TODO
+        // Effects of the played tile to insert
+        // Bonuses to insert
+        // Reactions to insert
+        //Tiles::applyEffects($player, 'AnimalPlayed', $effectArgs);
+        // 
+
+        $this->notify->all('animalPlayed', clienttranslate('${player_name} plays ${animal_name}'), [
+            'player' => $player,
+            'player_name' => $player->getName(),
+            'animal' => $playedAnimal,
+            'animal_name' => $playedAnimal->getName(),
+            'bonuses' => $bonuses,
+            'conservationMarker' => $marker,
+            'i18n' => ['animal_name'],
         ]);
 
-        // in this example, the player gains 1 points each time he plays a card
-        $this->bga->playerScore->inc($activePlayerId, 1);
-
-        // at the end of the action, move to the next state
-        return NextPlayer::class;
+        return $this->resolve(['tileId' => $tileId]);
     }
 
-    /**
-     * Player action, example content.
-     *
-     * In this scenario, each time a player pass, this method will be called. This method is called directly
-     * by the action trigger on the front side with `bgaPerformAction`.
-     */
-    #[PossibleAction]
-    public function actPass(int $activePlayerId)
+
+    private function processOpenAreas(Player $player, array $openAreas, array $required): array
     {
-        // Notify all players about the choice to pass.
-        $this->notify->all("pass", clienttranslate('${player_name} passes'), [
-            "player_id" => $activePlayerId,
-            "player_name" => $this->game->getPlayerNameById($activePlayerId), // remove this line if you uncomment notification decorator
-        ]);
+        $bonuses = [];
 
-        // in this example, the player gains 1 energy each time he passes
-        $this->game->playerEnergy->inc($activePlayerId, 1);
+        $result = [];
+        $usedTileIds = [];
+        $deleted = [];
+        $newTiles = [];
+        foreach ($required as $position) {
+            $key = $position['x'] . '_' . $position['y'];
+            $openAreaBonuses = [];
 
-        // at the end of the action, move to the next state
-        return NextPlayer::class;
+            // we take the first tile from hand
+            $tileId = array_pop($openAreas);
+            $tile = $player->getHand()[$tileId] ?? null;
+            if ($tile === null) {
+                throw new SystemException('Invalid open area tile. Should not happen');
+            }
+            if (isset($usedTileIds[$tileId])) {
+                throw new SystemException(clienttranslate('An open area tile cannot be used twice'));
+            }
+            $usedTileIds[$tileId] = true;
+            [$tile, $openAreaBonuses] = $player->map()->addOpenArea($tileId, $position);
+            $bonuses = array_merge($bonuses, $openAreaBonuses);
+            $newTiles[] = $tile;
+            $deleted[] = $tileId;
+        }
+
+        // TODO: notification for new tiles OR return
+
+        return $bonuses;
     }
+
 
     /**
      * This method is called each time it is the turn of a player who has quit the game (= "zombie" player).
@@ -199,8 +249,18 @@ class PlayAnimal extends ActionStateWithRevert
         // Example of zombie level 0: return NextPlayer::class; or $this->actPass($playerId);
 
         // Example of zombie level 1:
-        $args = $this->getArgs();
-        $zombieChoice = $this->getRandomZombieChoice($args['playableCardsIds']); // random choice over possible moves
-        return $this->actPlayAnimal($zombieChoice, $playerId, $args); // this function will return the transition to the next state
+        $args = $this->getArgs($playerId);
+        $tileId = $this->getRandomZombieChoice($args['playableCardsIds']);
+        $location = $args['playableTiles'][$tileId][0];
+        $locationKey = $location['x'] . '_' . $location['y'];
+        $openAreas = [];
+        foreach ($args['neededOpenAreas'][$tileId][$locationKey] ?? [] as $position) {
+            $openArea = Players::get($playerId)->getHand(Tile::TILE_OPEN_AREA)->first();
+            if ($openArea === null) {
+                throw new UserException('Zombie cannot satisfy the required open area');
+            }
+            $openAreas[$position['x'] . '_' . $position['y']] = $openArea->getId();
+        }
+        return $this->actPlayAnimal($tileId, $locationKey, $openAreas, $playerId);
     }
 }

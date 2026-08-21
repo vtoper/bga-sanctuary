@@ -18,6 +18,7 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
     protected ?string $primary = 'player_id';
     protected array $customAttributes = [
         "appeal" => ["appeal", "int"],
+        "conservationMarker" => ["conservation_marker", "int"],
 
     ];
 

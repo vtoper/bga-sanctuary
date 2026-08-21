@@ -123,4 +123,6 @@ class Meeples extends CachedPieces
     self::CONSERVATION_4,
     self::CONSERVATION_5
   ];
+
+  const CONSERVATION_MARKER = 'conservationMarker';
 }

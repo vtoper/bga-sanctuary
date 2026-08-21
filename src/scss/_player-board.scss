@@ -44,9 +44,30 @@
       }
     }
 
+    &.selectable {
+      background: #ffe08a;
+      cursor: pointer;
+
+      &:hover {
+        background: #ffd35c;
+      }
+    }
+
+    &.selected {
+      background: #ff9f1c;
+    }
+
     &.has-tile {
-      background: transparent;
-      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 15%;
+      background: #d9c9a3;
+      border-color: #8a7b52;
+      font-size: 6px;
+      line-height: 1.1;
+      overflow: hidden;
+      word-break: break-word;
     }
   }
 }

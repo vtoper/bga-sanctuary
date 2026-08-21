@@ -48,6 +48,8 @@ CREATE TABLE IF NOT EXISTS `actioncards` (
 -- Additional player's info
 --ALTER TABLE `player` ADD `map_id` varchar(10);
 ALTER TABLE `player` ADD `appeal` INT(10) NOT NULL DEFAULT 0;
+ALTER TABLE `player` ADD `conservation_marker` INT(10) NOT NULL DEFAULT 0;
+
 
 -- CORE TABLES --
 CREATE TABLE IF NOT EXISTS `global_variables` (

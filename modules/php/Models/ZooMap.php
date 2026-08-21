@@ -163,9 +163,24 @@ class ZooMap
 
   public function addTile($tileId, $pos)
   {
-    $building = Tiles::addToMap($tileId, $this->pId, $pos);
+    $tile = Tiles::addToMap($tileId, $this->pId, $pos);
 
-    return $this->addBuildingAux($building);
+    return $this->addBuildingAux($tile);
+  }
+
+  public function addOpenArea($tileId, $pos)
+  {
+    Tiles::delete($tileId);
+    $newTile = Tiles::singleCreate([
+      'id' => 'openArea_' . $this->pId . '_' . $pos['x'] . '_' . $pos['y'],
+      'player_id' => $this->pId,
+      'location' => 'board',
+      'x' => $pos['x'],
+      'y' => $pos['y'],
+      'state' => 0, // cannot be selected for placement
+    ]);
+    $newTile = Tiles::addToMap($newTile->getId(), $this->pId, $pos);
+    return [$newTile, $this->addBuildingAux($newTile)];
   }
 
   protected function addBuildingAux(Tile $tile, $isRepositioning = false, $previousBonuses = [])
@@ -174,33 +189,46 @@ class ZooMap
     $this->tiles[$tile->getId()] = &$tile;
     $bonuses = [];
     $this->invalidateCachedDatas();
-    $isAlreadyFull = $this->countEmptySpaces() == 0 ? true : false;
 
-
-    // Space already covered? ignore it (Conference on Australia)
-    if (!is_null($this->grid[$tile->getX()][$tile->getY()]['tile'])) {
-      return [$tile, $bonuses];
+    $cell = ['x' => $tile->getX(), 'y' => $tile->getY()];
+    if (!$this->isCellValid($cell)) {
+      throw new \Bga\GameFramework\UserException('Invalid tile location');
     }
 
-    $uid = self::getCellId($tile);
-
-    if (is_null($this->grid[$tile->getX()][$tile->getY()]['tile'])) {
-      $this->grid[$tile->getX()][$tile->getY()]['tile'] = $tile;
-      $uid = self::getCellId($tile);
-      foreach ($this->bonuses[$uid] ?? [] as $bonus => $n) {
-        $bonuses[] = [$bonus => $n];
-      }
-    }
-    // Already a building here => no new bonus
-    else {
-      $this->grid[$tile->getX()][$tile->getY()]['tile'] = $tile;
+    // Animal and open-area tiles are single-cell tiles. A cell must be empty.
+    if ($this->hasTileAtPos($cell) && !$isRepositioning) {
+      throw new \Bga\GameFramework\UserException('This map location is occupied');
     }
 
-    if (!$isAlreadyFull) {
-      // Stats::setEmptyHexes($this->pId, $this->countEmptySpaces());
+    $this->grid[$cell['x']][$cell['y']]['tile'] = $tile;
+    $uid = self::getCellId($cell);
+    foreach ($this->bonuses[$uid] ?? [] as $bonus => $n) {
+      $bonuses[] = [$bonus => $n];
     }
 
     return [$tile, $bonuses];
+  }
+
+  public function getAdjacentPair(Tile $tile): ?Tile
+  {
+    foreach ($this->getNeighbours(['x' => $tile->getX(), 'y' => $tile->getY()]) as $cell) {
+      $neighbour = $this->getTileAtPos($cell);
+      if ($neighbour instanceof \Bga\Games\sanctuary\Models\Animal && $neighbour->getId() === $tile->getPair()) {
+        return $neighbour;
+      }
+    }
+    return null;
+  }
+
+  public function addConservationMarker(Tile $tile): ?\Bga\Games\sanctuary\Models\Meeple
+  {
+    if ($this->getAdjacentPair($tile) === null) {
+      return null;
+    }
+
+    // a pair was played we create a conservation marker
+    $tile->getPlayer()->incConservationMarker();
+    return null;
   }
 
   public function getTileAtPos($hex)
@@ -253,7 +281,7 @@ class ZooMap
   public function checkMandatoryOpenAreas($mandatoryOpenAreas, $locations): array
   {
     $newLocations = [];
-    $existingOpenAreas = [];
+    $neededOpenAreas = [];
     foreach ($locations as $loc) {
       foreach ($mandatoryOpenAreas as $direction) {
         $dir = self::DIRECTIONS[$direction];
@@ -264,13 +292,14 @@ class ZooMap
         if ($this->hasTileAtPos($adjacentCell) && !$this->getTileAtPos($adjacentCell)->isOpenArea()) {
           continue 2; // skip this location, it doesn't satisfy the mandatory open area condition
         }
-        if ($this->hasTileAtPos($adjacentCell) && $this->getTileAtPos($adjacentCell)->isOpenArea()) {
-          $existingOpenAreas[$loc['x'] . '_' . $loc['y']][] = $adjacentCell;
+
+        if (!$this->hasTileAtPos($adjacentCell)) {
+          $neededOpenAreas[$loc['x'] . '_' . $loc['y']][] = $adjacentCell;
         }
       }
       $newLocations[] = $loc;
     }
-    return [$newLocations, $existingOpenAreas];
+    return [$newLocations, $neededOpenAreas];
   }
 
   public function getOpenAreasToPlace($locations, $animal) {}
@@ -916,7 +945,7 @@ class ZooMap
   {
     $hexes = [];
     foreach ($this->getListOfCells() as $cell) {
-      if (!$this->hasBuildingAtPos($cell)) {
+      if (!$this->hasTileAtPos($cell)) {
         $hexes[] = $cell;
       }
     }
