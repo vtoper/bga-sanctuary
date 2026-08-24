@@ -3,11 +3,11 @@ import { players } from '../Players';
 import { onClick } from '../framework/event';
 import { clearPossible, getCurrentPlayerId, performAction } from '../framework/utils';
 
-export class PlayAnimal {
+export class Animal {
   game: Game;
   bga: ExtendedBga;
 
-  private args: PlayAnimalArgs | null = null;
+  private args: AnimalArgs | null = null;
   private selectedTileId: string | null = null;
   private selectedLocation: string | null = null;
   private selectedOpenAreas: string[] = [];
@@ -20,7 +20,7 @@ export class PlayAnimal {
   /**
    * This method is called each time we are entering the game state. You can use this method to perform some user interface changes at this moment.
    */
-  onEnteringState(args: PlayAnimalArgs, isCurrentPlayerActive: boolean) {
+  onEnteringState(args: AnimalArgs, isCurrentPlayerActive: boolean) {
     this.args = args;
     this.resetSelection();
 

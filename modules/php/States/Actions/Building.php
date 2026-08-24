@@ -32,7 +32,7 @@ class Building extends ActionStateWithRevert
             node: $node,
             id: States::ST_BUILDING,
             type: StateType::ACTIVE_PLAYER,
-            description: clienttranslate('${actplayer} must play a ${habitat} or undefined animal with max level ${level}'),
+            description: clienttranslate('${actplayer} may play a building'),
             descriptionMyTurn: clienttranslate('${you} must play a ${habitat} or undefined animal with max level ${level}'),
         );
     }

@@ -173,7 +173,6 @@ class Animal extends ActionStateWithRevert
         $map = $player->map();
         [$playedAnimal, $bonuses] = $map->addTile($tileId, $position);
         $bonuses = array_merge($bonuses, $openBonuses);
-
         $this->insertBonusesFlow($bonuses, clienttranslate('placement bonus'));
 
         $this->notify->all('animalPlayed', clienttranslate('${player_name} plays ${animal_name}'), [

@@ -60,7 +60,7 @@ class ChooseActionCard extends ActionStateWithRevert
             // This case is used for Multiplier and animal effect Action
             $cards = ActionCards::getMany([$forcedCardId]);
         } else {
-            $cards = $player->getActionCards()->sort;
+            $cards = $player->getActionCards();
         }
 
         $data = [

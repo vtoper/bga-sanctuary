@@ -181,7 +181,7 @@ class ZooMap
       'state' => 0, // cannot be selected for placement
     ]);
     $newTile = Tiles::addToMap($newTile->getId(), $this->pId, $pos);
-    return [$newTile, $this->addBuildingAux($newTile)];
+    return [$newTile, $this->addBuildingAux($newTile)[1]];
   }
 
   protected function addBuildingAux(Tile $tile, $isRepositioning = false, $previousBonuses = [])

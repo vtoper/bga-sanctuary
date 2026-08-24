@@ -64,7 +64,7 @@ export class Players {
 
   private createHandTile(tile: SanctuaryTile): HTMLElement {
     const node = createDivElement(`hand-tile-${tile.id}`, 'hand-tile', { id: tile.id });
-    node.innerText = this.getTileName(tile);
+    node.innerText = tile.id; //this.getTileName(tile);
     return node;
   }
 

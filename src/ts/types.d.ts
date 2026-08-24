@@ -34,7 +34,7 @@ interface SanctuaryCell {
   y: number;
 }
 
-interface PlayAnimalArgs {
+interface AnimalArgs {
   habitat: string;
   level: number;
   sourceName: string | null;
