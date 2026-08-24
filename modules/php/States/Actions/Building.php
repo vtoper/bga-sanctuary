@@ -33,40 +33,22 @@ class Building extends ActionStateWithRevert
             id: States::ST_BUILDING,
             type: StateType::ACTIVE_PLAYER,
             description: clienttranslate('${actplayer} may play a building'),
-            descriptionMyTurn: clienttranslate('${you} must play a ${habitat} or undefined animal with max level ${level}'),
+            descriptionMyTurn: clienttranslate('${you} may play a building'),
         );
-    }
-
-    public function getCustomStateDescription()
-    {
-        if (!is_null($this->getSource())) {
-            return [
-                "description" => clienttranslate('${actplayer} must play a ${habitat} or undefined animal with max level ${level} (${source})'),
-                "descriptionMyTurn" => clienttranslate('${you} must play a ${habitat} or undefined animal with max level ${level} (${source})'),
-            ];
-        }
-        return null;
     }
 
     public function getDescription()
     {
         if (!is_null($this->getSource())) {
             return [
-                "log" => clienttranslate('Play card (${source})'),
+                "log" => clienttranslate('Play a building (${source})'),
                 "args" => [
                     "source" => $this->getSource() ?? ""
                 ]
             ];
         }
-        if (!is_null($this->getNodeArgs("habitat"))) {
-            return [
-                "log" => clienttranslate('Play ${habitat}'),
-                "args" => [
-                    "habitat" => $this->getNodeArgs("habitat", "")
-                ]
-            ];
-        }
-        return clienttranslate('Play card');
+
+        return clienttranslate('Play a building');
     }
 
 

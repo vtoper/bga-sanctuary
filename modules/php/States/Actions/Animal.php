@@ -78,11 +78,16 @@ class Animal extends ActionStateWithRevert
             'habitat' => $this->getNodeArgs("habitat", ""),
             'level' => $this->getNodeArgs("strength", 1),
             'source' => $this->getSource() ?? "",
-            'playableTiles' => $playable[0],
-            'neededOpenAreas' => $playable[1]
+            '_private' => [
+                $player->getId() => [
+                    'playableTiles' => $playable[0],
+                    'neededOpenAreas' => $playable[1],
+                    'playableCardsIds' => array_keys($playable[0])
+                ]
+            ],
+            '_merge_private' => true
 
         ];
-        $args['playableCardsIds'] = array_keys($args['playableTiles']);
         return $args;
     }
 
