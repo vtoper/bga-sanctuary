@@ -7,6 +7,7 @@ use Bga\Games\sanctuary\Managers\Players;
 use Bga\Games\sanctuary\Managers\Globals;
 use Bga\Games\sanctuary\Managers\Meeples;
 use Bga\Games\sanctuary\Managers\Tiles;
+use Bga\Games\Sanctuary\Constants\Effects;
 
 /*
  * ZooMap: all utility functions concerning a Zoo Map

@@ -16,4 +16,8 @@ export class TilesNotifications {
   async notif_pDrawCards(args) {
     console.debug(args);
   }
+
+  async notif_animalPlayed(args) {
+    console.debug(args);
+  }
 }

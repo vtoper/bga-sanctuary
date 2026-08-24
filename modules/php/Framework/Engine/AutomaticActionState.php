@@ -8,6 +8,7 @@ use Bga\GameFramework\StateType;
 use Bga\Games\sanctuary\Game;
 use Bga\Games\sanctuary\Managers\Players;
 use Bga\Games\sanctuary\Framework\Models\Player;
+use Bga\Games\Sanctuary\FlowConvertor;
 
 
 class AutomaticActionState extends \Bga\GameFramework\States\GameState
@@ -67,6 +68,11 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
         return $args;
     }
 
+    public function getSource()
+    {
+        return $this->getNode()->getInfo()['source'] ?? null;
+    }
+
     public function isAutomatic()
     {
         return $this->type === StateType::GAME;
@@ -124,5 +130,51 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
         } else {
             return Engine::resolveIrreversibleAction($args);
         }
+    }
+
+    /**
+     * Given bonuses, compute the flow and insert them as childs (or on insertAfterFinishing node)
+     */
+    public function insertBonusesFlow($bonuses, $source = '', $sourceType = null, $sourceId = null)
+    {
+        if (empty($bonuses)) {
+            return;
+        }
+
+        //    if (isset($bonuses[0]['type']) || isset($bonuses['type'])) {
+        if (isset($bonuses['type'])) {
+            // we already are receiving a node
+            $immediate = $bonuses;
+            $after = [];
+        } else {
+            list($immediate, $after) = FlowConvertor::getFlow($bonuses, $source, $sourceType, $sourceId);
+        }
+        Engine::insertOrUpdateParallelChilds($immediate, $this->node);
+        Engine::pushAfterFinishingChilds($after);
+    }
+
+    /**
+     * Update the args of current node
+     * @param array $args : the keys/values that needs to get updated
+     * Warning: resolve action must be call on the side
+     */
+    public function duplicateAction($args = [], $checkpoint = false)
+    {
+        // Duplicate the node and update the args
+        $node = $this->node->toArray();
+        $node['type'] = Engine::NODE_LEAF;
+        $node['childs'] = [];
+        $node['args'] = array_merge($node['args'] ?? [], $args);
+        $node['duplicate'] = true;
+        unset($node['mandatory']); // Weird edge case
+        $node = Engine::buildTree($node);
+        // Insert it as a brother of current node and proceed
+        $this->node->insertAsBrother($node);
+        Engine::save();
+
+        if ($checkpoint) {
+            Engine::checkpoint();
+        }
+        // Engine::proceed();
     }
 }

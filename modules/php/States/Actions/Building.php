@@ -21,7 +21,7 @@ use Bga\Games\Sanctuary\Models\Player;
 use Bga\Games\Sanctuary\Models\Tile;
 use Bga\Games\Sanctuary\Models\ZooMap;
 
-class PlayAnimal extends ActionStateWithRevert
+class Building extends ActionStateWithRevert
 {
     function __construct(
         protected Game $game,
@@ -30,7 +30,7 @@ class PlayAnimal extends ActionStateWithRevert
         parent::__construct(
             $game,
             node: $node,
-            id: States::ST_PLAY_CARD,
+            id: States::ST_BUILDING,
             type: StateType::ACTIVE_PLAYER,
             description: clienttranslate('${actplayer} must play a ${habitat} or undefined animal with max level ${level}'),
             descriptionMyTurn: clienttranslate('${you} must play a ${habitat} or undefined animal with max level ${level}'),
@@ -77,7 +77,7 @@ class PlayAnimal extends ActionStateWithRevert
         $args = [
             'habitat' => $this->getNodeArgs("habitat", ""),
             'level' => $this->getNodeArgs("strength", 1),
-            'source' => $this->getSource() ?? "",
+            'source' => $this->getSource(),
             'playableTiles' => $playable[0],
             'neededOpenAreas' => $playable[1]
 
@@ -187,11 +187,12 @@ class PlayAnimal extends ActionStateWithRevert
 
         // If we placed an animal near it's pair,  player earn a conservation marker
         $map->addConservationMarker($playedAnimal);
-
         // TODO
         // Effects of the played tile to insert
+        // Bonuses to insert
         // Reactions to insert
         //Tiles::applyEffects($player, 'AnimalPlayed', $effectArgs);
+        // 
 
         return $this->resolve(['tileId' => $tileId]);
     }

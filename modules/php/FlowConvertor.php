@@ -1,9 +1,20 @@
 <?php
 
-namespace Bga\Games\sanctuary;
+namespace Bga\Games\Sanctuary;
 
-use Bga\Games\sanctuary\Managers\Globals;
-use Bga\Games\sanctuary\Managers\Players;
+use Bga\Games\Sanctuary\Models\ZooMap;
+use Bga\Games\Sanctuary\Managers\Globals;
+use Bga\Games\Sanctuary\Managers\Players;
+use Bga\Games\Sanctuary\States\Actions\TakeBonus;
+use Bga\Games\Sanctuary\Framework\Engine\Utils;
+use Bga\Games\Sanctuary\Constants\Effects;
+
+// effects
+use Bga\Games\Sanctuary\States\Actions\Gain;
+use Bga\Games\Sanctuary\States\Actions\MoveActionCard;
+use Bga\Games\Sanctuary\States\Actions\DrawTile;
+use Bga\Games\Sanctuary\States\Actions\TakeTile;
+use Bga\GameFramework\SystemException;
 
 // Allow to use a short flow description syntax
 abstract class FlowConvertor
@@ -45,7 +56,7 @@ abstract class FlowConvertor
         is_null($bonus['source'] ?? null)
       ) {
         $node = [
-          'action' => TAKE_BONUS,
+          'state' => TakeBonus::class,
           'args' => [
             'type' => $type,
             'n' => $bonus[$type],
@@ -56,7 +67,7 @@ abstract class FlowConvertor
         ];
       }
 
-      if (in_array($type, [CLEVER, BOOST, ACTION, DETERMINATION, MARK]) || ($bonus['afterFinishing'] ?? false)) {
+      if (in_array($type, [Effects::MOVE_ACTION_CARD]) || ($bonus['afterFinishing'] ?? false)) {
         $afterFinishingBonuses[] = $node;
       } else {
         $immediateBonuses[] = $node;
@@ -88,30 +99,11 @@ abstract class FlowConvertor
   public static function getFlowSingleBonusAux($type, $n, $args = [])
   {
     // Basic resources via GAIN action
-    if (in_array($type, [MONEY, XTOKEN, REPUTATION, APPEAL, CONSERVATION])) {
-      // Handle the case of giving stuff to everyone else
-      if (($args['pId'] ?? null) == \EVERYONE_ELSE) {
-        $childs = [];
-        $player = Players::getActive();
-        foreach (Players::getAll() as $pId => $player2) {
-          if ($pId == $player->getId()) {
-            continue;
-          }
-          $childs[] = [
-            'action' => GAIN,
-            'args' => [$type => $n, 'pId' => $pId],
-          ];
-        }
-
-        return [
-          'type' => \NODE_SEQ,
-          'childs' => $childs,
-        ];
-      }
-
+    if (in_array($type, [Effects::CONSERVATION, Effects::APPEAL])) {
       // Normal gain
       $data = [
-        'action' => GAIN,
+        // TODO
+        'state' => Gain::class,
         'args' => [$type => $n],
       ];
       if (isset($args['pId'])) {
@@ -128,103 +120,26 @@ abstract class FlowConvertor
       }
       return $data;
     }
-    // Addition worker => same as "Full Throated" animal effect
-    elseif ($type == \BONUS_WORKER) {
-      return ['action' => FULL_THROATED, 'args' => ['n' => 1]];
-    }
-    // Move animals => only for the specific case where you build a special enclosure and you can move animals inside it
-    elseif ($type == MOVE_ANIMALS) {
-      return [
-        'action' => MOVE_ANIMALS,
-        'args' => ['buildingType' => $n],
-        'optional' => true,
-      ];
-    }
-    // Upgrade an action card
-    elseif ($type == BONUS_UPGRADE_CARD) {
-      return ['action' => UPGRADE_CARD];
-    }
-    // Gain a free university from the association board
-    elseif ($type == UNIVERSITY) {
-      return ['action' => GAIN_UNIVERSITY];
-    }
-    // Gain a free partner zoo from the association board
-    elseif ($type == PARTNER_ZOO) {
-      return ['action' => GAIN_PARTNER_ZOO];
-    }
-    // Build enclosure
-    elseif (in_array($type, array_merge(ENCLOSURES, [KIOSK, PAVILION, KIOSK_OR_PAVILION]))) {
-      if ($type == KIOSK_OR_PAVILION) {
-        $type = [KIOSK, PAVILION];
-      }
-      if ($n > 1) {
-        $nodes = [];
-        for ($i = 0; $i < $n; $i++) {
-          $nodes[] = ['action' => BUILD, 'args' => ['free' => true, 'freeBuilding' => $type, 'canPass' => true]];
-        }
-        return [
-          'type' => NODE_SEQ,
-          'childs' => $nodes,
-          'customDescription' => [
-            'log' => clienttranslate('Build for free x${n}'),
-            'args' => ['n' => $n],
-          ]
-        ];
-      }
-
-      return [
-        'action' => BUILD,
-        'args' => ['free' => true, 'freeBuilding' => $type, 'canPass' => true],
-      ];
-    } elseif ($type == BONUS_SPECIAL_ENCLOSURES) {
-      return [
-        'action' => BUILD,
-        'args' => ['free' => true, 'freeBuilding' => [\LARGE_BIRD_AVIARY, \REPTILE_HOUSE], 'canPass' => true],
-      ];
-    }
-    // Build unique building
-    elseif ($type == BUILD) {
-      return [
-        'action' => BUILD,
-        'args' => ['free' => true, 'freeBuilding' => $n, 'unique' => true],
-      ];
-    } elseif ($type == MULTIPLIER) {
-      return ['action' => MULTIPLIER, 'args' => ['n' => 'all']];
-    }
-    // Pay a sponsor card with money instead of strength
-    elseif ($type == BONUS_SPONSOR) {
-      return ['action' => BUY_SPONSOR, 'optional' => true];
-    }
-    // Everyone need to discard a scoring card
-    elseif ($type == DISCARD_SCORING) {
-      $player = Players::getActive();
-      return [
-        'action' => DISCARD_SCORING,
-        'args' => ['current' => $player->getId()],
-        'pId' => 'all',
-      ];
-    } elseif ($type == POUCH) {
-      return ['action' => POUCH, 'args' => ['n' => $n]];
-    }
+    // // Upgrade an action card
+    // elseif ($type == BONUS_UPGRADE_CARD) {
+    //   return ['action' => UPGRADE_CARD];
+    // }
     // ACTIONS THAT NEEDS TO BE TAKEN X-TIMES
-    elseif (in_array($type, [CLEVER, INCREASE_SIZE]) && ($n ?? 1) > 1) {
-      $nodes = [];
-      for ($i = 0; $i < $n; $i++) {
-        $nodes[] = ['action' => $type];
-      }
-      return ['type' => NODE_SEQ, 'childs' => $nodes];
-    }
-    // HELPFUL => null node
-    else if ($type == HELPFUL) {
-      return null;
-    }
-    // BONUS STRENGTH of MAP 12 => null node
-    else if ($type == BONUS_STRENGTH) {
-      return null;
-    }
+    // TODO Sanctuary check if it will be needed
+    // elseif (in_array($type, [CLEVER, INCREASE_SIZE]) && ($n ?? 1) > 1) {
+    //   $nodes = [];
+    //   for ($i = 0; $i < $n; $i++) {
+    //     $nodes[] = ['action' => $type];
+    //   }
+    //   return ['type' => NODE_SEQ, 'childs' => $nodes];
+    // }
     // Default behavior : action name = bonus name
     else {
-      $node = ['action' => $type, 'args' => ['n' => $n]];
+      $effectClass = self::effectClassMapping[$type] ?? null;
+      if (is_null($effectClass)) {
+        throw new SystemException("Missing mapping for " . $type . " in FlowConvertor::effectClassMapping. Should not happen");
+      }
+      $node = ['state' => $effectClass, 'args' => ['n' => $n]];
       if ($args['optional'] ?? false) {
         $node['optional'] = true;
       }
@@ -271,4 +186,12 @@ abstract class FlowConvertor
           'childs' => $childs,
         ]);
   }
+
+  const effectClassMapping = [
+    Effects::CONSERVATION => Gain::class,
+    Effects::APPEAL => Gain::class,
+    Effects::MOVE_ACTION_CARD => MoveActionCard::class,
+    Effects::DRAW_TILE => DrawTile::class,
+    Effects::TAKE_TILE => TakeTile::class,
+  ];
 }

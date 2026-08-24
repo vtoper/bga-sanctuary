@@ -21,8 +21,10 @@ class States
     const ST_TAKE_TILE = 120;
     const ST_PLAY_CARD = 130;
     const ST_CHOOSE_ACTION_CARD = 140;
+    const ST_BUILDING = 150;
 
     // Automatic state
     const ST_DRAW_TILE = 200;
     const ST_CLEANUP = 210;
+    const ST_TAKE_BONUS = 220;
 }

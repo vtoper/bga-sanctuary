@@ -40,7 +40,7 @@ class TakeTile extends ActionStateWithRevert
         return [
             "n" => $n,
             "inRange" => $inRange,
-            "sourceName" => $this->getNodeArgs("sourceName", ""),
+            "source" => $this->getSource() ?? "",
             'cardIds' => $inRange ? $player->getTilesInReputationRange()->getIds() : Tiles::getPool()->getIds(),
             "taken" => $this->getNodeArgs("taken", 0),
         ];
@@ -48,16 +48,16 @@ class TakeTile extends ActionStateWithRevert
 
     public function getCustomStateDescription()
     {
-        if (!is_null($this->getNodeArgs("sourceName"))) {
+        if (!is_null($this->getSource())) {
             if ($this->getNodeArgs('inRange', false)) {
                 return [
-                    "description" => clienttranslate('${actplayer} must take ${n} tile (${sourceName})'),
-                    "descriptionMyTurn" => clienttranslate('${you} must take ${n} tile (${sourceName})'),
+                    "description" => clienttranslate('${actplayer} must take ${n} tile (${source})'),
+                    "descriptionMyTurn" => clienttranslate('${you} must take ${n} tile (${source})'),
                 ];
             }
             return [
-                "description" => clienttranslate('${actplayer} must take ${n} tile in range (${sourceName})'),
-                "descriptionMyTurn" => clienttranslate('${you} must take ${n} tile in range (${sourceName})'),
+                "description" => clienttranslate('${actplayer} must take ${n} tile in range (${source})'),
+                "descriptionMyTurn" => clienttranslate('${you} must take ${n} tile in range (${source})'),
             ];
         }
         return null;
@@ -65,20 +65,20 @@ class TakeTile extends ActionStateWithRevert
 
     public function getDescription()
     {
-        if (!is_null($this->getNodeArgs("sourceName"))) {
+        if (!is_null($this->getSource())) {
             if ($this->getNodeArgs('inRange', false)) {
                 return [
-                    "log" => clienttranslate('Take ${n} tile (${sourceName})'),
+                    "log" => clienttranslate('Take ${n} tile (${source})'),
                     "args" => [
-                        "sourceName" => $this->getNodeArgs("sourceName", ""),
+                        "source" => $this->getSource() ?? "",
                         "n" => $this->getNodeArgs("max", 1)
                     ]
                 ];
             }
             return [
-                "log" => clienttranslate('Take ${n} tile in range (${sourceName})'),
+                "log" => clienttranslate('Take ${n} tile in range (${source})'),
                 "args" => [
-                    "sourceName" => $this->getNodeArgs("sourceName", ""),
+                    "source" => $this->getSource() ?? "",
                     "n" => $this->getNodeArgs("max", 1)
                 ]
             ];

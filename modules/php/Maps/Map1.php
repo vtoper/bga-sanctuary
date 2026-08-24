@@ -2,8 +2,7 @@
 
 namespace Bga\Games\Sanctuary\Maps;
 
-use ARK\Helpers\Utils;
-
+use Bga\Games\Sanctuary\Constants\Effects;
 
 class Map1 extends \Bga\Games\Sanctuary\Models\ZooMap
 {
@@ -23,14 +22,10 @@ class Map1 extends \Bga\Games\Sanctuary\Models\ZooMap
   ];
 
   protected $bonuses = [
-    // '0_1' => [XTOKEN => 1],
-    // '0_11' => [MONEY => 5],
-    // '3_6' => [TAKE_IN_RANGE_OR_DECK => 1],
-    // '4_1' => [CLEVER => 1],
-    // '4_11' => [REPUTATION => 1],
-    // '6_5' => [MONEY => 5],
-    // '7_2' => [TAKE_IN_RANGE_OR_DECK => 1],
-    // '7_8' => [XTOKEN => 1],
-    // '7_12' => [XTOKEN => 1],
+    '0_1' => [Effects::MOVE_ACTION_CARD => 1],
+    '0_5' => [Effects::DRAW_TILE => 1],
+    '3_0' => [Effects::TAKE_TILE => 1],
+    '6_1' => [Effects::DRAW_TILE => 1],
+    '6_5' => [Effects::MOVE_ACTION_CARD => 1],
   ];
 }

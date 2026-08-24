@@ -37,11 +37,11 @@ class ChooseActionCard extends ActionStateWithRevert
 
     public function getDescription()
     {
-        if (!is_null($this->getNodeArgs("sourceName"))) {
+        if (!is_null($this->getSource())) {
             return [
-                "log" => clienttranslate('Choose an action card (${sourceName})'),
+                "log" => clienttranslate('Choose an action card (${source})'),
                 "args" => [
-                    "sourceName" => $this->getNodeArgs("sourceName", "")
+                    "source" => $this->getSource() ?? ""
                 ]
             ];
         }

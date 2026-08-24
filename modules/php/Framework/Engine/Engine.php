@@ -445,6 +445,58 @@ class Engine
         self::save();
     }
 
+    /**
+     * insertOrUpdateParallelChilds:
+     *  - if the node is a parallel node => insert all the nodes as childs
+     *  - if one of the child is a parallel node => insert as their childs instead
+     *  - otherwise, make the action a parallel node
+     */
+
+    public static function insertOrUpdateParallelChilds($childs, &$node = null)
+    {
+        if (empty($childs)) {
+            return;
+        }
+        if (is_null($node)) {
+            $node = self::$tree->getNextUnresolved();
+        }
+
+        if ($node->getType() == self::NODE_SEQUENTIAL) {
+            // search if we have children and if so if we have a parallel node
+            foreach ($node->getChilds() as $child) {
+                if ($child->getType() == self::NODE_PARALLEL) {
+                    foreach ($childs as $newChild) {
+                        $child->pushChild(self::buildTree($newChild));
+                    }
+                    self::save();
+                    return;
+                }
+            }
+
+            $node->pushChild(
+                self::buildTree([
+                    'type' => self::NODE_PARALLEL,
+                    'childs' => $childs,
+                ])
+            );
+        }
+        // Otherwise, turn the node into a PARALLEL node if needed, and then insert the childs
+        else {
+            // If the node is an action leaf, turn it into a Parallel node first
+            if ($node->getType() == self::NODE_LEAF) {
+                $newNode = $node->toArray();
+                $newNode['type'] = self::NODE_PARALLEL;
+                $node = $node->replace(self::buildTree($newNode));
+            }
+
+            // Push childs
+            foreach ($childs as $newChild) {
+                $node->pushChild(self::buildTree($newChild));
+            }
+            self::save();
+        }
+    }
+
     public static function confirmPartialTurn()
     {
         $node = self::getNextUnresolved();

@@ -33,10 +33,10 @@ class DrawTile extends AutomaticActionState
 
     public function getCustomStateDescription()
     {
-        if (!is_null($this->getNodeArgs("sourceName"))) {
+        if (!is_null($this->getSource())) {
             return [
-                "description" => clienttranslate('${actplayer} must draw ${n} tile(s) (${sourceName})'),
-                "descriptionMyTurn" => clienttranslate('${you} must draw ${n} tile(s) (${sourceName})'),
+                "description" => clienttranslate('${actplayer} must draw ${n} tile(s) (${source})'),
+                "descriptionMyTurn" => clienttranslate('${you} must draw ${n} tile(s) (${source})'),
             ];
         }
         return null;
@@ -44,12 +44,12 @@ class DrawTile extends AutomaticActionState
 
     public function getDescription()
     {
-        if (!is_null($this->getNodeArgs("sourceName"))) {
+        if (!is_null($this->getSource())) {
             return [
-                "log" => clienttranslate('Draw ${n} tile(s) (${sourceName})'),
+                "log" => clienttranslate('Draw ${n} tile(s) (${source})'),
                 "args" => [
                     "n" => $this->getNodeArgs("n", 1),
-                    "sourceName" => $this->getNodeArgs("sourceName", "")
+                    "source" => $this->getSource() ?? ""
                 ]
             ];
         }
@@ -77,7 +77,7 @@ class DrawTile extends AutomaticActionState
     {
         $n = $this->getNodeArgs("n", 1);
         $player = Players::get($activePlayerId);
-        $sourceName = $this->getNodeArgs("sourceName", "");
+        $source = $this->getSource() ?? "";
         $drawnTiles = Tiles::draw($player, $n);
         Engine::checkpoint();
         return $this->resolve(['cards' => $drawnTiles]);
