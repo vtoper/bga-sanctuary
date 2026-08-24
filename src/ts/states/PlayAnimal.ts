@@ -159,7 +159,7 @@ export class PlayAnimal {
   }
 
   private confirm() {
-    performAction('actPlayAnimal', {
+    performAction('actAnimal', {
       tileId: this.selectedTileId,
       location: this.selectedLocation,
       openAreas: JSON.stringify(this.selectedOpenAreas),

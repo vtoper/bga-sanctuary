@@ -21,7 +21,7 @@ use Bga\Games\Sanctuary\Models\Player;
 use Bga\Games\Sanctuary\Models\Tile;
 use Bga\Games\Sanctuary\Models\ZooMap;
 
-class PlayAnimal extends ActionStateWithRevert
+class Animal extends ActionStateWithRevert
 {
     function __construct(
         protected Game $game,
@@ -141,7 +141,7 @@ class PlayAnimal extends ActionStateWithRevert
     }
 
     #[PossibleAction]
-    public function actPlayAnimal(string $tileId, string $location, #[JsonParam(associative: null)] array $openAreas)
+    public function actAnimal(string $tileId, string $location, #[JsonParam(associative: null)] array $openAreas)
     {
         $player = Players::getCurrent();
         if ($player != Players::getActive()) {
@@ -261,6 +261,6 @@ class PlayAnimal extends ActionStateWithRevert
             }
             $openAreas[$position['x'] . '_' . $position['y']] = $openArea->getId();
         }
-        return $this->actPlayAnimal($tileId, $locationKey, $openAreas, $playerId);
+        return $this->actAnimal($tileId, $locationKey, $openAreas, $playerId);
     }
 }

@@ -34,7 +34,7 @@ use Bga\GameFramework\States\PossibleAction;
 use Bga\GameFramework\Actions\CheckAction;
 use Bga\Games\Sanctuary\Framework\Managers\Config;
 
-use Bga\Games\Sanctuary\States\Actions\PlayAnimal;
+use Bga\Games\Sanctuary\States\Actions\Animal;
 
 class Game extends \Bga\GameFramework\Table
 {

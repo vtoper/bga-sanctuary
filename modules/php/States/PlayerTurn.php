@@ -45,7 +45,7 @@ class PlayerTurn extends GameState
      * @throws UserException
      */
     #[PossibleAction]
-    public function actPlayAnimal(int $card_id, int $activePlayerId, array $args)
+    public function actAnimal(int $card_id, int $activePlayerId, array $args)
     {
         // check input values
         $playableCardsIds = $args['playableCardsIds'];
@@ -114,6 +114,6 @@ class PlayerTurn extends GameState
         // Example of zombie level 1:
         $args = $this->getArgs();
         $zombieChoice = $this->getRandomZombieChoice($args['playableCardsIds']); // random choice over possible moves
-        return $this->actPlayAnimal($zombieChoice, $playerId, $args); // this function will return the transition to the next state
+        return $this->actAnimal($zombieChoice, $playerId, $args); // this function will return the transition to the next state
     }
 }
