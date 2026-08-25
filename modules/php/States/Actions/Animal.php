@@ -92,6 +92,12 @@ class Animal extends ActionStateWithRevert
         return $args;
     }
 
+    public function isDoable($player): bool
+    {
+        $playable = $this->getPlayableTilesAndLocations($player);
+        return !empty($playable[0]);
+    }
+
     /**
      * Compute, for each animal tile in the player's hand that satisfies the strength/habitat constraints,
      * the list of locations on the ZooMap where it could be placed.
