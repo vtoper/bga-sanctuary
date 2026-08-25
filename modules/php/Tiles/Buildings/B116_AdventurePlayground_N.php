@@ -14,6 +14,7 @@ class B116_AdventurePlayground_N extends \Bga\Games\Sanctuary\Models\Building
     $this->appeal = '4';
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 rock tiles';
+    $this->prerequisites = [Icons::ROCK => 2];
     $this->categories = [Icons::ROCK];
   }
 }

@@ -14,6 +14,7 @@ class B106_PredatorHouse_N extends \Bga\Games\Sanctuary\Models\Building
     $this->appeal = '2 per adjacent predator';
     $this->gender = 'N';
     //effect = '#####prerequisite next to 1 predator';
+    $this->prerequisites = [Icons::PREDATOR => 1];
     $this->categories = [Icons::PREDATOR];
   }
 }

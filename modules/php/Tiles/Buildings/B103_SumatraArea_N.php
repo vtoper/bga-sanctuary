@@ -14,6 +14,7 @@ class B103_SumatraArea_N extends \Bga\Games\Sanctuary\Models\Building
     $this->appeal = '2 per connected asia';
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 asia tiles';
+    $this->prerequisites = [Icons::ASIA => 2];
     $this->continents = [Icons::ASIA];
   }
 }

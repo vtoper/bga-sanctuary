@@ -49,8 +49,7 @@ class Animal extends Tile
   {
     return array_merge(
       array_count_values($this->getCategories()),
-      array_count_values($this->getContinents()),
-      $this->getEnclosureRequirements()
+      array_count_values($this->getContinents())
     );
   }
 

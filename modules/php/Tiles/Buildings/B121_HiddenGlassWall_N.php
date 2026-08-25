@@ -3,6 +3,7 @@
 namespace Bga\Games\Sanctuary\Tiles\Buildings;
 
 use Bga\Games\Sanctuary\Constants\Icons;
+use Bga\Games\Sanctuary\Constants\Prerequisites;
 
 class B121_HiddenGlassWall_N extends \Bga\Games\Sanctuary\Models\Building
 {
@@ -14,6 +15,6 @@ class B121_HiddenGlassWall_N extends \Bga\Games\Sanctuary\Models\Building
     $this->appeal = '6';
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 large animals';
-
+    $this->prerequisites = [Prerequisites::NEXT_TO_LARGE_ANIMALS => 2];
   }
 }

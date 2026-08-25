@@ -51,20 +51,27 @@ class Building extends ActionStateWithRevert
         return clienttranslate('Play a building');
     }
 
+    // Building is always optional
+    public function isOptional()
+    {
+        return true;
+    }
+
 
     public function getActionArgs(int $activePlayerId): array
     {
         $player = Players::get($activePlayerId);
         $playable = $this->getPlayableTilesAndLocations($player);
         $args = [
-            'habitat' => $this->getNodeArgs("habitat", ""),
-            'level' => $this->getNodeArgs("strength", 1),
             'source' => $this->getSource(),
-            'playableTiles' => $playable[0],
-            'neededOpenAreas' => $playable[1]
-
+            '_private' => [
+                $player->getId() => [
+                    'playableTiles' => $playable,
+                    'playableCardsIds' => array_keys($playable)
+                ]
+            ],
+            '_merge_private' => true
         ];
-        $args['playableCardsIds'] = array_keys($args['playableTiles']);
         return $args;
     }
 
@@ -76,30 +83,21 @@ class Building extends ActionStateWithRevert
      */
     protected function getPlayableTilesAndLocations(Player $player): array
     {
-        $maxStrength = $this->getNodeArgs("strength", 1);
-        $habitat = $this->getNodeArgs("habitat", null);
         $map = $player->map();
         $locations = $map->getAvailableLocations();
         if (empty($locations)) {
-            return [[], []];
+            return [];
         }
 
         $result = [];
         $openAreasByTile = [];
-        foreach ($player->getHand(Tile::TILE_ANIMAL) as $tileId => $animal) {
-            if ($animal->matchesPlayConstraints($maxStrength, $habitat)) {
-                $newLocations = $locations;
-                $openAreasByTile[$tileId] = [];
-                if ($animal->getOpenAreas() !== []) {
-                    $mandatoryOpenAreas = $animal->getOpenAreas();
-                    list($newLocations, $neededOpenAreas) = $map->checkMandatoryOpenAreas($mandatoryOpenAreas, $locations);
-                    $openAreasByTile[$tileId] = $neededOpenAreas;
-                }
-
-                $result[$tileId] = $newLocations;
+        foreach ($player->getHand(Tile::TILE_BUILDING) as $tileId => $building) {
+            $possible = $map->getPlacementOptions($building);
+            if (!empty($possible)) {
+                $result[$tileId] = $possible;
             }
         }
-        return [$result, $openAreasByTile];
+        return $result;
     }
 
 
@@ -123,7 +121,7 @@ class Building extends ActionStateWithRevert
     }
 
     #[PossibleAction]
-    public function actAnimal(string $tileId, string $location, #[JsonParam(associative: null)] array $openAreas)
+    public function actBuilding(string $tileId, string $location)
     {
         $player = Players::getCurrent();
         if ($player != Players::getActive()) {
@@ -131,44 +129,33 @@ class Building extends ActionStateWithRevert
         }
 
         $args = $this->getArgs($player->getId());
-
-        if (!isset($args['playableTiles'][$tileId])) {
-            throw new UserException(clienttranslate('This animal cannot be played'));
+        $playableTiles = $this->getPlayableTilesAndLocations($player);
+        if (!isset($playableTiles[$tileId])) {
+            throw new UserException('This building cannot be played. Should not happen');
         }
         $position = $this->parseLocation($location);
-        if (!$this->containsCell($args['playableTiles'][$tileId], $position)) {
-            throw new UserException(clienttranslate('This location is not available for this animal'));
+        if (!$this->containsCell($playableTiles[$tileId], $position)) {
+            throw new UserException('This location is not available for this building. Should not happen');
         }
 
-        $animal = $player->getHand(Tile::TILE_ANIMAL)[$tileId] ?? null;
-        if ($animal === null || !$animal->matchesPlayConstraints(
-            $this->getNodeArgs('strength', 1),
-            $this->getNodeArgs('habitat', null)
-        )) {
-            throw new UserException(clienttranslate('This animal is not playable'));
-        }
+        $building = Tiles::get($tileId) ?? null;
 
         $locationKey = $position['x'] . '_' . $position['y'];
-        $requiredOpenAreas = $args['neededOpenAreas'][$tileId][$locationKey] ?? [];
-        $openBonuses = $this->processOpenAreas($player, $openAreas, $requiredOpenAreas);
 
         $map = $player->map();
-        [$playedAnimal, $bonuses] = $map->addTile($tileId, $position);
-        $bonuses = array_merge($bonuses, $openBonuses);
+        [$playedBuilding, $bonuses] = $map->addTile($tileId, $position);
 
         $this->insertBonusesFlow($bonuses, clienttranslate('placement bonus'));
 
-        $this->notify->all('animalPlayed', clienttranslate('${player_name} plays ${animal_name}'), [
+        $this->notify->all('buildingPlayed', clienttranslate('${player_name} plays ${building_name}'), [
             'player' => $player,
             'player_name' => $player->getName(),
-            'animal' => $playedAnimal,
-            'animal_name' => $playedAnimal->getName(),
+            'building' => $playedBuilding,
+            'building_name' => $playedBuilding->getName(),
             'bonuses' => $bonuses,
-            'i18n' => ['animal_name'],
+            'i18n' => ['building_name'],
         ]);
 
-        // If we placed an animal near it's pair,  player earn a conservation marker
-        $map->addConservationMarker($playedAnimal);
         // TODO
         // Effects of the played tile to insert
         // Bonuses to insert
@@ -176,41 +163,7 @@ class Building extends ActionStateWithRevert
         //Tiles::applyEffects($player, 'AnimalPlayed', $effectArgs);
         // 
 
-        return $this->resolve(['tileId' => $tileId]);
-    }
-
-
-    private function processOpenAreas(Player $player, array $openAreas, array $required): array
-    {
-        $bonuses = [];
-
-        $result = [];
-        $usedTileIds = [];
-        $deleted = [];
-        $newTiles = [];
-        foreach ($required as $position) {
-            $key = $position['x'] . '_' . $position['y'];
-            $openAreaBonuses = [];
-
-            // we take the first tile from hand
-            $tileId = array_pop($openAreas);
-            $tile = $player->getHand()[$tileId] ?? null;
-            if ($tile === null) {
-                throw new SystemException('Invalid open area tile. Should not happen');
-            }
-            if (isset($usedTileIds[$tileId])) {
-                throw new SystemException(clienttranslate('An open area tile cannot be used twice'));
-            }
-            $usedTileIds[$tileId] = true;
-            [$tile, $openAreaBonuses] = $player->map()->addOpenArea($tileId, $position);
-            $bonuses = array_merge($bonuses, $openAreaBonuses);
-            $newTiles[] = $tile;
-            $deleted[] = $tileId;
-        }
-
-        // TODO: notification for new tiles OR return
-
-        return $bonuses;
+        return $this->resolve(['building', 'tileId' => $tileId]);
     }
 
 

@@ -14,6 +14,7 @@ class B109_ReptileHouse_N extends \Bga\Games\Sanctuary\Models\Building
     $this->appeal = '2 per adjacent reptile';
     $this->gender = 'N';
     //effect = '#####prerequisite next to 1 reptile';
+    $this->prerequisites = [Icons::REPTILE => 1];
     $this->categories = [Icons::REPTILE];
   }
 }

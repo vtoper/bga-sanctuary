@@ -280,6 +280,16 @@ class Game extends \Bga\GameFramework\Table
         Tiles::fillPool();
     }
 
+    public function debug_addToHand(string $tileId, string $location, ?int $x = null, ?int $y = null)
+    {
+        $playerId = Players::getCurrentId();
+        $tile = Tiles::get($tileId);
+        $tile->setLocation($location);
+        $tile->setPId($playerId);
+        $tile->setX($x);
+        $tile->setY($y);
+    }
+
     public function debug_vt()
     {
         $titi = new \Bga\Games\Sanctuary\States\Actions\TakeTile($this, Engine::getNextUnresolved());

@@ -8,6 +8,8 @@ use Bga\Games\sanctuary\Managers\Globals;
 use Bga\Games\sanctuary\Managers\Meeples;
 use Bga\Games\sanctuary\Managers\Tiles;
 use Bga\Games\Sanctuary\Constants\Effects;
+use Bga\Games\Sanctuary\Constants\Icons;
+use Bga\Games\Sanctuary\Constants\Prerequisites;
 
 /*
  * ZooMap: all utility functions concerning a Zoo Map
@@ -335,18 +337,12 @@ class ZooMap
   protected $freeCells = null;
   public function getPlacementOptionsCachedDatas()
   {
-    if (is_null($this->checkingCells)) {
-      $this->checkingCells = $this->tiles->empty() ? $this->getBorderCells() : $this->getConnectedCells();
-    }
+
     if (is_null($this->freeCells)) {
-      $cells = self::getListOfCells();
-      Utils::filter($cells, function ($cell) {
-        return !$this->hasTileAtPos($cell);
-      });
-      $this->freeCells = $cells;
+      $this->freeCells = self::getAvailableLocations();
     }
 
-    return [$this->checkingCells, $this->freeCells];
+    return $this->freeCells;
   }
   public function invalidateCachedDatas()
   {
@@ -354,134 +350,209 @@ class ZooMap
     $this->freeCells = null;
   }
 
-  public function getPlacementOptions($buildingType, $checkIsDoable = false, $args = [])
+  public function getPlacementOptions($building, $checkIsDoable = false, $args = [])
   {
-    list($checkingCells, $freeCells) = $this->getPlacementOptionsCachedDatas();
-    $byPassCheck = $this->player->hasPlayedCard('S219_DiversityResearcher');
-    $size1 = count(BUILDINGS[$buildingType]) == 1;
-
-    // COnference on Australia
-    $mustCoverOneBuilding = $args['mustCoverOneBuilding'] ?? false;
-    if ($mustCoverOneBuilding) {
-      $freeCells = self::getListOfCells();
-    }
+    $freeCells = $this->getPlacementOptionsCachedDatas();
+    $prerequisites = $building->getPrerequisites();
 
     $result = [];
-    // For each possible cell to place the reference hex of the building
+    // For each possible cell check if the prerequisites are satisfied
     foreach ($freeCells as $pos) {
-      if ($buildingType == 'kiosk' && !$this->isFarEnoughFromOtherKiosk($pos)) {
+      if (!$this->arePrerequisitesSatisfied($prerequisites, $pos)) {
         continue;
       }
 
-      $rotations = [];
-      $coveringRotations = [];
-      // Compute which rotations are valid
-      for ($rotation = 0; $rotation < ($size1 ? 1 : 6); $rotation++) {
-        // BUILD 4
-        if ($args['canPayToBuildOnSingleWaterRock'] ?? false) {
-          $hexes = self::getCoveredHexes($buildingType, $pos, $rotation, true, [WATER => true, ROCK => true]);
-          if ($hexes === false) continue;
-
-          // Count water/rock spaces
-          $forbiddenSpaces = 0;
-          foreach ($hexes as $hex) {
-            $uid = self::getCellId($hex);
-            if (in_array($uid, $this->terrains[WATER]) || in_array($uid, $this->terrains[ROCK])) {
-              $forbiddenSpaces++;
-            }
-          }
-          if ($forbiddenSpaces > 1 && !$byPassCheck) {
-            continue;
-          }
-          if ($forbiddenSpaces != 0) {
-            $coveringRotations[] = $rotation;
-          }
-        }
-        // STARNDARD CASE : check whether covered hexes are valid
-        else {
-          $ignore = [];
-          if ($mustCoverOneBuilding) $ignore['building'] = true;
-
-          $hexes = self::getCoveredHexes($buildingType, $pos, $rotation, true, $ignore);
-          // Are all the hexes valid to build upon ?
-          if ($hexes === false) {
-            continue;
-          }
-
-          // CONFERENCE ON AUSTRALIA
-          if ($mustCoverOneBuilding) {
-            $buildingIds = [];
-            foreach ($hexes as $hex) {
-              $building = $this->getBuildingAtPos($hex);
-              if (!is_null($building)) {
-                $buildingIds[] = $building['id'];
-              }
-            }
-
-            $uniqueBuildingIds = array_unique($buildingIds);
-            if (count($uniqueBuildingIds) != 1) {
-              continue;
-            }
-            $building = $this->buildings[$buildingIds[0]];
-            if (!in_array($building['type'], REGULAR_ENCLOSURES)) {
-              continue; // can only cover regular enclosures
-            }
-            $smallSize = count(BUILDINGS[$building['type']]);
-            $bigSize = count(BUILDINGS[$buildingType]);
-            if (count($buildingIds) != $smallSize || $bigSize != $smallSize + 1) {
-              continue; // must cover exactly the building + 1 hex
-            }
-          }
-        }
-
-        // Constraints for water/rock adjacency
-        $constraints = BUILDINGS_CONSTRAINTS[$buildingType] ?? [];
-        if ($buildingType == 'sea-turtle' && Globals::isMarineWorld()) {
-          $constraints[WATER] = 2;
-        }
-
-        if (!$byPassCheck && !empty($constraints)) {
-          $enclosure = [
-            'type' => $buildingType,
-            'rotation' => $rotation,
-            'x' => $pos['x'],
-            'y' => $pos['y'],
-          ];
-          $this->addSurroundingsToEnclosure($enclosure);
-          $satisfied = true;
-          foreach ($constraints as $constraint => $n) {
-            if ($n > $enclosure[$constraint]) {
-              $satisfied = false;
-              break;
-            }
-          }
-
-          if (!$satisfied) {
-            continue;
-          }
-        }
-
-        // Adjacency check: either adjacent to existing buildings, or on the border otherwise
-        if ($buildingType == SIDE_ENTRANCE) {
-          $rotations[] = $rotation;
-        } elseif ($this->isIntersectionNonEmpty($hexes, $checkingCells)) {
-          $rotations[] = $rotation;
-        }
-      }
-      if (!empty($rotations)) {
-        $result[] = [
-          'pos' => $pos,
-          'rotations' => $rotations,
-        ];
-        if (!empty($coveringRotations)) {
-          $result[count($result) - 1]['coveringRotations'] = $coveringRotations;
-        }
-        if ($checkIsDoable) {
-          return $result;
-        }
+      $result[] = $pos;
+      if ($checkIsDoable) {
+        break;
       }
     }
-    return $result;
+    return $checkIsDoable ? !empty($result) : $result;
+  }
+
+  /**
+   * arePrerequisitesSatisfied: checks that $pos (and/or the player's zoo) satisfies all $prerequisites
+   */
+  protected function arePrerequisitesSatisfied($prerequisites, $pos): bool
+  {
+    foreach ($prerequisites ?? [] as $key => $amount) {
+      if (!$this->isPrerequisiteSatisfied($key, $amount, $pos)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  protected function isPrerequisiteSatisfied($key, $amount, $pos): bool
+  {
+    switch ($key) {
+      case Prerequisites::BY_THE_RIVER:
+        return $this->isRiverCell($pos);
+
+      case Prerequisites::NEXT_TO_BUILDINGS:
+        return $this->countNeighbourTilesOfType($pos, Tile::TILE_BUILDING) >= $amount;
+
+      case Prerequisites::NEXT_TO_PROJECTS:
+        return $this->countNeighbourTilesOfType($pos, Tile::TILE_PROJECT) >= $amount;
+
+      case Prerequisites::NEXT_TO_OPEN_AREAS:
+        return $this->countNeighbourMatching($pos, fn($tile) => $tile->isOpenArea()) >= $amount;
+
+      case Prerequisites::NEXT_TO_LARGE_ANIMALS:
+        return $this->countNeighbourMatching(
+          $pos,
+          fn($tile) => $tile instanceof Animal && $tile->getStrength() >= Prerequisites::LARGE_ANIMAL_STRENGTH
+        ) >= $amount;
+
+      case Prerequisites::NEXT_TO_DIFFERENT_ANIMAL_OR_CONTINENT_ICONS:
+        return count(array_intersect_key($this->getNeighbourIcons($pos), array_flip(Icons::CONTINENTS_AND_TYPES))) >= $amount;
+
+      case Prerequisites::HAVE_DIFFERENT_CONTINENT_ICONS:
+        return count(array_intersect_key($this->getZooIcons(), array_flip(Icons::CONTINENTS))) >= $amount;
+
+      case Prerequisites::HAVE_DIFFERENT_ANIMAL_ICONS:
+        return count(array_intersect_key($this->getZooIcons(), array_flip(Icons::ANIMAL_TYPES))) >= $amount;
+
+      case Prerequisites::HAVE_DIFFERENT_ANIMAL_AND_CONTINENT_ICONS:
+        return count(array_intersect_key($this->getZooIcons(), array_flip(Icons::CONTINENTS_AND_TYPES))) >= $amount;
+
+      case Prerequisites::HAVE_ALL_RIVER_SPACES_FILLED:
+        return $this->areAllRiverSpacesFilled();
+
+      case Prerequisites::HAVE_TILES_IN_HAND:
+        return $this->player->getHand()->count() >= $amount;
+
+      default:
+        // 'CONNECT_<icon>' => next to N tiles of <icon> connected to each other
+        if (str_starts_with($key, Prerequisites::CONNECT_PREFIX)) {
+          $icon = substr($key, strlen(Prerequisites::CONNECT_PREFIX));
+          return $this->getMaxConnectedNeighbourGroupSize($pos, $icon) >= $amount;
+        }
+        // '<icon>' => N of that icon among the neighbours
+        $neighbourIcons = $this->getNeighbourIcons($pos);
+        return ($neighbourIcons[$key] ?? 0) >= $amount;
+    }
+  }
+
+  /**
+   * isRiverCell: the river runs along the left and right edges of the zoo map
+   */
+  protected function isRiverCell($pos): bool
+  {
+    return $pos['x'] == 0 || $pos['x'] == 6;
+  }
+
+  protected function areAllRiverSpacesFilled(): bool
+  {
+    foreach (self::getListOfCells() as $cell) {
+      if ($this->isRiverCell($cell) && !$this->hasTileAtPos($cell)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * getNeighbourIcons: aggregate the icons of all tiles adjacent to $pos
+   */
+  protected function getNeighbourIcons($pos): array
+  {
+    return $this->aggregateIcons($this->getNeighbours($pos));
+  }
+
+  /**
+   * getZooIcons: aggregate the icons of every tile played in the player's zoo
+   */
+  protected function getZooIcons(): array
+  {
+    $icons = [];
+    foreach ($this->tiles as $tile) {
+      foreach ($tile->getIcons() as $icon => $n) {
+        $icons[$icon] = ($icons[$icon] ?? 0) + $n;
+      }
+    }
+    return $icons;
+  }
+
+  protected function aggregateIcons(array $cells): array
+  {
+    $icons = [];
+    foreach ($cells as $cell) {
+      $tile = $this->getTileAtPos($cell);
+      if (is_null($tile)) {
+        continue;
+      }
+      foreach ($tile->getIcons() as $icon => $n) {
+        $icons[$icon] = ($icons[$icon] ?? 0) + $n;
+      }
+    }
+    return $icons;
+  }
+
+  protected function countNeighbourTilesOfType($pos, $type): int
+  {
+    return $this->countNeighbourMatching($pos, fn($tile) => $tile->getType() == $type);
+  }
+
+  protected function countNeighbourMatching($pos, callable $predicate): int
+  {
+    $n = 0;
+    foreach ($this->getNeighbours($pos) as $cell) {
+      $tile = $this->getTileAtPos($cell);
+      if (!is_null($tile) && $predicate($tile)) {
+        $n++;
+      }
+    }
+    return $n;
+  }
+
+  /**
+   * getMaxConnectedNeighbourGroupSize: size of the largest group of tiles carrying $icon, connected to each other,
+   * that is adjacent to $pos
+   */
+  protected function getMaxConnectedNeighbourGroupSize($pos, $icon): int
+  {
+    $seen = [];
+    $max = 0;
+    foreach ($this->getNeighbours($pos) as $cell) {
+      $uid = self::getCellId($cell);
+      if (isset($seen[$uid]) || !$this->cellHasIcon($cell, $icon)) {
+        continue;
+      }
+
+      $component = $this->getConnectedIconGroup($cell, $icon);
+      $seen += $component;
+      $max = max($max, count($component));
+    }
+    return $max;
+  }
+
+  /**
+   * getConnectedIconGroup: flood-fill the connected group of tiles carrying $icon, starting from $start
+   * Returns a map of cell uid => true
+   */
+  protected function getConnectedIconGroup($start, $icon): array
+  {
+    $group = [self::getCellId($start) => true];
+    $stack = [$start];
+    while (!empty($stack)) {
+      $cell = array_pop($stack);
+      foreach ($this->getNeighbours($cell) as $neighbour) {
+        $uid = self::getCellId($neighbour);
+        if (isset($group[$uid]) || !$this->cellHasIcon($neighbour, $icon)) {
+          continue;
+        }
+        $group[$uid] = true;
+        $stack[] = $neighbour;
+      }
+    }
+    return $group;
+  }
+
+  protected function cellHasIcon($cell, $icon): bool
+  {
+    $tile = $this->getTileAtPos($cell);
+    return !is_null($tile) && ($tile->getIcons()[$icon] ?? 0) > 0;
   }
 
   /**

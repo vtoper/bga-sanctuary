@@ -14,6 +14,7 @@ class B102_AlpineArea_N extends \Bga\Games\Sanctuary\Models\Building
     $this->appeal = '2 per connected europe';
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 europe tiles';
+    $this->prerequisites = [Icons::EUROPE => 2];
     $this->continents = [Icons::EUROPE];
   }
 }

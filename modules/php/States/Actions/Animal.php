@@ -50,9 +50,10 @@ class Animal extends ActionStateWithRevert
 
     public function getDescription()
     {
+        // TODO: update card after upgrade
         if (!is_null($this->getSource())) {
             return [
-                "log" => clienttranslate('Play card (${source})'),
+                "log" => clienttranslate('Play animal (${source})'),
                 "args" => [
                     "source" => $this->getSource() ?? ""
                 ]
@@ -60,13 +61,13 @@ class Animal extends ActionStateWithRevert
         }
         if (!is_null($this->getNodeArgs("habitat"))) {
             return [
-                "log" => clienttranslate('Play ${habitat}'),
+                "log" => clienttranslate('Play ${habitat} animal'),
                 "args" => [
                     "habitat" => $this->getNodeArgs("habitat", "")
                 ]
             ];
         }
-        return clienttranslate('Play card');
+        return clienttranslate('Play animal');
     }
 
 
@@ -155,11 +156,11 @@ class Animal extends ActionStateWithRevert
 
         $args = $this->getArgs($player->getId());
 
-        if (!isset($args['playableTiles'][$tileId])) {
+        if (!isset($this->getPlayableTilesAndLocations($player)[0][$tileId])) {
             throw new UserException(clienttranslate('This animal cannot be played'));
         }
         $position = $this->parseLocation($location);
-        if (!$this->containsCell($args['playableTiles'][$tileId], $position)) {
+        if (!$this->containsCell($this->getPlayableTilesAndLocations($player)[0][$tileId], $position)) {
             throw new UserException(clienttranslate('This location is not available for this animal'));
         }
 

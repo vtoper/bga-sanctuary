@@ -43,6 +43,12 @@ interface AnimalArgs {
   // tileId => locationKey ("x_y") => cells that must be covered by an open area. Empty array when none.
   neededOpenAreas: { [tileId: string]: { [locationKey: string]: SanctuaryCell[] } | [] };
 }
+
+interface BuildingArgs {
+  sourceName: string | null;
+  playableCardsIds: string[];
+  playableTiles: { [tileId: string]: SanctuaryCell[] };
+}
 /*
  * Describe here the types for your notif args
  */

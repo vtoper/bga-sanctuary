@@ -14,6 +14,7 @@ class B114_WaterPlayground_N extends \Bga\Games\Sanctuary\Models\Building
     $this->appeal = '4';
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 water tiles';
+    $this->prerequisites = [Icons::WATER => 2];
     $this->categories = [Icons::WATER];
   }
 }

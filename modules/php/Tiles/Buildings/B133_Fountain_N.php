@@ -3,6 +3,7 @@
 namespace Bga\Games\Sanctuary\Tiles\Buildings;
 
 use Bga\Games\Sanctuary\Constants\Icons;
+use Bga\Games\Sanctuary\Constants\Prerequisites;
 
 class B133_Fountain_N extends \Bga\Games\Sanctuary\Models\Building
 {
@@ -14,6 +15,6 @@ class B133_Fountain_N extends \Bga\Games\Sanctuary\Models\Building
     $this->appeal = '6';
     $this->gender = 'N';
     //effect = '#####prerequisite have tiles on all spaces by the river';
-
+    $this->prerequisites = [Prerequisites::HAVE_ALL_RIVER_SPACES_FILLED => true];
   }
 }

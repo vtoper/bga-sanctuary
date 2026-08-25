@@ -201,7 +201,7 @@ class CachedPieces extends DB_Manager
     /**
      * Get specific piece by id
      */
-    public static function get(int $id, bool $raiseExceptionIfNotEnough = true)
+    public static function get(string|int $id, bool $raiseExceptionIfNotEnough = true)
     {
         $result = self::getMany($id, $raiseExceptionIfNotEnough);
         return $result->count() == 1 ? $result->first() : $result;

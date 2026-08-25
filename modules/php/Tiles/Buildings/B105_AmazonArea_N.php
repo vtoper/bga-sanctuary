@@ -14,6 +14,7 @@ class B105_AmazonArea_N extends \Bga\Games\Sanctuary\Models\Building
     $this->appeal = '2 per connected americas';
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 americas tiles';
+    $this->prerequisites = [Icons::AMERICAS => 2];
     $this->continents = [Icons::AMERICAS];
   }
 }

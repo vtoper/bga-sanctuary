@@ -14,6 +14,7 @@ class B110_HerbivoreHouse_N extends \Bga\Games\Sanctuary\Models\Building
     $this->appeal = '2 per adjacent herbivore';
     $this->gender = 'N';
     //effect = '#####prerequisite next to 1 herbivore';
+    $this->prerequisites = [Icons::HERBIVORE => 1];
     $this->categories = [Icons::HERBIVORE];
   }
 }

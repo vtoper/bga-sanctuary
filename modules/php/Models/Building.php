@@ -39,6 +39,11 @@ class Building extends Tile
   }
 
 
+  public function matchesPlayConstraints(): bool
+  {
+    // TODO
+  }
+
   public function getBonuses()
   {
     $bonuses = [];

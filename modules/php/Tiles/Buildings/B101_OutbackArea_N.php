@@ -14,6 +14,7 @@ class B101_OutbackArea_N extends \Bga\Games\Sanctuary\Models\Building
     $this->appeal = '2 per connected australia';
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 australia tiles';
+    $this->prerequisites = [Icons::AUSTRALIA => 2];
     $this->continents = [Icons::AUSTRALIA];
   }
 }
