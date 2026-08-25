@@ -20,4 +20,12 @@ export class TilesNotifications {
   async notif_animalPlayed(args) {
     console.debug(args);
   }
+
+  async notif_buildingPlayed(args) {
+    console.debug(args);
+  }
+
+  async notif_projectPlayed(args) {
+    console.debug(args);
+  }
 }

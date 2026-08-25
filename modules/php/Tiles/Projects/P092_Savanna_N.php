@@ -16,5 +16,7 @@ class P092_Savanna_N extends \Bga\Games\Sanctuary\Models\Project
     $this->gender = 'N';
     //effect = 'immediate release 1 predator, get 2/3 conservation tokens';
     $this->categories = [Icons::WATER, Icons::ROCK];
+    $this->release = true;
+    $this->releaseIcon = Icons::PREDATOR;
   }
 }

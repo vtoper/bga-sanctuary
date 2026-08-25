@@ -16,5 +16,7 @@ class P094_Jungle_N extends \Bga\Games\Sanctuary\Models\Project
     $this->gender = 'N';
     //effect = 'immediate release 1 primate, get 2/3 conservation tokens';
     $this->categories = [Icons::FOREST, Icons::WATER];
+    $this->release = true;
+    $this->releaseIcon = Icons::PRIMATE;
   }
 }

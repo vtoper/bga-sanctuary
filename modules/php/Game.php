@@ -280,7 +280,7 @@ class Game extends \Bga\GameFramework\Table
         Tiles::fillPool();
     }
 
-    public function debug_addToHand(string $tileId, string $location, ?int $x = null, ?int $y = null)
+    public function debug_addToHand(string $tileId, string $location = 'hand', ?int $x = null, ?int $y = null)
     {
         $playerId = Players::getCurrentId();
         $tile = Tiles::get($tileId);

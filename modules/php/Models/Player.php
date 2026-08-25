@@ -221,7 +221,7 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
 
     public function getPlayedAnimal($icon = null)
     {
-        $animals = $this->getPlayedCards(\CARD_ANIMAL);
+        $animals = $this->getPlayedCards(Tile::TILE_ANIMAL);
         if (!is_null($icon)) {
             $animals = $animals->filter(function ($animal) use ($icon) {
                 return ($animal->getIcons()[$icon] ?? 0) > 0;
@@ -234,7 +234,7 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
     public function getBiggestHerbivore()
     {
         $n = 0;
-        foreach ($this->getPlayedAnimal(\HERBIVORE) as $animal) {
+        foreach ($this->getPlayedAnimal(Icons::HERBIVORE) as $animal) {
             $n = max($n, $animal->getEnclosureSize());
         }
         return $n;

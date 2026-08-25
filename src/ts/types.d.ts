@@ -49,6 +49,13 @@ interface BuildingArgs {
   playableCardsIds: string[];
   playableTiles: { [tileId: string]: SanctuaryCell[] };
 }
+
+interface ProjectArgs {
+  sourceName: string | null;
+  level: number;
+  playableCardsIds: string[];
+  playableTiles: { [tileId: string]: SanctuaryCell[] };
+}
 /*
  * Describe here the types for your notif args
  */

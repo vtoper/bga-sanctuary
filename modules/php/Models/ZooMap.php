@@ -171,6 +171,14 @@ class ZooMap
     return $this->addBuildingAux($tile);
   }
 
+  public function replaceTile($tileId, $pos)
+  {
+    $existingTile = $this->grid[$pos['x']][$pos['y']]['tile'] ?? null;
+    $existingTile->setLocation('released');
+    Tiles::addToMap($tileId, $this->pId, $pos);
+    return $existingTile;
+  }
+
   public function addOpenArea($tileId, $pos)
   {
     Tiles::delete($tileId);
@@ -553,6 +561,29 @@ class ZooMap
   {
     $tile = $this->getTileAtPos($cell);
     return !is_null($tile) && ($tile->getIcons()[$icon] ?? 0) > 0;
+  }
+
+  // Release project must be placed a top an animal card with the corresponding icons
+  public function getProjectReleaseOptions(Project $project, $checkIsDoable = false, $args = [])
+  {
+
+    $prerequisite = $project->getReleaseIcon();
+
+    $result = [];
+    // For each possible tiles check if the prerequisites are satisfied
+    foreach ($this->tiles as $tileId => $tile) {
+      if ($tile->getType() != Tile::TILE_ANIMAL) {
+        continue;
+      }
+      if (!in_array($prerequisite, array_keys($tile->getIcons()))) {
+        continue;
+      }
+      $result[] = ['x' => $tile->getX(), 'y' => $tile->getY()];
+      if ($checkIsDoable) {
+        break;
+      }
+    }
+    return $checkIsDoable ? !empty($result) : $result;
   }
 
   /**

@@ -16,5 +16,7 @@ class P095_BambooForest_N extends \Bga\Games\Sanctuary\Models\Project
     $this->gender = 'N';
     //effect = 'immediate release 1 herbivore, get 2/3 conservation tokens';
     $this->categories = [Icons::FOREST, Icons::WATER];
+    $this->release = true;
+    $this->releaseIcon = Icons::HERBIVORE;
   }
 }

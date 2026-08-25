@@ -14,6 +14,12 @@ use Bga\Games\Sanctuary\Game;
 use Bga\Games\Sanctuary\Constants\States;
 use Bga\Games\Sanctuary\Framework\Engine\ActionStateWithRevert;
 
+use Bga\Games\Sanctuary\Managers\Players;
+use Bga\Games\Sanctuary\Managers\Tiles;
+use Bga\Games\Sanctuary\Models\Player;
+use Bga\Games\Sanctuary\Models\Tile;
+
+
 
 class Project extends ActionStateWithRevert
 {
@@ -26,101 +32,165 @@ class Project extends ActionStateWithRevert
             node: $node,
             id: States::ST_PROJECT,
             type: StateType::ACTIVE_PLAYER,
+            description: clienttranslate('${actplayer} must play a project tile with max level ${level}'),
+            descriptionMyTurn: clienttranslate('${you} must play a project tile with max level ${level}'),
         );
     }
 
-    /**
-     * Game state arguments, example content.
-     *
-     * This method returns some additional information that is very specific to the `PlayerTurn` game state.
-     */
-    // public function getArgs(): array
-    // {
-    //     // Get some values from the current game situation from the database.
-
-    //     return [
-    //         "playableCardsIds" => [1, 2],
-    //     ];
-    // }
-
-    /**
-     * Player action, example content.
-     *
-     * In this scenario, each time a player plays a card, this method will be called. This method is called directly
-     * by the action trigger on the front side with `bgaPerformAction`.
-     *
-     * @throws UserException
-     */
-    #[PossibleAction]
-    public function actAnimal(int $card_id, int $activePlayerId, array $args)
+    public function getDescription()
     {
-        // check input values
-        $playableCardsIds = $args['playableCardsIds'];
-        if (!in_array($card_id, $playableCardsIds)) {
-            throw new UserException('Invalid card choice');
+        if (!is_null($this->getSource())) {
+            return [
+                "log" => clienttranslate('Play a project tile (${source})'),
+                "args" => [
+                    "source" => $this->getSource() ?? ""
+                ]
+            ];
         }
 
-        // Add your game logic to play a card here.
-        $card_name = Game::$CARD_TYPES[$card_id]['card_name'];
-
-        // Notify all players about the card played.
-        $this->bga->notify->all("cardPlayed", clienttranslate('${player_name} plays ${card_name}'), [
-            "player_id" => $activePlayerId,
-            "player_name" => $this->game->getPlayerNameById($activePlayerId), // remove this line if you uncomment notification decorator
-            "card_name" => $card_name, // remove this line if you uncomment notification decorator
-            "card_id" => $card_id,
-            "i18n" => ['card_name'], // remove this line if you uncomment notification decorator
-        ]);
-
-        // in this example, the player gains 1 points each time he plays a card
-        $this->bga->playerScore->inc($activePlayerId, 1);
-
-        // at the end of the action, move to the next state
-        return NextPlayer::class;
+        return clienttranslate('Play a project tile');
     }
 
-    /**
-     * Player action, example content.
-     *
-     * In this scenario, each time a player pass, this method will be called. This method is called directly
-     * by the action trigger on the front side with `bgaPerformAction`.
-     */
-    #[PossibleAction]
-    public function actPass(int $activePlayerId)
+    public function getActionArgs(int $activePlayerId): array
     {
-        // Notify all players about the choice to pass.
-        $this->notify->all("pass", clienttranslate('${player_name} passes'), [
-            "player_id" => $activePlayerId,
-            "player_name" => $this->game->getPlayerNameById($activePlayerId), // remove this line if you uncomment notification decorator
-        ]);
-
-        // in this example, the player gains 1 energy each time he passes
-        $this->game->playerEnergy->inc($activePlayerId, 1);
-
-        // at the end of the action, move to the next state
-        return NextPlayer::class;
+        $player = Players::get($activePlayerId);
+        $playable = $this->getPlayableTilesAndLocations($player);
+        $args = [
+            'source' => $this->getSource(),
+            'level' => $this->getNodeArgs("strength", 1),
+            '_private' => [
+                $player->getId() => [
+                    'playableTiles' => $playable,
+                    'playableCardsIds' => array_keys($playable)
+                ]
+            ],
+            '_merge_private' => true
+        ];
+        return $args;
     }
 
     /**
-     * This method is called each time it is the turn of a player who has quit the game (= "zombie" player).
-     * You can do whatever you want in order to make sure the turn of this player ends appropriately
-     * (ex: play a random card).
-     * 
-     * See more about Zombie Mode: https://en.doc.boardgamearena.com/Zombie_Mode
+     * Compute, for each project tile in the player's hand that satisfies the strength constraints,
+     * the list of locations on the ZooMap where it could be placed.
      *
-     * Important: your zombie code will be called when the player leaves the game. This action is triggered
-     * from the main site and propagated to the gameserver from a server, not from a browser.
-     * As a consequence, there is no current player associated to this action. In your zombieTurn function,
-     * you must _never_ use `getCurrentPlayerId()` or `getCurrentPlayerName()`, 
-     * but use the $playerId passed in parameter and $this->game->getPlayerNameById($playerId) instead.
+     * @return array<string, array<array{x:int,y:int}>> map of tile id => list of locations
      */
+    protected function getPlayableTilesAndLocations(Player $player): array
+    {
+        $maxStrength = $this->getNodeArgs("strength", 1);
+        $map = $player->map();
+        $locations = $map->getAvailableLocations();
+        if (empty($locations)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($player->getHand(Tile::TILE_PROJECT) as $tileId => $project) {
+            if ($project->matchesPlayConstraints($maxStrength)) {
+                $newLocations = $locations;
+                $result[$tileId] = $newLocations;
+
+                if ($project->isRelease()) {
+                    $possible = $map->getProjectReleaseOptions($project);
+                    if (!empty($possible)) {
+                        $result[$tileId] = $possible;
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    private function parseLocation(string $location): array
+    {
+        $parts = explode('_', $location);
+        if (count($parts) !== 2 || filter_var($parts[0], FILTER_VALIDATE_INT) === false || filter_var($parts[1], FILTER_VALIDATE_INT) === false) {
+            throw new UserException(clienttranslate('Invalid location'));
+        }
+        return ['x' => (int) $parts[0], 'y' => (int) $parts[1]];
+    }
+
+    private function containsCell(array $locations, array $needle): bool
+    {
+        foreach ($locations as $location) {
+            if ((int) $location['x'] === $needle['x'] && (int) $location['y'] === $needle['y']) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    #[PossibleAction]
+    public function actProject(string $tileId, string $location)
+    {
+        $player = Players::getCurrent();
+        if ($player != Players::getActive()) {
+            throw new UserException('Not your turn');
+        }
+
+        $args = $this->getArgs($player->getId());
+        $playableTiles = $this->getPlayableTilesAndLocations($player);
+        if (!isset($playableTiles[$tileId])) {
+            throw new UserException('This project cannot be played. Should not happen');
+        }
+        $position = $this->parseLocation($location);
+        if (!$this->containsCell($playableTiles[$tileId], $position)) {
+            throw new UserException('This location is not available for this project. Should not happen');
+        }
+
+        $project = Tiles::get($tileId) ?? null;
+        $map = $player->map();
+
+        // if it's a release project, we need to replace existing tile
+        // no placement bonus can occur
+        if ($project->isRelease()) {
+            $existingTile = $map->replaceTile($tileId, $position);
+            $project = Tiles::get($project->getId()) ?? null; // reload the project tile after replacement
+
+            $this->notify->all('projectReleased', clienttranslate('${player_name} plays ${project_name} and replace ${existing_tile_name}'), [
+                'player' => $player,
+                'player_name' => $player->getName(),
+                'project' => $project,
+                'project_name' => $project->getName(),
+                'existing_tile_name' => $existingTile->getName(),
+                'existingId' => $existingTile->getId(),
+                'bonuses' => [],
+                'i18n' => ['project_name', 'existing_tile_name'],
+            ]);
+        } else {
+            [$playedProject, $bonuses] = $map->addTile($tileId, $position);
+
+            $this->insertBonusesFlow($bonuses, clienttranslate('placement bonus'));
+            $this->notify->all('buildingPlayed', clienttranslate('${player_name} plays ${project_name}'), [
+                'player' => $player,
+                'player_name' => $player->getName(),
+                'project' => $playedProject,
+                'project_name' => $playedProject->getName(),
+                'bonuses' => $bonuses,
+                'i18n' => ['project_name'],
+            ]);
+        }
+
+
+        // TODO
+        // Effects of the played tile to insert
+        // Bonuses to insert
+        // Reactions to insert
+        //Tiles::applyEffects($player, 'AnimalPlayed', $effectArgs);
+        // 
+
+        return $this->resolve(['project', 'tileId' => $tileId]);
+    }
+
+
+
     function zombie(int $playerId)
     {
-        // Example of zombie level 0: return NextPlayer::class; or $this->actPass($playerId);
+        // // Example of zombie level 0: return NextPlayer::class; or $this->actPass($playerId);
 
-        // Example of zombie level 1:
-        $args = $this->getArgs();
-        $zombieChoice = $this->getRandomZombieChoice($args['playableCardsIds']); // random choice over possible moves
-        return $this->actAnimal($zombieChoice, $playerId, $args); // this function will return the transition to the next state
+        // // Example of zombie level 1:
+        // $args = $this->getArgs();
+        // $zombieChoice = $this->getRandomZombieChoice($args['playableCardsIds']); // random choice over possible moves
+        // return $this->actBuilding($zombieChoice, $playerId, $args); // this function will return the transition to the next state
     }
 }

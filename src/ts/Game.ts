@@ -19,6 +19,8 @@ import { TakeTile } from './states/TakeTile';
 import { ChooseActionCard } from './states/ChooseActionCard';
 import { Animal } from './states/Animal';
 import { Building } from './states/Building';
+import { Project } from './states/Project';
+
 import { players } from './Players';
 
 export class Game {
@@ -43,6 +45,7 @@ export class Game {
     this.bga.states.register('ChooseActionCard', new ChooseActionCard(this, bga));
     this.bga.states.register('Animal', new Animal(this, bga));
     this.bga.states.register('Building', new Building(this, bga));
+    this.bga.states.register('Project', new Project(this, bga));
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
     this.bga.states.logger = console.log;

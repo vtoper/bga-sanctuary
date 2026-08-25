@@ -19,6 +19,10 @@ class Project extends Tile
     ['continents', 'obj'],
     ['effects', 'obj'],
     ['strength', 'int'],
+    ['release', 'bool'],
+    ['releaseIcon', 'str'],
+    ['categories', 'obj'],
+    ['gender', 'str'],
   ];
   protected string $name;
   protected int $number;
@@ -33,6 +37,8 @@ class Project extends Tile
   protected int $strength;
   protected string $gender;
   protected array $categories = [];
+  protected bool $release = false;
+  protected string $releaseIcon = '';
 
 
 
@@ -41,6 +47,13 @@ class Project extends Tile
     return $this->getPlayer()->countCardIcon($icon);
   }
 
+  public function matchesPlayConstraints(int $maxStrength): bool
+  {
+    if ($this->getStrength() > $maxStrength) {
+      return false;
+    }
+    return true;
+  }
 
   public function getBonuses()
   {
@@ -61,8 +74,7 @@ class Project extends Tile
   {
     return array_merge(
       array_count_values($this->getCategories()),
-      array_count_values($this->getContinents()),
-      $this->getEnclosureRequirements()
+      array_count_values($this->getContinents())
     );
   }
 

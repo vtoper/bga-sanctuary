@@ -16,5 +16,7 @@ class P091_Canyon_N extends \Bga\Games\Sanctuary\Models\Project
     $this->gender = 'N';
     //effect = 'immediate release 1 reptile, get 2/3 conservation tokens';
     $this->categories = [Icons::WATER, Icons::ROCK];
+    $this->release = true;
+    $this->releaseIcon = Icons::REPTILE;
   }
 }

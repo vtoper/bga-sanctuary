@@ -16,5 +16,7 @@ class P093_LowMountainRange_N extends \Bga\Games\Sanctuary\Models\Project
     $this->gender = 'N';
     //effect = 'immediate release 1 bird, get 2/3 conservation tokens';
     $this->categories = [Icons::FOREST, Icons::ROCK];
+    $this->release = true;
+    $this->releaseIcon = Icons::BIRD;
   }
 }
