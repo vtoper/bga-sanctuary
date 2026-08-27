@@ -239,7 +239,7 @@ class Game extends \Bga\GameFramework\Table
         Log::enable();
         $this->activeNextPlayer();
 
-        return TurnOrderManager::launchDefault("turn", SetupTurn::class, SetupTurn::class, false);
+        return TurnOrderManager::launchDefault("turn", SetupTurn::class, SetupTurn::class, true);
     }
 
     /**
@@ -309,5 +309,10 @@ class Game extends \Bga\GameFramework\Table
                 'engine' => Config::getLastEngine()
             ]);
         }
+    }
+
+    public function debug_pass()
+    {
+        return Engine::resolve(['toto']);
     }
 }
