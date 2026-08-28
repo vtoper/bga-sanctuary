@@ -15,12 +15,12 @@ use Bga\Games\Sanctuary\Constants\States;
 use Bga\Games\Sanctuary\Framework\Db\Log;
 use Bga\Games\Sanctuary\Framework\Engine\AbstractNode;
 use Bga\Games\Sanctuary\Framework\Engine\ActionStateWithRevert;
-use Bga\Games\sanctuary\Framework\Engine\Engine;
-use Bga\Games\sanctuary\Framework\Models\Player as ModelsPlayer;
+use Bga\Games\Sanctuary\Framework\Engine\Engine;
+use Bga\Games\Sanctuary\Framework\Models\Player as ModelsPlayer;
 use Bga\Games\Sanctuary\Managers\Players;
 use Bga\Games\Sanctuary\Managers\Meeples;
 use Bga\Games\Sanctuary\Managers\ActionCards;
-use Bga\Games\sanctuary\Constants\Icons;
+use Bga\Games\Sanctuary\Constants\Icons;
 use Bga\Games\sanctuary\Models\ActionCard;
 use Bga\Games\Sanctuary\Models\Player;
 use Bga\Games\Sanctuary\Models\Tile;
@@ -63,7 +63,7 @@ class Upgrade extends ActionStateWithRevert
         $args = [
             'source' => $this->getSource(),
             'playableUpgrades' => $this->getPlayableUpgrades($player),
-            'actionCards' => $player->getActionCards()->toArray()
+            'actionCards' => $player->getActionCards()->filter(fn($card) => $card->getLevel() == 1)->toArray()
         ];
         return $args;
     }
@@ -92,7 +92,7 @@ class Upgrade extends ActionStateWithRevert
         $args = $this->getActionArgs($player->getId());
         $playableUpgrades = $args['playableUpgrades'] ?? [];
         $upgrade = $playableUpgrades[$tokenId] ?? null;
-        $actionCards = $player->getActionCards()->getIds();
+        $actionCards = $player->getActionCards()->filter(fn($card) => $card->getLevel() == 1)->getIds();
         if ($upgrade === null || !in_array($cardId, $actionCards)) {
             throw new SystemException('This upgrade is not available. Should not happen');
         }

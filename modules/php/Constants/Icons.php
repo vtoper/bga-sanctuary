@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bga\Games\sanctuary\Constants;
+namespace Bga\Games\Sanctuary\Constants;
 
 class Icons
 {
@@ -20,12 +20,11 @@ class Icons
     const HERBIVORE = 'Herbivore';
     const BEAR = 'Bear';
     const REPTILE = 'Reptile';
-    const PET = 'Pet';
     const PRIMATE = 'Primate';
     const PETTING_ZOO = 'PettingZoo';
-    const ANIMAL_TYPES = [self::BIRD, self::PREDATOR, self::HERBIVORE, self::BEAR, self::REPTILE, self::PET, self::PRIMATE, self::PETTING_ZOO];
+    const ANIMAL_TYPES = [self::BIRD, self::PREDATOR, self::HERBIVORE,  self::REPTILE, self::PRIMATE, self::PETTING_ZOO];
 
-    const CONTINENTS_AND_TYPES = [self::AFRICA, self::EUROPE, self::ASIA, self::AMERICAS, self::AUSTRALIA, self::BIRD, self::PREDATOR, self::HERBIVORE, self::BEAR, self::REPTILE, self::PET, self::PRIMATE, self::PETTING_ZOO];
+    const CONTINENTS_AND_TYPES = [self::AFRICA, self::EUROPE, self::ASIA, self::AMERICAS, self::AUSTRALIA, self::BIRD, self::PREDATOR, self::HERBIVORE, self::BEAR, self::REPTILE, self::PRIMATE, self::PETTING_ZOO];
 
     // Habitat
     const ROCK = 'Rock';
@@ -34,5 +33,5 @@ class Icons
     const UNDEFINED = 'Undefined';
     const HABITATS = [self::ROCK, self::WATER, self::FOREST, self::UNDEFINED];
 
-    const CONTINENTS_AND_TYPES_AND_HABITATS = [self::AFRICA, self::EUROPE, self::ASIA, self::AMERICAS, self::AUSTRALIA, self::BIRD, self::PREDATOR, self::HERBIVORE, self::BEAR, self::REPTILE, self::PET, self::PRIMATE, self::PETTING_ZOO, self::ROCK, self::WATER, self::FOREST, self::UNDEFINED];
+    const CONTINENTS_AND_TYPES_AND_HABITATS = [self::AFRICA, self::EUROPE, self::ASIA, self::AMERICAS, self::AUSTRALIA, self::BIRD, self::PREDATOR, self::HERBIVORE, self::BEAR, self::REPTILE, self::PRIMATE, self::PETTING_ZOO, self::ROCK, self::WATER, self::FOREST, self::UNDEFINED];
 }

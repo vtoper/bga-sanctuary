@@ -77,6 +77,12 @@ class Conservation extends ActionStateWithRevert
         return count($player->getPlayableAchievementMarkers()) > 0;
     }
 
+    public function onEnteringState(int $activePlayerId)
+    {
+        if (!$this->isDoable($activePlayerId)) {
+            return $this->resolve(['pass']);
+        }
+    }
 
 
     #[PossibleAction]
