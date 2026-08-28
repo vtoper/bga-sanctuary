@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bga\Games\sanctuary\Constants;
+namespace Bga\Games\Sanctuary\Constants;
 
 class States
 {
@@ -23,6 +23,8 @@ class States
     const ST_CHOOSE_ACTION_CARD = 140;
     const ST_BUILDING = 150;
     const ST_CONSERVATION = 160;
+    const ST_UPGRADE = 170;
+
 
     // Automatic state
     const ST_DRAW_TILE = 200;

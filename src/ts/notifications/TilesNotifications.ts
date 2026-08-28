@@ -32,4 +32,8 @@ export class TilesNotifications {
   async notif_conservationSupported(args) {
     console.debug(args);
   }
+
+  async notif_upgradeTokenUsed(args) {
+    console.debug(args);
+  }
 }

@@ -13,6 +13,8 @@ use Bga\Games\Sanctuary\States\Actions\ChooseActionCard;
 use Bga\Games\Sanctuary\States\Actions\TakeTile;
 use Bga\Games\Sanctuary\States\Actions\Building;
 use Bga\Games\Sanctuary\States\Actions\Conservation;
+use Bga\Games\Sanctuary\States\Actions\Upgrade;
+
 use Bga\Games\Sanctuary\Framework\TurnOrderManager;
 use Bga\Games\Sanctuary\Managers\Players;
 use Bga\Games\Sanctuary\Models\Tile;
@@ -36,6 +38,7 @@ class SetupTurn extends GameState
 
         // function startTurn()
         // {
+        $this->notify->all('message', "New turn");
         $this->game->giveExtraTime(Players::getActiveId());
         $newNode = [
             "type" => Engine::NODE_SEQUENTIAL,
@@ -57,12 +60,10 @@ class SetupTurn extends GameState
                     "state" => Conservation::class,
                     "args" => []
                 ],
-                // [
-                //     "state" => Upgrade::class,
-                //     "args" => [
-                //     ]
-                //      "optional"=>true,
-                // ],
+                [
+                    "state" => Upgrade::class,
+                    "args" => [],
+                ],
                 // // [
                 //     "state" => Administration::class,
                 //     "args" => [

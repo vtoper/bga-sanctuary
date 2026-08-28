@@ -73,6 +73,11 @@ class Meeples extends CachedPieces
     return self::getFilteredQuery($playerId, 'reserve', self::ACHIEVEMENT_TOKENS)->get();
   }
 
+  public static function getAvailableUpgradeMarkers(int $playerId): Collection
+  {
+    return self::getFilteredQuery($playerId, 'reserve', self::UPGRADE_TOKENS)->get();
+  }
+
   /**
    * Achievement markers already placed by the player on the conservation board
    */
@@ -92,7 +97,7 @@ class Meeples extends CachedPieces
   /**
    * Generic base query
    */
-  public static function getFilteredQuery(?int $pId, string|array $location, string|array $type): \Bga\Games\sanctuary\Framework\Db\QueryBuilder
+  public static function getFilteredQuery(?int $pId, string|array $location, string|array $type): \Bga\Games\Sanctuary\Framework\Db\QueryBuilder
   {
     $query = self::getSelectQuery();
 

@@ -68,6 +68,18 @@ interface ConservationArgs {
   source: string | null;
   playableMarkers: { [markerId: string]: ConservationMarkerChoice };
 }
+
+interface UpgradeChoice {
+  type: string;
+  actionCards: number[];
+}
+
+interface UpgradeArgs {
+  source: string | null;
+  playableUpgrades: { [tokenId: string]: UpgradeChoice };
+  actionCards: { id: number; type: string }[];
+}
+
 /*
  * Describe here the types for your notif args
  */

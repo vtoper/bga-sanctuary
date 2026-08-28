@@ -256,7 +256,7 @@ class Game extends \Bga\GameFramework\Table
 
     public function debug_test()
     {
-        throw new \feException(print_r(Players::getCurrent()->getPlayableAchievementMarkers(), true));
+        throw new \feException(print_r(Players::getCurrent()->getSupportedAchievements()));
     }
 
     /*
