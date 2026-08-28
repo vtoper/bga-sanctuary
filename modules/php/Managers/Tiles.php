@@ -405,17 +405,12 @@ class Tiles extends CachedPieces
    */
   public static function getPlayedCards($pId, $type = null)
   {
-    return self::getFiltered($pId, 'inPlay')
-      ->merge(self::getRescuedCards($pId))
+    return self::getFiltered($pId, 'board')
       ->filter(function ($card) use ($type) {
         return $type == null || $card->getType() == $type;
       });
   }
 
-  public static function getRescuedCards($pId)
-  {
-    return self::getFiltered($pId, 'rescueStation');
-  }
 
   /**
    * Check whether a player played a specific card

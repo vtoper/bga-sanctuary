@@ -28,4 +28,8 @@ export class TilesNotifications {
   async notif_projectPlayed(args) {
     console.debug(args);
   }
+
+  async notif_conservationSupported(args) {
+    console.debug(args);
+  }
 }

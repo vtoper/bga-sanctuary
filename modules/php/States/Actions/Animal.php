@@ -70,6 +70,7 @@ class Animal extends ActionStateWithRevert
         return clienttranslate('Play animal');
     }
 
+    // TODO: if it's upgraded we can play 2 animals (sum of strength <= max strength)
 
     public function getActionArgs(int $activePlayerId): array
     {
@@ -94,6 +95,11 @@ class Animal extends ActionStateWithRevert
 
     public function isDoable($player): bool
     {
+        if (is_null($player)) {
+            $player = Players::getActive();
+        } else {
+            $player = Players::get($player->getId());
+        }
         $playable = $this->getPlayableTilesAndLocations($player);
         return !empty($playable[0]);
     }

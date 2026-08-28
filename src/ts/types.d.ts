@@ -56,6 +56,18 @@ interface ProjectArgs {
   playableCardsIds: string[];
   playableTiles: { [tileId: string]: SanctuaryCell[] };
 }
+
+interface ConservationMarkerChoice {
+  type: string;
+  strength: number;
+  achievements: string[];
+  conservationMarkers?: { [achievement: string]: number };
+}
+
+interface ConservationArgs {
+  source: string | null;
+  playableMarkers: { [markerId: string]: ConservationMarkerChoice };
+}
 /*
  * Describe here the types for your notif args
  */

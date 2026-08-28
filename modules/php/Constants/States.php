@@ -22,6 +22,7 @@ class States
     const ST_PLAY_CARD = 130;
     const ST_CHOOSE_ACTION_CARD = 140;
     const ST_BUILDING = 150;
+    const ST_CONSERVATION = 160;
 
     // Automatic state
     const ST_DRAW_TILE = 200;

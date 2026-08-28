@@ -5,6 +5,8 @@ namespace Bga\Games\sanctuary\Models;
 use Bga\Games\sanctuary\Game;
 use Bga\Games\sanctuary\Managers\Tiles;
 use Bga\Games\sanctuary\Managers\ActionCards;
+use Bga\Games\sanctuary\Managers\Meeples;
+
 use Bga\Games\Sanctuary\Managers\Globals;
 use Bga\Games\sanctuary\Constants\Icons;
 
@@ -163,6 +165,77 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
         return $this->getActionCards();
     }
 
+    // conservation markers
+    public function getAvailableAchievementMarkers()
+    {
+        return Meeples::getAvailableAchievementMarkers($this->id);
+    }
+
+    /**
+     * Icons of the conservation projects already supported by this player
+     */
+    public function getSupportedAchievements(): array
+    {
+        return array_values(
+            Meeples::getPlacedAchievementMarkers($this->id)
+                ->map(fn($marker) => $marker->getLocationArg())
+                ->toArray()
+        );
+    }
+
+    /**
+     * Achievement markers the player can still place on the conservation board.
+     * Returns [markerId => ['type' => markerType, 'strength' => iconRequirement,
+     * 'achievements' => [icon, ...],
+     * 'conservationMarkers' => [icon => count, ...]]]
+     */
+    public function getPlayableAchievementMarkers(): array
+    {
+        $available = $this->getAvailableAchievementMarkers();
+        if ($available->count() == 0) {
+            return [];
+        }
+
+        $supported = $this->getSupportedAchievements();
+        $board = Globals::getConservationBoard() ?? [];
+        $icons = $this->countCardIcons();
+        $conservationMarkers = max(0, $this->getConservationMarker());
+        $result = [];
+        foreach ($available as $marker) {
+            $needed = Meeples::getAchievementRequirement($marker->getType());
+            $achievements = [];
+            $usedConservationMarkers = [];
+            foreach ($board as $achievement) {
+                if (in_array($achievement, $supported)) {
+                    continue;
+                }
+                // At least 1 icon is required
+                if ($icons[$achievement] == 0) {
+                    continue;
+                }
+                $markersNeeded = max(0, $needed - ($icons[$achievement] ?? 0));
+                if ($markersNeeded <= $conservationMarkers) {
+                    $achievements[] = $achievement;
+                    if ($markersNeeded > 0) {
+                        $usedConservationMarkers[$achievement] = $markersNeeded;
+                    }
+                }
+            }
+
+            if (!empty($achievements)) {
+                $result[$marker->getId()] = [
+                    'type' => $marker->getType(),
+                    'strength' => $needed,
+                    'achievements' => $achievements,
+                ];
+                if (!empty($usedConservationMarkers)) {
+                    $result[$marker->getId()]['conservationMarkers'] = $usedConservationMarkers;
+                }
+            }
+        }
+        return $result;
+    }
+
     ///////////////////////////////////////////////////
     //  _____              ____              _
     // |__  /___   ___    / ___|__ _ _ __ __| |___
@@ -264,7 +337,7 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
     {
         $icons = [];
 
-        foreach (Icons::CONTINENTS_AND_TYPES as $type) {
+        foreach (Icons::CONTINENTS_AND_TYPES_AND_HABITATS as $type) {
             $icons[$type] = 0;
         }
 

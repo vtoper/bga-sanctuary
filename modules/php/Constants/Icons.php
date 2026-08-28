@@ -33,4 +33,6 @@ class Icons
     const FOREST = 'Forest';
     const UNDEFINED = 'Undefined';
     const HABITATS = [self::ROCK, self::WATER, self::FOREST, self::UNDEFINED];
+
+    const CONTINENTS_AND_TYPES_AND_HABITATS = [self::AFRICA, self::EUROPE, self::ASIA, self::AMERICAS, self::AUSTRALIA, self::BIRD, self::PREDATOR, self::HERBIVORE, self::BEAR, self::REPTILE, self::PET, self::PRIMATE, self::PETTING_ZOO, self::ROCK, self::WATER, self::FOREST, self::UNDEFINED];
 }

@@ -86,10 +86,6 @@ class ChooseActionCard extends ActionStateWithRevert
         $player = Players::getActive();
         $args = $this->getArgs($player->getId());
 
-        if (!isset($args['strengths'][$cardId])) {
-            throw new \BgaVisibleSystemException('Card action not doable. Should not happen');
-        }
-
         // Activate the card
         $card = ActionCards::get($cardId);
         $card->setStatus(1);

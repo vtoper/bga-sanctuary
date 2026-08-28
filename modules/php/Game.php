@@ -252,17 +252,11 @@ class Game extends \Bga\GameFramework\Table
         $this->gamestate->jumpToState($state);
     }
 
-    /**
-     * Another example of debug function, to easily test the zombie code.
-     */
-    public function debug_playOneMove()
-    {
-        $this->bga->debug->playUntil(fn(int $count) => $count == 1);
-    }
+
 
     public function debug_test()
     {
-        Players::getCurrent()->map()->getAvailableLocations();
+        throw new \feException(print_r(Players::getCurrent()->getPlayableAchievementMarkers(), true));
     }
 
     /*

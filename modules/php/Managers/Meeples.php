@@ -46,7 +46,7 @@ class Meeples extends CachedPieces
       ];
     }
 
-    foreach (self::CONSERVATION_TOKENS as $type) {
+    foreach (self::ACHIEVEMENT_TOKENS as $type) {
       $meeples[] = [
         'type' => $type,
         'player_id' => $playerId,
@@ -68,6 +68,26 @@ class Meeples extends CachedPieces
     return self::getFilteredQuery(null, $location, $type)->get();
   }
 
+  public static function getAvailableAchievementMarkers(int $playerId): Collection
+  {
+    return self::getFilteredQuery($playerId, 'reserve', self::ACHIEVEMENT_TOKENS)->get();
+  }
+
+  /**
+   * Achievement markers already placed by the player on the conservation board
+   */
+  public static function getPlacedAchievementMarkers(int $playerId): Collection
+  {
+    return self::getFilteredQuery($playerId, self::LOCATION_CONSERVATION_BOARD . '-%', self::ACHIEVEMENT_TOKENS)->get();
+  }
+
+  /**
+   * Number of icons required to place the given achievement marker
+   */
+  public static function getAchievementRequirement(string $type): int
+  {
+    return self::ACHIEVEMENT_REQUIREMENTS[$type] ?? 0;
+  }
 
   /**
    * Generic base query
@@ -113,16 +133,25 @@ class Meeples extends CachedPieces
     self::UPGRADE_4ANIMALS
   ];
 
-  const CONSERVATION_2 = 'conservation2';
-  const CONSERVATION_3 = 'conservation3';
-  const CONSERVATION_4 = 'conservation4';
-  const CONSERVATION_5 = 'conservation5';
-  const CONSERVATION_TOKENS = [
-    self::CONSERVATION_2,
-    self::CONSERVATION_3,
-    self::CONSERVATION_4,
-    self::CONSERVATION_5
+  const ACHIEVEMENT_2 = 'achievement2';
+  const ACHIEVEMENT_3 = 'achievement3';
+  const ACHIEVEMENT_4 = 'achievement4';
+  const ACHIEVEMENT_5 = 'achievement5';
+  const ACHIEVEMENT_TOKENS = [
+    self::ACHIEVEMENT_2,
+    self::ACHIEVEMENT_3,
+    self::ACHIEVEMENT_4,
+    self::ACHIEVEMENT_5
+  ];
+
+  const ACHIEVEMENT_REQUIREMENTS = [
+    self::ACHIEVEMENT_2 => 2,
+    self::ACHIEVEMENT_3 => 3,
+    self::ACHIEVEMENT_4 => 4,
+    self::ACHIEVEMENT_5 => 5
   ];
 
   const CONSERVATION_MARKER = 'conservationMarker';
+
+  const LOCATION_CONSERVATION_BOARD = 'conservationBoard';
 }
