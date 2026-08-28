@@ -159,4 +159,6 @@ class Meeples extends CachedPieces
   const CONSERVATION_MARKER = 'conservationMarker';
 
   const LOCATION_CONSERVATION_BOARD = 'conservationBoard';
+  const END_GAME_FIRST = 'endGameFirst';
+  const END_GAME_OTHERS = 'endGameOthers';
 }

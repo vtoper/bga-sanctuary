@@ -24,6 +24,8 @@ class States
     const ST_BUILDING = 150;
     const ST_CONSERVATION = 160;
     const ST_UPGRADE = 170;
+    const ST_ADMINISTRATION = 180;
+
 
 
     // Automatic state

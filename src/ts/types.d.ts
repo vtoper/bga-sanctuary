@@ -25,6 +25,14 @@ interface PlayerTurnArgs {
   playableCardsIds: number[];
 }
 
+interface TakeTileArgs {
+  n: number;
+  inRange: boolean;
+  source: string;
+  cardIds: string[];
+  taken: number;
+}
+
 interface ChooseActionCardArgs {
   strengths: { strength: number; type: string; id: number }[];
 }
@@ -67,6 +75,11 @@ interface ConservationMarkerChoice {
 interface ConservationArgs {
   source: string | null;
   playableMarkers: { [markerId: string]: ConservationMarkerChoice };
+}
+
+interface AdministrationArgs {
+  cardIds: string[];
+  discardCount: number;
 }
 
 interface UpgradeChoice {

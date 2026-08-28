@@ -46,3 +46,51 @@
     background: #ff9f1c;
   }
 }
+
+.sanctuary-tile-pool {
+  display: block;
+  margin: 10px;
+}
+
+.tile-pool-tiles {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  min-height: $cellHeight * 1.5;
+  overflow-x: auto;
+  padding: 10px;
+  background-color: #e6e0cc;
+  border: 4px solid #666246;
+  border-radius: 6px;
+}
+
+.pool-tile {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 ($cellWidth * 10);
+  width: $cellWidth * 10;
+  height: $cellHeight * 1.5;
+  background: #a9d18e;
+  border: 1px solid #557a46;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.1;
+  overflow: hidden;
+  clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
+  -webkit-clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
+
+  &.selectable {
+    background: #ffe08a;
+    cursor: pointer;
+
+    &:hover {
+      background: #ffd35c;
+    }
+  }
+
+  &.selected {
+    background: #ff9f1c;
+  }
+}

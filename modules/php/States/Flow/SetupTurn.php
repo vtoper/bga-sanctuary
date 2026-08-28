@@ -14,6 +14,7 @@ use Bga\Games\Sanctuary\States\Actions\TakeTile;
 use Bga\Games\Sanctuary\States\Actions\Building;
 use Bga\Games\Sanctuary\States\Actions\Conservation;
 use Bga\Games\Sanctuary\States\Actions\Upgrade;
+use Bga\Games\Sanctuary\States\Actions\Administration;
 
 use Bga\Games\Sanctuary\Framework\TurnOrderManager;
 use Bga\Games\Sanctuary\Managers\Players;
@@ -62,6 +63,10 @@ class SetupTurn extends GameState
                 ],
                 [
                     "state" => Upgrade::class,
+                    "args" => [],
+                ],
+                [
+                    "state" => Administration::class,
                     "args" => [],
                 ],
                 // // [

@@ -15,6 +15,8 @@ use Bga\Games\Sanctuary\Framework\Engine\AbstractNode;
 use Bga\Games\Sanctuary\Framework\Engine\ActionStateWithRevert;
 use Bga\Games\Sanctuary\Managers\Players;
 use Bga\Games\Sanctuary\Managers\Tiles;
+use Bga\GameFramework\Actions\Types\JsonParam;
+
 
 class TakeTile extends ActionStateWithRevert
 {
@@ -109,10 +111,13 @@ class TakeTile extends ActionStateWithRevert
     }
 
     #[PossibleAction]
-    public function actTakeTile($cardIds)
+    public function actTakeTile(#[JsonParam(associative: null)] array $cardIds)
     {
         $player = Players::getActive();
         $args = $this->getActionArgs($player->getId());
+        if (!is_array($cardIds) || count($cardIds) != $args['n'] || count(array_unique($cardIds)) !== count($cardIds)) {
+            throw new \Bga\GameFramework\UserException('You must take the required number of tiles');
+        }
         foreach ($cardIds as $cardId) {
             if (!in_array($cardId, $args['cardIds'])) {
                 throw new \BgaVisibleSystemException('This card cannot be taken. Should not happen');

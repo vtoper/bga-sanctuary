@@ -27,7 +27,44 @@ export class Players {
       this.createPlayerBoard(player);
     }
 
+    this.createTilePool();
     this.createPlayerHand();
+  }
+
+  private createTilePool() {
+    const gamePlayArea = document.getElementById('game_play_area');
+    if (!gamePlayArea) {
+      return;
+    }
+
+    const poolNode = insertDivElement(gamePlayArea, 'tile-pool', 'sanctuary-tile-pool');
+    poolNode.insertAdjacentHTML('beforeend', '<div class="tile-pool-tiles" id="tile-pool-tiles"></div>');
+    this.setTilePool(this.gamedatas.tiles ?? []);
+  }
+
+  setTilePool(tiles: SanctuaryTile[]) {
+    const poolNode = document.getElementById('tile-pool-tiles');
+    if (!poolNode) {
+      return;
+    }
+
+    poolNode.innerHTML = '';
+    tiles
+      .filter((tile) => tile.location.startsWith('pool-'))
+      .sort((first, second) => {
+        const firstSlot = Number(first.location.split('-')[1]);
+        const secondSlot = Number(second.location.split('-')[1]);
+        return firstSlot - secondSlot;
+      })
+      .forEach((tile) => {
+        const node = createDivElement(`pool-tile-${tile.id}`, 'pool-tile', { id: tile.id });
+        node.innerText = tile.id;
+        poolNode.appendChild(node);
+      });
+  }
+
+  getPoolTileNode(tileId: string): HTMLElement | null {
+    return document.getElementById(`pool-tile-${tileId}`);
   }
 
   /**

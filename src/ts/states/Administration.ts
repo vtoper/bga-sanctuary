@@ -3,10 +3,11 @@ import { players } from '../Players';
 import { onClick } from '../framework/event';
 import { clearPossible, performAction } from '../framework/utils';
 
-export class TakeTile {
+export class Administration {
   game: Game;
   bga: ExtendedBga;
-  private args: TakeTileArgs | null = null;
+
+  private args: AdministrationArgs | null = null;
   private selectedCardIds: string[] = [];
 
   constructor(game: Game, bga: ExtendedBga) {
@@ -14,10 +15,7 @@ export class TakeTile {
     this.bga = bga;
   }
 
-  /**
-   * This method is called each time we are entering the game state. You can use this method to perform some user interface changes at this moment.
-   */
-  onEnteringState(args: TakeTileArgs, isCurrentPlayerActive: boolean) {
+  onEnteringState(args: AdministrationArgs, isCurrentPlayerActive: boolean) {
     this.args = args;
     this.selectedCardIds = [];
     if (isCurrentPlayerActive) {
@@ -25,9 +23,6 @@ export class TakeTile {
     }
   }
 
-  /**
-   * This method is called each time we are leaving the game state. You can use this method to perform some user interface changes at this moment.
-   */
   onLeavingState(args: object, isCurrentPlayerActive: boolean) {
     this.args = null;
     this.selectedCardIds = [];
@@ -36,41 +31,37 @@ export class TakeTile {
 
   private refresh() {
     clearPossible();
-    this.makePoolSelectable();
+    this.makeHandSelectable();
     this.updateStatusBar();
   }
 
-  private makePoolSelectable() {
-    for (const cardId of this.args?.cardIds ?? []) {
-      const node = players.getPoolTileNode(cardId);
-      if (!node) {
+  private makeHandSelectable() {
+    for (const cardId of players.getHandTileIds()) {
+      const node = players.getHandTileNode(cardId);
+      if (!node || !this.args?.cardIds.includes(cardId)) {
         continue;
       }
 
       node.classList.toggle('selected', this.selectedCardIds.includes(cardId));
-      onClick(node, () => this.toggleTile(cardId));
+      onClick(node, () => this.toggleCard(cardId));
     }
   }
 
-  private toggleTile(cardId: string) {
+  private toggleCard(cardId: string) {
     if (this.selectedCardIds.includes(cardId)) {
       this.selectedCardIds = this.selectedCardIds.filter((selectedId) => selectedId !== cardId);
-    } else if (this.selectedCardIds.length < this.requiredCount()) {
+    } else if (this.selectedCardIds.length < (this.args?.discardCount ?? 0)) {
       this.selectedCardIds.push(cardId);
     }
     this.refresh();
   }
 
-  private requiredCount() {
-    return Math.min(this.args?.n ?? 1, (this.args?.cardIds ?? []).length);
-  }
-
   private updateStatusBar() {
     this.bga.statusBar.removeActionButtons();
-    const required = this.requiredCount();
+    const required = this.args?.discardCount ?? 0;
     this.bga.statusBar.addActionButton(
-      `${_('Take tile')} (${this.selectedCardIds.length}/${required})`,
-      () => performAction('actTakeTile', { cardIds: JSON.stringify(this.selectedCardIds) }),
+      `${_('Discard')} (${this.selectedCardIds.length}/${required})`,
+      () => performAction('actDiscard', { cardIds: this.selectedCardIds }),
       { disabled: this.selectedCardIds.length !== required },
     );
   }
