@@ -34,7 +34,9 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
         $current = $this->id == $currentPlayerId;
         $data['hand'] = $current ? $this->getHand()->ui() : [];
         $data['handCount'] = $this->getHand()->count();
-        $data['actionCards'] = $this->getActionCards()->ui();
+        $data['actionCards'] = $this->getActionCards()
+            ->order(fn($first, $second) => $first->getStrength() <=> $second->getStrength())
+            ->ui();
         $data['icons'] = $this->countCardIcons();
         $data['map'] = $this->map() ? $this->map()->getUiData() : null;
         // $data['newScore'] = $this->getNewScore();

@@ -152,11 +152,33 @@ export class Players {
         <div class="zoo-map-board">
           <div class="zoo-board" id="zoo-board-${player.id}"></div>
         </div>
+        <div class="action-cards" id="action-cards-${player.id}"></div>
       </div>`,
     );
 
     this.renderZooMapGrid(player.id);
     this.setBoardTiles(player.id);
+    this.setActionCards(player.id, player.actionCards ?? []);
+  }
+
+  private setActionCards(playerId: string, actionCards: SanctuaryActionCard[]) {
+    const actionCardsNode = document.getElementById(`action-cards-${playerId}`);
+    if (!actionCardsNode) {
+      return;
+    }
+
+    actionCardsNode.innerHTML = '';
+    [...actionCards]
+      .sort((first, second) => first.strength - second.strength)
+      .forEach((card) => {
+        const cardNode = createDivElement(`action-card-${playerId}-${card.id}`, 'action-card', {
+          cardId: `${card.id}`,
+          position: `${card.strength}`,
+          type: card.type,
+        });
+        cardNode.innerHTML = `<span class="action-card-type">${card.type}</span><span class="action-card-position">${card.level == 2 ? card.strength + 1 : card.strength}</span>`;
+        actionCardsNode.appendChild(cardNode);
+      });
   }
 
   /**

@@ -12,6 +12,14 @@ interface SanctuaryPlayer extends Player {
   energy: number; // any information you add on each result['players']
   hand: SanctuaryTile[]; // only filled for the current player
   handCount: number;
+  actionCards: SanctuaryActionCard[];
+}
+
+interface SanctuaryActionCard {
+  id: number;
+  strength: number;
+  type: string;
+  level: number;
 }
 
 interface SanctuaryGamedatas extends Gamedatas<SanctuaryPlayer> {
