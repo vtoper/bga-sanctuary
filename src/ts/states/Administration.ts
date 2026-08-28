@@ -61,7 +61,7 @@ export class Administration {
     const required = this.args?.discardCount ?? 0;
     this.bga.statusBar.addActionButton(
       `${_('Discard')} (${this.selectedCardIds.length}/${required})`,
-      () => performAction('actDiscard', { cardIds: this.selectedCardIds }),
+      () => performAction('actDiscard', { cardIds: JSON.stringify(this.selectedCardIds) }),
       { disabled: this.selectedCardIds.length !== required },
     );
   }

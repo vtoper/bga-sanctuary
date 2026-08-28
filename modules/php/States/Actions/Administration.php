@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bga\Games\Sanctuary\States\Actions;
 
+use Bga\GameFramework\Actions\Types\JsonParam;
 use Bga\GameFramework\StateType;
 use Bga\GameFramework\States\GameState;
 use Bga\GameFramework\States\PossibleAction;
@@ -31,8 +32,8 @@ class Administration extends ActionStateWithRevert
             node: $node,
             id: States::ST_ADMINISTRATION,
             type: StateType::ACTIVE_PLAYER,
-            description: clienttranslate('${actplayer} must discard tiles'),
-            descriptionMyTurn: clienttranslate('${you} must discard tiles'),
+            description: clienttranslate('Administration: ${actplayer} must discard tiles ${discardCount} tiles'),
+            descriptionMyTurn: clienttranslate('Administration: ${you} must discard tiles ${discardCount} tiles'),
         );
     }
 
@@ -58,7 +59,7 @@ class Administration extends ActionStateWithRevert
     }
 
     #[PossibleAction]
-    public function actDiscard(array $cardIds)
+    public function actDiscard(#[JsonParam(associative: null)] array $cardIds)
     {
         $player = Players::getActive();
         $args = $this->getActionArgs($player->getId());

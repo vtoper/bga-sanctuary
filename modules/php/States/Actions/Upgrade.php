@@ -56,12 +56,6 @@ class Upgrade extends ActionStateWithRevert
         return clienttranslate('Upgrade an action card');
     }
 
-    // Upgrading is always optional
-    public function isOptional()
-    {
-        return true;
-    }
-
 
     public function getActionArgs(int $activePlayerId): array
     {
@@ -80,7 +74,12 @@ class Upgrade extends ActionStateWithRevert
         return count($this->getPlayableUpgrades($player)) > 0;
     }
 
-
+    public function onEnteringState(int $activePlayerId)
+    {
+        if (!$this->isDoable($activePlayerId)) {
+            return $this->resolve(['pass']);
+        }
+    }
 
     #[PossibleAction]
     public function actUpgrade(int $tokenId, int $cardId)
@@ -129,6 +128,9 @@ class Upgrade extends ActionStateWithRevert
                     'args' => [],
                 ],
             ]);
+        }
+        if (count($this->getPlayableUpgrades($player)) > 0) {
+            return self::class;
         }
 
         return $this->resolve(['cardId' => $cardId]);

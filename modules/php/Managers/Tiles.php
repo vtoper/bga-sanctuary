@@ -149,22 +149,6 @@ class Tiles extends CachedPieces
       $cardIds = [$cardIds];
     }
 
-    // Marine world: if the card discarded is from the display & has player token, it's not discarded but put in hand
-    foreach (self::getMany($cardIds) as $cId => $card) {
-      if ($card->isMarked()) {
-        $token = $card->getMark();
-        Meeples::removeFromCard($cId);
-        $card->setPId((int) $token['pId']);
-        $card->setLocation('hand');
-        $assignedCardIds[] = $cId;
-        $deletedMeeples[] = $token;
-      }
-
-      // Move pouched cards if needed
-      $pouchedCards = self::getInLocation($cId)->where('state', POUCHED);
-      self::move($pouchedCards->getIds(), $discard);
-    }
-
     $discardedCards = self::getMany(array_diff($cardIds, $assignedCardIds));
     self::move($discardedCards->getIds(), $discard);
 

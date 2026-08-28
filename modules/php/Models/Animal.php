@@ -112,7 +112,7 @@ class Animal extends Tile
     }
 
     $animalHabitat = $this->getHabitat();
-    return is_null($animalHabitat) || is_null($habitat) || $habitat === '' || $animalHabitat === $habitat;
+    return is_null($animalHabitat) || is_null($habitat) || $habitat == '' || $animalHabitat == $habitat || $animalHabitat == Icons::UNDEFINED;
   }
 
   // public function isSmall()
