@@ -21,6 +21,7 @@ use Bga\Games\Sanctuary\Models\Player;
 use Bga\Games\Sanctuary\Models\Tile;
 use Bga\Games\Sanctuary\Models\ZooMap;
 
+
 class Animal extends ActionStateWithRevert
 {
     function __construct(
@@ -104,6 +105,25 @@ class Animal extends ActionStateWithRevert
         return !empty($playable[0]);
     }
 
+    public function isOptional(): bool
+    {
+        return !empty($this->getPreviousActions());
+    }
+
+    public function getPreviousActions()
+    {
+        return $this->getNodeArgs('previous') ?? [];
+    }
+
+    public function getStrengthLeft()
+    {
+        $strength = $this->getNodeArgs("strength", 1);
+        foreach ($this->getPreviousActions() as $s) {
+            $strength -= array_values($s)[0];
+        }
+        return $strength;
+    }
+
     /**
      * Compute, for each animal tile in the player's hand that satisfies the strength/habitat constraints,
      * the list of locations on the ZooMap where it could be placed.
@@ -112,7 +132,7 @@ class Animal extends ActionStateWithRevert
      */
     protected function getPlayableTilesAndLocations(Player $player): array
     {
-        $maxStrength = $this->getNodeArgs("strength", 1);
+        $maxStrength = $this->getStrengthLeft();
         $habitat = $this->getNodeArgs("habitat", null);
         $map = $player->map();
         $locations = $map->getAvailableLocations();
@@ -209,6 +229,12 @@ class Animal extends ActionStateWithRevert
         // Effects of the played tile to insert
         // Reactions to insert
         //Tiles::applyEffects($player, 'AnimalPlayed', $effectArgs);
+
+        $actions = $this->getPreviousActions();
+        $actions[] = [$tileId => $playedAnimal->getStrength()];
+        if (count($actions) < $this->getNodeArgs('nb', 1)) {
+            $this->duplicateAction(['previous' => $actions]);
+        }
 
         return $this->resolve(['tileId' => $tileId]);
     }

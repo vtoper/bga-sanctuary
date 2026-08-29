@@ -161,6 +161,9 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
     public function duplicateAction($args = [], $checkpoint = false)
     {
         // Duplicate the node and update the args
+        if ($this->node === null) {
+            $this->node = Engine::getNextUnresolved();
+        }
         $node = $this->node->toArray();
         $node['type'] = Engine::NODE_LEAF;
         $node['childs'] = [];
