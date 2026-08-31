@@ -2,6 +2,7 @@
 
 namespace Bga\Games\sanctuary\Framework\Engine;
 
+use Bga\Games\Sanctuary\Managers\Meeples;
 
 abstract class Utils extends \APP_DbObject
 {
@@ -99,7 +100,7 @@ abstract class Utils extends \APP_DbObject
         continue;
       }
 
-      if (in_array($resource, [REPUTATION, CONSERVATION, APPEAL, MONEY])) {
+      if (in_array($resource, [Meeples::CONSERVATION_MARKER])) {
         $descs[] = '<' . strtoupper($resource) . ':' . $amount . '>';
       } else {
         $descs[] = $amount . '<' . strtoupper($resource) . '>';

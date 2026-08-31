@@ -73,6 +73,11 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
         return $this->getNode()->getInfo()['source'] ?? null;
     }
 
+    public function getSourceId()
+    {
+        return $this->getNode()->getInfo()['sourceId'] ?? null;
+    }
+
     public function isAutomatic()
     {
         return $this->type === StateType::GAME;

@@ -26,6 +26,7 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
 
     protected array $staticAttributes = [];
     protected int $appeal;
+    protected int $conservationMarker;
     protected ?ZooMap $map = null;
 
     public function getUiData($currentPlayerId = null)
@@ -92,6 +93,22 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
         } else {
             return $card->getStrength();
         }
+    }
+
+    public function getConservation()
+    {
+
+        return $this->conservationMarker;
+    }
+
+    public function setConservation($n)
+    {
+        return $this->setConservationMarker($n);
+    }
+
+    public function incConservation($n = 1)
+    {
+        return $this->incConservationMarker($n);
     }
 
     /*

@@ -79,7 +79,7 @@ class Animal extends ActionStateWithRevert
         $playable = $this->getPlayableTilesAndLocations($player);
         $args = [
             'habitat' => $this->getNodeArgs("habitat", ""),
-            'level' => $this->getNodeArgs("strength", 1),
+            'level' => $this->getStrengthLeft(),
             'source' => $this->getSource() ?? "",
             '_private' => [
                 $player->getId() => [
@@ -122,13 +122,6 @@ class Animal extends ActionStateWithRevert
             $strength -= array_values($s)[0];
         }
         return $strength;
-    }
-
-    public function onEnteringState(int $activePlayerId)
-    {
-        if ($this->getStrengthLeft() <= 0) {
-            return $this->resolve(['pass']);
-        }
     }
 
     /**

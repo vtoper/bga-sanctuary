@@ -18,7 +18,7 @@ class Globals extends \Bga\Games\sanctuary\Framework\Db\Globals
         'initialSelection' => 'obj',
 
         'map' => 'int',
-
+        'engine' => 'obj',
         // conservation board
         'conservationBoard' => 'obj',
 
