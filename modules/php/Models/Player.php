@@ -39,10 +39,6 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
             ->ui();
         $data['icons'] = $this->countCardIcons();
         $data['map'] = $this->map() ? $this->map()->getUiData() : null;
-        // $data['newScore'] = $this->getNewScore();
-        // $data['mapStatus'] = $this->getMapStatus();
-        // $data['handStatus'] = $this->getHandStatus();
-
         return $data;
     }
 
@@ -85,12 +81,6 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
                 $card = $oCard;
             }
         }
-        // if (Globals::getEffectHypnosis() != 0) {
-        //     $hypnoCard = ActionCards::get(Globals::getEffectHypnosis());
-        //     if ($hypnoCard->getActionType() == $cardType) {
-        //         $card = $hypnoCard;
-        //     }
-        // }
         return is_null($card) ? false : $card->getLevel() == 2;
     }
 

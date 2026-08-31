@@ -53,14 +53,4 @@ class ActionProject extends \Bga\Games\sanctuary\Models\ActionCard
     return $animalNode;
   }
 
-  // Can always be played
-  // public function canBePlayed($player, $strength = null)
-  // {
-  //   $strength = $strength ?? $this->getStrength();
-  //   if ($strength >= 5 && $this->getLevel() == 2) {
-  //     return true;
-  //   } else {
-  //     return parent::canBePlayed($player, $strength);
-  //   }
-  // }
 }

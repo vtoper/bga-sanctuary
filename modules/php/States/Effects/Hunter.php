@@ -179,9 +179,6 @@ class Hunter extends ActionStateWithRevert
 
     function zombie(int $playerId)
     {
-        // Example of zombie level 0: return NextPlayer::class; or $this->actPass($playerId);
-
-        // Example of zombie level 1:
         $args = $this->getActionArgs($playerId);
         $animalIds = $args['_private']['active']['cardIds'];
         if (count($animalIds) === 0) {

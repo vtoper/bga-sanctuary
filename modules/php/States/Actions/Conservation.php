@@ -140,9 +140,6 @@ class Conservation extends ActionStateWithRevert
      */
     function zombie(int $playerId)
     {
-        // Example of zombie level 0: return NextPlayer::class; or $this->actPass($playerId);
-
-        // Example of zombie level 1:
         $args = $this->getArgs($playerId);
         $tileId = $this->getRandomZombieChoice($args['playableCardsIds']);
         $location = $args['playableTiles'][$tileId][0];

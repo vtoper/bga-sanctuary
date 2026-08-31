@@ -134,43 +134,6 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
       $satisfied = true;
       $ignoredToAdd = 1;
       switch ($prerequisite) {
-        // case PARTNER_ZOO:
-        //   $continent = $this->getContinents()[0] ?? null;
-        //   if (is_null($continent)) {
-        //     $nZoos = $player->countPartnerZoo();
-        //     $satisfied = $nZoos >= $amount;
-        //     $ignoredToAdd = $amount - $nZoos;
-        //   } else {
-        //     $satisfied = $player->hasPartnerZoo($continent);
-        //   }
-        //   break;
-
-        // case UPGRADED_ANIMALS_CARD:
-        //   $satisfied = $player->isCardUpgraded(ANIMALS);
-        //   break;
-
-        // case UPGRADED_SPONSORS_CARD:
-        //   $satisfied = $player->isCardUpgraded(SPONSORS);
-        //   break;
-
-        // case UPGRADED_CARDS_CARD:
-        //   $satisfied = $player->isCardUpgraded(CARDS);
-        //   break;
-
-        // case MAX_25_APPEAL:
-        //   $satisfied = $player->getAppeal() <= 25 + Globals::getSoloAppeal();
-        //   break;
-
-        // case KIOSK:
-        //   $satisfied = $player->map()->hasBuilding(KIOSK);
-        //   break;
-
-        // case REPUTATION:
-        //   $satisfied = $player->getReputation() >= $amount;
-        //   break;
-        // case UNIVERSITY:
-        //   $satisfied = $player->countUniversities() > 0;
-        //   break;
         default:
           $satisfied = $icons[$prerequisite] >= $amount;
           $ignoredToAdd = $amount - $icons[$prerequisite];

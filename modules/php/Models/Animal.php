@@ -38,15 +38,6 @@ class Animal extends Tile
   protected array $openAreas = [];
   protected array $effect = [];
 
-  // public function getBonuses()
-  // {
-  //   return [
-  //     'appeal' => $this->getAppeal(),
-  //     'conservation' => $this->getConservation(),
-  //     'reputation' => $this->getReputation(),
-  //   ];
-  // }
-
   public function getIcons()
   {
     return array_merge(
@@ -54,19 +45,6 @@ class Animal extends Tile
       array_count_values($this->getContinents())
     );
   }
-
-  // public function getBuyCost($player)
-  // {
-  //   $cost = parent::getBuyCost($player);
-  //   if ($player->hasPlayedCard('S229_ExpertInSmallAnimals') && $this->isSmall()) {
-  //     $cost -= 3;
-  //   }
-  //   if ($player->hasPlayedCard('S230_ExpertInLargeAnimals') && $this->isLarge()) {
-  //     $cost -= 4;
-  //   }
-
-  //   return max($cost, 0);
-  // }
 
   public function checkConditions($player, $icons, $nCanIgnore = 0)
   {
@@ -134,22 +112,4 @@ class Animal extends Tile
     }
     return parent::getSoloAbility();
   }
-
-  /******** POWER  *********/
-  // public function getFlockSize()
-  // {
-  //   foreach ($this->getAbility() as $ab => $n) {
-  //     if ($ab == \FLOCK_ANIMAL) {
-  //       return $n;
-  //     }
-  //   }
-  //   return false;
-  // }
-
-  // public function getInventiveTokens()
-  // {
-  //   return 1;
-  // }
-
-
 }

@@ -147,9 +147,6 @@ class TakeTile extends ActionStateWithRevert
 
     function zombie(int $playerId)
     {
-        // Example of zombie level 0: return NextPlayer::class; or $this->actPass($playerId);
-
-        // Example of zombie level 1:
         $args = $this->getArgs($playerId);
         $zombieChoice = $this->getRandomZombieChoice($args['cardIds']); // random choice over possible moves
         return $this->actTakeTile($zombieChoice); // this function will return the transition to the next state

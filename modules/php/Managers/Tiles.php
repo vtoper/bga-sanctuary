@@ -103,13 +103,6 @@ class Tiles extends CachedPieces
   {
     foreach (Players::getAll() as $pId => $player) {
       $cards = self::draw($player, 8);
-      // $scoringCards = self::draw($player, 2, 'scoringDeck', 'scoringHand');
-      // Notifications::initialDraw($player, $cards, $scoringCards);
-
-      // MAP 14
-      //if ($player->getMapId() == 14) {
-      //   SearchCard::stSearchCardAux($player, SPONSOR_PERSON, clienttranslate('Map 14 effect'));
-      // }
     }
   }
 
@@ -243,40 +236,6 @@ class Tiles extends CachedPieces
     return self::getFiltered(null, 'projects_%');
   }
 
-  /**
-   * Conservation projects in the bottom row (= placed here at setup from base projects deck)
-   */
-  public static function getBaseProjects(): Collection
-  {
-    return self::getFiltered(null, 'base_%');
-  }
-
-  public static function insertProjectCard(string $cardId)
-  {
-    $nbPlayers = Players::count();
-    $projectCards = ZooCards::getAssociationProjects();
-    $maxProjects = max(2, $nbPlayers);
-
-    // Too many projects played => remove the last one of the row
-    if (count($projectCards) == $maxProjects) {
-      $last = $maxProjects - 1; // Index start at 0
-      $cardToDiscard = ZooCards::getFiltered(null, "projects_$last")->first();
-      $cardToDiscard->setLocation('discard');
-      $tokenIds = Meeples::removeFromCard($cardToDiscard->getId());
-      Notifications::discardProject($cardToDiscard, $tokenIds);
-    }
-
-    // Shift them by one
-    foreach (ZooCards::getAssociationProjects() as $cId => $card) {
-      $nb = \explode('_', $card->getLocation())[1];
-      $card->setLocation('projects_' . ++$nb);
-    }
-    // Insert the card
-    $card = self::getSingle($cardId);
-    $card->setLocation('projects_0');
-    $card->setPId(null);
-  }
-
   ///////////////////////////////////////////////
   //  ____                                 _
   // |  _ \ ___ _ __ ___  ___  _ __   __ _| |
@@ -342,49 +301,6 @@ class Tiles extends CachedPieces
     $card->setY($pos['y']);
 
     return $card;
-  }
-
-  /**
-   * Draw card until we find one with the icone
-   */
-  public static function searchCard($player, $icon)
-  {
-    $checkSearchCard = function ($card, $icon) {
-      // Skip projects
-      if ($card->getType() == CARD_PROJECT) {
-        return false;
-      }
-
-      // Search sponsor card
-      if ($icon == CARD_SPONSOR) {
-        return $card->getType() == CARD_SPONSOR;
-      }
-      // Search person sponsor card
-      if ($icon == SPONSOR_PERSON) {
-        return $card->getType() == CARD_SPONSOR && $card->isPerson();
-      }
-
-      return in_array($icon, array_keys($card->getIcons()));
-    };
-
-    $drawed = new Collection();
-    $found = null;
-    while (is_null($found)) {
-      $card = self::draw($player)->first();
-      if ($checkSearchCard($card, $icon)) {
-        $found = $card;
-      } else {
-        $drawed[$card->getId()] = $card;
-      }
-    }
-
-    if (!$drawed->empty()) {
-      foreach ($drawed as $cId => $card) {
-        self::insertAtBottom($cId, 'deck');
-      }
-    }
-
-    return $found;
   }
 
   /**

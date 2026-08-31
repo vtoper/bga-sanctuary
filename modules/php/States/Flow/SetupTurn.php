@@ -34,11 +34,6 @@ class SetupTurn extends GameState
 
     function onEnteringState(int $activePlayerId)
     {
-        //     return TurnOrderManager::launch("turn", Players::getTurnOrder(), [self::class, "startTurn"], null, true);
-        // }
-
-        // function startTurn()
-        // {
         $this->notify->all('message', "New turn");
         $this->game->giveExtraTime(Players::getActiveId());
         $newNode = [
@@ -69,11 +64,6 @@ class SetupTurn extends GameState
                     "state" => Administration::class,
                     "args" => [],
                 ],
-                // // [
-                //     "state" => Administration::class,
-                //     "args" => [
-                //     ]
-                // ],
             ]
         ];
 
