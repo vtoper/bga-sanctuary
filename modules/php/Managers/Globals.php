@@ -30,6 +30,8 @@ class Globals extends \Bga\Games\sanctuary\Framework\Db\Globals
 
         'activeActionCard' => 'obj',
 
+        // effets
+        'effectHunter' => 'obj',
 
         // end of game
         'endRemainingPlayers' => 'obj',

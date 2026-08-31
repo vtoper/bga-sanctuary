@@ -14,6 +14,7 @@ use Bga\Games\Sanctuary\States\Actions\Gain;
 use Bga\Games\Sanctuary\States\Actions\MoveActionCard;
 use Bga\Games\Sanctuary\States\Actions\DrawTile;
 use Bga\Games\Sanctuary\States\Actions\TakeTile;
+use Bga\Games\Sanctuary\States\Effects\Hunter;
 use Bga\GameFramework\SystemException;
 
 // Allow to use a short flow description syntax
@@ -193,5 +194,6 @@ abstract class FlowConvertor
     Effects::MOVE_ACTION_CARD => MoveActionCard::class,
     Effects::DRAW_TILE => DrawTile::class,
     Effects::TAKE_TILE => TakeTile::class,
+    Effects::HUNTER => Hunter::class,
   ];
 }

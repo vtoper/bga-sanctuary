@@ -141,6 +141,21 @@ class Game extends \Bga\GameFramework\Table
                 $args['preserve'][] = 'action_card_type';
             }
 
+            if (isset($args['card'])) {
+                $logs = [];
+                $logs[] = '${card_name}';
+                $args['i18n'][] = 'card_name';
+                $args['card_name'] = [
+                    'log' => '${card_name}',
+                    'args' => [
+                        'i18n' => ['card_name'],
+                        'card_name' => is_array($args['card']) ? $args['card']['name'] : $args['card']->getName(),
+                        'card_id' => is_array($args['card']) ? $args['card']['id'] : $args['card']->getId(),
+                        'preserve' => ['card_id'],
+                    ],
+                ];
+            }
+
             return $args;
         });
     }

@@ -21,4 +21,5 @@ class Effects
     const MOVE_ACTION_CARD = 'MoveActionCard';
     const CONSERVATION = 'Conservation';
     const APPEAL = 'Appeal';
+    const HUNTER = 'Hunter';
 }

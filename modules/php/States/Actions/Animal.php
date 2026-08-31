@@ -124,6 +124,13 @@ class Animal extends ActionStateWithRevert
         return $strength;
     }
 
+    public function onEnteringState(int $activePlayerId)
+    {
+        if ($this->getStrengthLeft() <= 0) {
+            return $this->resolve(['pass']);
+        }
+    }
+
     /**
      * Compute, for each animal tile in the player's hand that satisfies the strength/habitat constraints,
      * the list of locations on the ZooMap where it could be placed.
@@ -227,6 +234,9 @@ class Animal extends ActionStateWithRevert
 
         // TODO
         // Effects of the played tile to insert
+        $abilities = [$playedAnimal->getEffect()];
+        $this->insertBonusesFlow($abilities, '', '', $playedAnimal->getId());
+
         // Reactions to insert
         //Tiles::applyEffects($player, 'AnimalPlayed', $effectArgs);
 

@@ -32,4 +32,7 @@ class States
     const ST_DRAW_TILE = 200;
     const ST_CLEANUP = 210;
     const ST_TAKE_BONUS = 220;
+
+    // Effects
+    const ST_HUNTER = 300;
 }

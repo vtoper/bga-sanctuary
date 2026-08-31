@@ -7,6 +7,7 @@ use Bga\Games\sanctuary\Framework\Db\Collection;
 use Bga\Games\sanctuary\Game;
 use Bga\Games\sanctuary\Models\Assignment;
 use Bga\Games\sanctuary\Models\Tile;
+use Bga\Games\sanctuary\Models\Player;
 
 class Tiles extends CachedPieces
 {
@@ -199,6 +200,28 @@ class Tiles extends CachedPieces
       ->where('tiles_location', $location)
       ->orderBy('tiles_id', 'ASC') // to get first animals and then the release
       ->get();
+  }
+
+  public static function notificationDiscardCards(Player $player, array|Collection $cards, ?string $privateMsg = null, ?string $publicMsg = null,  array $args = [], array $privateArgs = null)
+  {
+    Game::get()->bga->notify->all(
+      'discardCards',
+      $publicMsg ?? clienttranslate('${player_name} discards ${n} card(s)'),
+      $args + [
+        'player' => $player,
+        'n' => count($cards),
+      ]
+    );
+
+    Game::get()->bga->notify->player(
+      $player->getId(),
+      'pDiscardCards',
+      $privateMsg ?? clienttranslate('You discard ${card_names}'),
+      ($privateArgs ?? $args) + [
+        'player' => $player,
+        'cards' => $cards->toArray(),
+      ]
+    );
   }
 
 

@@ -90,6 +90,11 @@ interface AdministrationArgs {
   discardCount: number;
 }
 
+interface HunterArgs {
+  n: number;
+  cardIds: string[];
+}
+
 interface UpgradeChoice {
   type: string;
   actionCards: number[];

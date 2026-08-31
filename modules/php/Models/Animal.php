@@ -23,6 +23,7 @@ class Animal extends Tile
     ['gender', 'str'],
     ['strength', 'int'],
     ['categories', 'obj'],
+    ['effect', 'obj'],
 
   ];
   protected string $name;
@@ -35,6 +36,7 @@ class Animal extends Tile
   protected array $categories = [];
   protected array $continents = [];
   protected array $openAreas = [];
+  protected array $effect = [];
 
   // public function getBonuses()
   // {
