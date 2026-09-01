@@ -1,3 +1,5 @@
+import { players } from '../Players';
+
 export class TilesNotifications {
   bga: ExtendedBga;
 
@@ -24,6 +26,11 @@ export class TilesNotifications {
   async notif_openAreaPlaced(args) {
     console.debug(args);
     // TODO: decrease deck count
+  }
+
+  async notif_pouchGained(args) {
+    players.removeHandTiles(args.player_id, args.cardIds);
+    players.setPouch(args.player_id, args.pouch);
   }
 
   async notif_buildingPlayed(args) {

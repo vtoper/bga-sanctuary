@@ -21,12 +21,14 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
     protected array $customAttributes = [
         "appeal" => ["appeal", "int"],
         "conservationMarker" => ["conservation_marker", "int"],
+        "pouch" => ["pouch_marker", "int"],
 
     ];
 
     protected array $staticAttributes = [];
     protected int $appeal;
     protected int $conservationMarker;
+    protected int $pouch;
     protected ?ZooMap $map = null;
 
     public function getUiData($currentPlayerId = null)

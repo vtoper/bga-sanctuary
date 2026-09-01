@@ -7,6 +7,29 @@
 }
 
 .zoo-map {
+  .pouch-marker {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    margin-bottom: 5px;
+    color: #403b2b;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .pouch-marker-value {
+    display: inline-grid;
+    place-items: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 4px;
+    background: #e8b45c;
+    border: 2px solid #8a5a20;
+    border-radius: 50%;
+    color: #3a240d;
+  }
+
   .zoo-map-board {
     box-sizing: content-box;
     width: $zooMapWidth;

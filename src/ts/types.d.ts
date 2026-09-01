@@ -13,6 +13,7 @@ interface SanctuaryPlayer extends Player {
   hand: SanctuaryTile[]; // only filled for the current player
   handCount: number;
   actionCards: SanctuaryActionCard[];
+  pouch: number;
 }
 
 interface SanctuaryActionCard {
@@ -98,6 +99,11 @@ interface HunterArgs {
 interface PlaceOpenAreasArgs {
   n: number;
   locations: SanctuaryCell[];
+}
+
+interface PouchArgs {
+  n: number;
+  cardIds: string[];
 }
 
 interface UpgradeChoice {

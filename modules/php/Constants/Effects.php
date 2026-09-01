@@ -23,5 +23,6 @@ class Effects
     const APPEAL = 'Appeal';
     const HUNTER = 'Hunter';
     const PLACE_OPEN_AREAS = 'PlaceOpenAreas';
+    const POUCH = 'Pouch';
     const TAKE_ALL_TILES = 'TakeAllTiles';
 }

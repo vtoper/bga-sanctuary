@@ -118,6 +118,28 @@ export class Players {
     return document.getElementById(`hand-tile-${tileId}`);
   }
 
+  removeHandTiles(playerId: string | number, tileIds: string[]) {
+    if (`${playerId}` !== `${getCurrentPlayerId()}`) {
+      return;
+    }
+
+    for (const tileId of tileIds) {
+      this.getHandTileNode(tileId)?.remove();
+    }
+  }
+
+  setPouch(playerId: string | number, pouch: number) {
+    const counterNode = document.getElementById(`pouch-counter-${playerId}`);
+    if (counterNode) {
+      counterNode.innerText = `${pouch}`;
+    }
+
+    const player = this.gamedatas?.players[playerId];
+    if (player) {
+      player.pouch = pouch;
+    }
+  }
+
   getMapCellNode(playerId: string | number, x: number, y: number): HTMLElement | null {
     return document.getElementById(`zoo-map-cell-${playerId}-${x}_${y}`);
   }
@@ -149,6 +171,10 @@ export class Players {
     boardNode.insertAdjacentHTML(
       'beforeend',
       `<div class="zoo-map" id="zoo-map-${player.id}">zoo-map-${player.id} ${player.name}
+        <div class="pouch-marker" title="${_('Pouch markers')}">
+          <span class="pouch-marker-label">${_('Pouch')}</span>
+          <span class="pouch-marker-value" id="pouch-counter-${player.id}">${player.pouch}</span>
+        </div>
         <div class="zoo-map-board">
           <div class="zoo-board" id="zoo-board-${player.id}"></div>
         </div>
