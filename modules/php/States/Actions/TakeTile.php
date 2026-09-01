@@ -38,12 +38,19 @@ class TakeTile extends ActionStateWithRevert
     {
         $player = Players::getActive();
         $inRange = $this->getNodeArgs("inRange", false);
+        $typeFilter = $this->getNodeArgs("typeFilter", null);
         $n = $this->getNodeArgs("max", 1);
+        $cards = $inRange ? $player->getTilesInReputationRange() : Tiles::getPool();
+        if ($typeFilter !== null) {
+            $cards = $cards->filter(function ($card) use ($typeFilter) {
+                return $card->getType() == $typeFilter;
+            });
+        }
         return [
             "n" => $n,
             "inRange" => $inRange,
             "source" => $this->getSource() ?? "",
-            'cardIds' => $inRange ? $player->getTilesInReputationRange()->getIds() : Tiles::getPool()->getIds(),
+            'cardIds' => $cards->getIds(),
             "taken" => $this->getNodeArgs("taken", 0),
         ];
     }
@@ -105,7 +112,7 @@ class TakeTile extends ActionStateWithRevert
     {
         $args = $this->getActionArgs($activePlayerId);
         // Only one tile to take, do it automatically
-        if (count($args['cardIds']) == 1) {
+        if (count($args['cardIds']) > 0 && count($args['cardIds']) <= $this->getNodeArgs("max", 1)) {
             return $this->actTakeTile($args['cardIds']);
         }
     }
@@ -115,7 +122,7 @@ class TakeTile extends ActionStateWithRevert
     {
         $player = Players::getActive();
         $args = $this->getActionArgs($player->getId());
-        if (!is_array($cardIds) || count($cardIds) != $args['n'] || count(array_unique($cardIds)) !== count($cardIds)) {
+        if (!is_array($cardIds) || (count($cardIds) != $args['n'] && $args['n'] != 99) || count(array_unique($cardIds)) !== count($cardIds)) {
             throw new \Bga\GameFramework\UserException('You must take the required number of tiles');
         }
         foreach ($cardIds as $cardId) {

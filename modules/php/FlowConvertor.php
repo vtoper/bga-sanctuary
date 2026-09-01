@@ -120,6 +120,26 @@ abstract class FlowConvertor
         $data['source'] = $args['source'];
       }
       return $data;
+    } elseif ($type == Effects::TAKE_ALL_TILES) {
+      return [
+        'state' => TakeTile::class,
+        'args' => [
+          'max' => 99,
+          'inRange' => false,
+          'typeFilter' => $n,
+          'source' => $args['source'] ?? '',
+        ],
+      ];
+    } elseif ($type == Effects::TAKE_TILE) {
+      return [
+        'state' => TakeTile::class,
+        'args' => [
+          'max' => 1,
+          'inRange' => false,
+          'typeFilter' => $n,
+          'source' => $args['source'] ?? '',
+        ],
+      ];
     }
     // // Upgrade an action card
     // elseif ($type == BONUS_UPGRADE_CARD) {
