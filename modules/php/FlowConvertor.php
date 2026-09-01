@@ -15,6 +15,7 @@ use Bga\Games\Sanctuary\States\Actions\MoveActionCard;
 use Bga\Games\Sanctuary\States\Actions\DrawTile;
 use Bga\Games\Sanctuary\States\Actions\TakeTile;
 use Bga\Games\Sanctuary\States\Effects\Hunter;
+use Bga\Games\Sanctuary\States\Effects\PlaceOpenAreas;
 use Bga\GameFramework\SystemException;
 
 // Allow to use a short flow description syntax
@@ -215,5 +216,6 @@ abstract class FlowConvertor
     Effects::DRAW_TILE => DrawTile::class,
     Effects::TAKE_TILE => TakeTile::class,
     Effects::HUNTER => Hunter::class,
+    Effects::PLACE_OPEN_AREAS => PlaceOpenAreas::class,
   ];
 }

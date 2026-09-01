@@ -56,7 +56,7 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
     {
         $args = [];
 
-        $node = $this->getNode();
+        $node = Engine::getNextUnresolved(); // to force refresh of node
         if ($node !== null) {
             $args = $node->getArgs() ?? [];
         }

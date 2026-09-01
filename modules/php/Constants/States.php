@@ -36,4 +36,5 @@ class States
 
     // Effects
     const ST_HUNTER = 300;
+    const ST_PLACE_OPEN_AREAS = 310;
 }

@@ -95,6 +95,11 @@ interface HunterArgs {
   cardIds: string[];
 }
 
+interface PlaceOpenAreasArgs {
+  n: number;
+  locations: SanctuaryCell[];
+}
+
 interface UpgradeChoice {
   type: string;
   actionCards: number[];

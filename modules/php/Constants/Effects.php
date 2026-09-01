@@ -22,5 +22,6 @@ class Effects
     const CONSERVATION = 'Conservation';
     const APPEAL = 'Appeal';
     const HUNTER = 'Hunter';
+    const PLACE_OPEN_AREAS = 'PlaceOpenAreas';
     const TAKE_ALL_TILES = 'TakeAllTiles';
 }

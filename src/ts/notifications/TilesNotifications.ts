@@ -21,6 +21,11 @@ export class TilesNotifications {
     console.debug(args);
   }
 
+  async notif_openAreaPlaced(args) {
+    console.debug(args);
+    // TODO: decrease deck count
+  }
+
   async notif_buildingPlayed(args) {
     console.debug(args);
   }

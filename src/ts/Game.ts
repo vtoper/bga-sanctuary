@@ -24,6 +24,7 @@ import { Conservation } from './states/Conservation';
 import { Upgrade } from './states/Upgrade';
 import { Administration } from './states/Administration';
 import { Hunter } from './states/Hunter';
+import { PlaceOpenAreas } from './states/PlaceOpenAreas';
 
 import { players } from './Players';
 
@@ -54,6 +55,7 @@ export class Game {
     this.bga.states.register('Upgrade', new Upgrade(this, bga));
     this.bga.states.register('Administration', new Administration(this, bga));
     this.bga.states.register('Hunter', new Hunter(this, bga));
+    this.bga.states.register('PlaceOpenAreas', new PlaceOpenAreas(this, bga));
 
     // Uncomment the next line to show debug informations about state changes in the console. Remove before going to production!
     this.bga.states.logger = console.log;
