@@ -33,6 +33,10 @@ export class TilesNotifications {
     players.setPouch(args.player_id, args.pouch);
   }
 
+  async notif_actionCardMoved(args) {
+    players.setActionCards(args.player_id, args.actionCards);
+  }
+
   async notif_buildingPlayed(args) {
     console.debug(args);
   }

@@ -50,7 +50,7 @@ class AbstractNode
         return $i;
       }
     }
-
+    throw new \feException(debug_print_backtrace());
     throw new VisibleSystemException("Can't find index of a child");
   }
 

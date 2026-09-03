@@ -61,6 +61,10 @@
     color: #403b2b;
     font-size: 11px;
     line-height: 1.2;
+    &.selected {
+      background: #1bba0a;
+      border-color: #ff9f1c;
+    }
   }
 
   .action-card-type {

@@ -106,6 +106,10 @@ interface PouchArgs {
   cardIds: string[];
 }
 
+interface MoveActionCardArgs {
+  actionCards: SanctuaryActionCard[];
+}
+
 interface UpgradeChoice {
   type: string;
   actionCards: number[];

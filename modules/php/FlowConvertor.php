@@ -11,12 +11,12 @@ use Bga\Games\Sanctuary\Constants\Effects;
 
 // effects
 use Bga\Games\Sanctuary\States\Actions\Gain;
-use Bga\Games\Sanctuary\States\Actions\MoveActionCard;
 use Bga\Games\Sanctuary\States\Actions\DrawTile;
 use Bga\Games\Sanctuary\States\Actions\TakeTile;
 use Bga\Games\Sanctuary\States\Effects\Hunter;
 use Bga\Games\Sanctuary\States\Effects\PlaceOpenAreas;
 use Bga\Games\Sanctuary\States\Effects\Pouch;
+use Bga\Games\Sanctuary\States\Effects\MoveActionCard;
 use Bga\GameFramework\SystemException;
 
 // Allow to use a short flow description syntax

@@ -187,7 +187,7 @@ export class Players {
     this.setActionCards(player.id, player.actionCards ?? []);
   }
 
-  private setActionCards(playerId: string, actionCards: SanctuaryActionCard[]) {
+  setActionCards(playerId: string | number, actionCards: SanctuaryActionCard[]) {
     const actionCardsNode = document.getElementById(`action-cards-${playerId}`);
     if (!actionCardsNode) {
       return;

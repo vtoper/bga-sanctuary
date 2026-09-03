@@ -374,34 +374,63 @@ class Engine
     /**
      * Get the "next after finishing action node", create a new if needed
      */
-    public static function getAfterFinishingNode()
+    public static function getAfterFinishingNode($fromNode = null)
     {
         self::ensureSeqRootNode();
-        // Go through root children
-        $childs = self::$tree->getChilds();
-        for ($i = 0; $i < count($childs); $i++) {
-            if ($childs[$i]->getFlag() == self::AFTER_FINISHING_ACTION) {
-                return $childs[$i];
-            }
-        }
 
-        return self::insertAtRoot([
-            'type' => self::NODE_PARALLEL,
-            'flag' => self::AFTER_FINISHING_ACTION,
-            'childs' => [],
-        ]);
+        if ($fromNode === null) {
+            // Go through root children
+            $childs = self::$tree->getChildren();
+            for ($i = 0; $i < count($childs); $i++) {
+                if ($childs[$i]->getFlag() == self::AFTER_FINISHING_ACTION) {
+                    return $childs[$i];
+                }
+            }
+
+            return self::insertAtRoot([
+                'type' => self::NODE_PARALLEL,
+                'flag' => self::AFTER_FINISHING_ACTION,
+                'childs' => [],
+            ]);
+        } else {
+            // Search following siblings at each level, then each ancestor.
+            $node = $fromNode;
+
+            while ($node !== null) {
+                if ($node->getFlag() == self::AFTER_FINISHING_ACTION) {
+                    return $node;
+                }
+
+                $parent = $node->getParent();
+                if ($parent === null) {
+                    break;
+                }
+
+                $siblings = $parent->getChildren();
+                $nodeIndex = $node->getIndex();
+                for ($index = $nodeIndex + 1; $index < count($siblings); $index++) {
+                    if ($siblings[$index]->getFlag() == self::AFTER_FINISHING_ACTION) {
+                        return $siblings[$index];
+                    }
+                }
+
+                $node = $parent;
+            }
+
+            return self::getAfterFinishingNode();
+        }
     }
 
     /**
      * Insert after finishing action
      */
-    public static function pushAfterFinishingChilds(array $childs)
+    public static function pushAfterFinishingChilds(array $childs, $fromCurrentNode = false)
     {
         if (empty($childs)) {
             return;
         }
 
-        $node = self::getAfterFinishingNode();
+        $node = self::getAfterFinishingNode($fromCurrentNode ? self::getNextUnresolved() : null);
         foreach ($childs as $child) {
             $node->pushChild(self::buildTree($child));
         }

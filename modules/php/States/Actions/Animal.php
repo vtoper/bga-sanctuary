@@ -230,6 +230,7 @@ class Animal extends ActionStateWithRevert
         $abilities = [$playedAnimal->getEffect()];
         $this->insertBonusesFlow($abilities, '', '', $playedAnimal->getId());
 
+        // throw new \feException(print_r(Globals::getEngine()));
         // Reactions to insert
         //Tiles::applyEffects($player, 'AnimalPlayed', $effectArgs);
 

@@ -36,6 +36,7 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
             updateGameProgression: $updateGameProgression,
             initialPrivate: $initialPrivate,
         );
+        $this->node = $node;
     }
 
     public function getCustomStateDescription()
@@ -56,7 +57,8 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
     {
         $args = [];
 
-        $node = Engine::getNextUnresolved(); // to force refresh of node
+        // $node = Engine::getNextUnresolved(); // to force refresh of node
+        $node = $this->getNode(); // to see
         if ($node !== null) {
             $args = $node->getArgs() ?? [];
         }
@@ -155,7 +157,7 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
             list($immediate, $after) = FlowConvertor::getFlow($bonuses, $source, $sourceType, $sourceId);
         }
         Engine::insertOrUpdateParallelChilds($immediate, $this->node);
-        Engine::pushAfterFinishingChilds($after);
+        Engine::pushAfterFinishingChilds($after, true);
     }
 
     /**
@@ -178,6 +180,7 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
         $node = Engine::buildTree($node);
         // Insert it as a brother of current node and proceed
         $this->node->insertAsBrother($node);
+        $this->node = $node; // test
         Engine::save();
 
         if ($checkpoint) {

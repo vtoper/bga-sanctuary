@@ -124,6 +124,9 @@ class ChooseActionCard extends ActionStateWithRevert
             'pId' => $player->getId(),
             'args' => ['card' => $cardId],
         ]);
+        // if we play cards that trigger after finishing
+        Engine::insertAsChild(['type' => Engine::NODE_PARALLEL, 'childs' => [], 'flag' => Engine::AFTER_FINISHING_ACTION]);
+
         return $this->resolve(['card' => $cardId]);
     }
 }
