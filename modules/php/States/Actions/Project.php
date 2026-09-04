@@ -145,13 +145,13 @@ class Project extends ActionStateWithRevert
         // no placement bonus can occur
         if ($project->isRelease()) {
             $existingTile = $map->replaceTile($tileId, $position);
-            $project = Tiles::get($project->getId()) ?? null; // reload the project tile after replacement
+            $playedProject = Tiles::get($project->getId()) ?? null; // reload the project tile after replacement
 
             $this->notify->all('projectReleased', clienttranslate('${player_name} plays ${project_name} and replace ${existing_tile_name}'), [
                 'player' => $player,
                 'player_name' => $player->getName(),
-                'project' => $project,
-                'project_name' => $project->getName(),
+                'project' => $playedProject,
+                'project_name' => $playedProject->getName(),
                 'existing_tile_name' => $existingTile->getName(),
                 'existingId' => $existingTile->getId(),
                 'bonuses' => [],
@@ -189,8 +189,10 @@ class Project extends ActionStateWithRevert
 
         // TODO
         // Effects of the played tile to insert
-        $abilities = [$playedProject->getEffect()];
-        $this->insertBonusesFlow($abilities, '', '', $playedProject->getId());
+        $abilities = $playedProject->getEffect();
+        if (!empty($abilities)) {
+            $this->insertBonusesFlow([$abilities], '', '', $playedProject->getId());
+        }
 
         // Reactions to insert
         //Tiles::applyEffects($player, 'AnimalPlayed', $effectArgs);

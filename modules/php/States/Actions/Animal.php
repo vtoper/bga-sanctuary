@@ -227,8 +227,10 @@ class Animal extends ActionStateWithRevert
 
         // TODO
         // Effects of the played tile to insert
-        $abilities = [$playedAnimal->getEffect()];
-        $this->insertBonusesFlow($abilities, '', '', $playedAnimal->getId());
+        $abilities = $playedAnimal->getEffect();
+        if (!empty($abilities)) {
+            $this->insertBonusesFlow([$abilities], '', '', $playedAnimal->getId());
+        }
 
         // throw new \feException(print_r(Globals::getEngine()));
         // Reactions to insert
