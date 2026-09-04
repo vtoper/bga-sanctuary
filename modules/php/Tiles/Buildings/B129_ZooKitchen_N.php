@@ -4,6 +4,7 @@ namespace Bga\Games\Sanctuary\Tiles\Buildings;
 
 use Bga\Games\Sanctuary\Constants\Icons;
 use Bga\Games\Sanctuary\Constants\Prerequisites;
+use Bga\Games\Sanctuary\Constants\Effects;
 
 class B129_ZooKitchen_N extends \Bga\Games\Sanctuary\Models\Building
 {
@@ -16,5 +17,6 @@ class B129_ZooKitchen_N extends \Bga\Games\Sanctuary\Models\Building
     $this->gender = 'N';
     //effect = 'immediate take 2 conservation tokens#####prerequisite have 5 different animal icons';
     $this->prerequisites = [Prerequisites::HAVE_DIFFERENT_ANIMAL_ICONS => 5];
+    $this->effect = [Effects::CONSERVATION => 2];
   }
 }

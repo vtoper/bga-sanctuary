@@ -158,6 +158,13 @@ class Building extends ActionStateWithRevert
 
         // TODO
         // Effects of the played tile to insert
+        $abilities = $playedBuilding->getEffect();
+        if (!empty($abilities)) {
+            if (count($abilities) == 1) {
+                $abilities = [$abilities];
+            }
+            $this->insertBonusesFlow($abilities, '', '', $playedBuilding->getId());
+        }
         // Bonuses to insert
         // Reactions to insert
         //Tiles::applyEffects($player, 'AnimalPlayed', $effectArgs);

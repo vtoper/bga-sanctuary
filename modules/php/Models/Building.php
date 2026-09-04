@@ -18,6 +18,9 @@ class Building extends Tile
     ['continents', 'obj'],
     ['effects', 'obj'],
     ['strength', 'int'],
+    ['categories', 'obj'],
+    ['gender', 'str'],
+    ['effect', 'obj']
   ];
   protected string $name;
   protected int $number;
@@ -30,8 +33,9 @@ class Building extends Tile
   protected string $listeningMode = self::MY_ZOO;
   protected ?array $listeningBonuses = null;
   protected int $strength;
-
-
+  protected array $categories;
+  protected string $gender;
+  protected array $effect;
 
   public function countIcon($icon)
   {
@@ -64,7 +68,6 @@ class Building extends Tile
     return array_merge(
       array_count_values($this->getCategories()),
       array_count_values($this->getContinents()),
-      $this->getEnclosureRequirements()
     );
   }
 

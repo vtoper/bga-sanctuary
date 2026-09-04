@@ -515,6 +515,7 @@ class Engine
             if ($node->getType() == self::NODE_LEAF) {
                 $newNode = $node->toArray();
                 $newNode['type'] = self::NODE_PARALLEL;
+                $newNode['optional'] = false;
                 $node = $node->replace(self::buildTree($newNode));
             }
 
