@@ -23,6 +23,7 @@ class Project extends Tile
     ['releaseIcon', 'str'],
     ['categories', 'obj'],
     ['gender', 'str'],
+    ['effect', 'obj'],
   ];
   protected string $name;
   protected int $number;
@@ -39,6 +40,7 @@ class Project extends Tile
   protected array $categories = [];
   protected bool $release = false;
   protected string $releaseIcon = '';
+  protected array $effect = [];
 
 
 

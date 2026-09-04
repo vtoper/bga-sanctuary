@@ -16,7 +16,8 @@ use Bga\Games\Sanctuary\Framework\Engine\ActionStateWithRevert;
 use Bga\Games\Sanctuary\Managers\Players;
 use Bga\Games\Sanctuary\Managers\Tiles;
 use Bga\GameFramework\Actions\Types\JsonParam;
-
+use Bga\Games\Sanctuary\Constants\Icons;
+use Bga\Games\Sanctuary\Models\Tile;
 
 class TakeTile extends ActionStateWithRevert
 {
@@ -43,6 +44,15 @@ class TakeTile extends ActionStateWithRevert
         $cards = $inRange ? $player->getTilesInReputationRange() : Tiles::getPool();
         if ($typeFilter !== null) {
             $cards = $cards->filter(function ($card) use ($typeFilter) {
+                if ($typeFilter == Icons::SMALL_ANIMALS) {
+                    return $card->getType() == Tile::TILE_ANIMAL && in_array($card->getStrength(), [2, 3]);
+                }
+                if ($typeFilter == Icons::LARGE_ANIMALS) {
+                    return $card->getType() == Tile::TILE_ANIMAL && in_array($card->getStrength(), [4, 5]);
+                }
+                if (in_array($typeFilter, Icons::CONTINENTS)) {
+                    return in_array($typeFilter, $card->getContinents());
+                }
                 return $card->getType() == $typeFilter;
             });
         }

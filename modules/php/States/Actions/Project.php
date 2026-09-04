@@ -157,6 +157,21 @@ class Project extends ActionStateWithRevert
                 'bonuses' => [],
                 'i18n' => ['project_name', 'existing_tile_name'],
             ]);
+
+            $conservationMarkers = 0;
+            if (in_array($existingTile->getStrength(), [2, 3])) {
+                $conservationMarkers = 2;
+            } elseif (in_array($existingTile->getStrength(), [4, 5])) {
+                $conservationMarkers = 3;
+            }
+            if ($conservationMarkers > 0) {
+                $player->incConservation($conservationMarkers);
+                $this->notify->all(
+                    'conservationMarkersGained',
+                    clienttranslate('${player_name} gains ${conservation_markers} conservation markers'),
+                    ['player' => $player, 'conservation_markers' => $conservationMarkers]
+                );
+            }
         } else {
             [$playedProject, $bonuses] = $map->addTile($tileId, $position);
 
@@ -174,7 +189,9 @@ class Project extends ActionStateWithRevert
 
         // TODO
         // Effects of the played tile to insert
-        // Bonuses to insert
+        $abilities = [$playedProject->getEffect()];
+        $this->insertBonusesFlow($abilities, '', '', $playedProject->getId());
+
         // Reactions to insert
         //Tiles::applyEffects($player, 'AnimalPlayed', $effectArgs);
         // 

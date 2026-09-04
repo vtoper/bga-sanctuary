@@ -34,4 +34,8 @@ class Icons
     const HABITATS = [self::ROCK, self::WATER, self::FOREST, self::UNDEFINED];
 
     const CONTINENTS_AND_TYPES_AND_HABITATS = [self::AFRICA, self::EUROPE, self::ASIA, self::AMERICAS, self::AUSTRALIA, self::BIRD, self::PREDATOR, self::HERBIVORE, self::BEAR, self::REPTILE, self::PRIMATE, self::PETTING_ZOO, self::ROCK, self::WATER, self::FOREST, self::UNDEFINED];
+
+    // Animal Size
+    const SMALL_ANIMALS = 'SmallAnimals'; // 2-3
+    const LARGE_ANIMALS = 'LargeAnimals'; // 4-5
 }
