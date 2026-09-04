@@ -281,7 +281,7 @@ class ZooMap
     return $locations;
   }
 
-  public function checkMandatoryOpenAreas($mandatoryOpenAreas, $locations): array
+  public function checkMandatoryOpenAreas($mandatoryOpenAreas, $locations, $canAddOpenAreas = true): array
   {
     $newLocations = [];
     $neededOpenAreas = [];
@@ -294,6 +294,10 @@ class ZooMap
         }
         if ($this->hasTileAtPos($adjacentCell) && !$this->getTileAtPos($adjacentCell)->isOpenArea()) {
           continue 2; // skip this location, it doesn't satisfy the mandatory open area condition
+        }
+
+        if (!$canAddOpenAreas) {
+          continue 2; // if we cannot add an open area, skip this location
         }
 
         if (!$this->hasTileAtPos($adjacentCell)) {

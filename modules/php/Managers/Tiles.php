@@ -299,6 +299,7 @@ class Tiles extends CachedPieces
     $card->setLocation('board');
     $card->setX($pos['x']);
     $card->setY($pos['y']);
+    $card->setState(0);
 
     return $card;
   }

@@ -52,4 +52,8 @@ export class TilesNotifications {
   async notif_upgradeTokenUsed(args) {
     console.debug(args);
   }
+
+  async notif_tileRelocated(args) {
+    console.debug(args);
+  }
 }

@@ -16,6 +16,7 @@ use Bga\Games\Sanctuary\States\Actions\TakeTile;
 use Bga\Games\Sanctuary\States\Effects\Hunter;
 use Bga\Games\Sanctuary\States\Effects\PlaceOpenAreas;
 use Bga\Games\Sanctuary\States\Effects\Pouch;
+use Bga\Games\Sanctuary\States\Effects\Relocate;
 use Bga\Games\Sanctuary\States\Effects\MoveActionCard;
 use Bga\GameFramework\SystemException;
 
@@ -219,5 +220,6 @@ abstract class FlowConvertor
     Effects::HUNTER => Hunter::class,
     Effects::PLACE_OPEN_AREAS => PlaceOpenAreas::class,
     Effects::POUCH => Pouch::class,
+    Effects::RELOCATE => Relocate::class,
   ];
 }

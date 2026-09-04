@@ -110,6 +110,11 @@ interface MoveActionCardArgs {
   actionCards: SanctuaryActionCard[];
 }
 
+interface RelocateArgs {
+  playableCardsIds: string[];
+  playableTiles: { [tileId: string]: SanctuaryCell[] };
+}
+
 interface UpgradeChoice {
   type: string;
   actionCards: number[];

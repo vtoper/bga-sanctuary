@@ -39,4 +39,5 @@ class States
     const ST_PLACE_OPEN_AREAS = 310;
     const ST_POUCH = 320;
     const ST_MOVE_ACTION_CARD = 330;
+    const ST_RELOCATE = 340;
 }

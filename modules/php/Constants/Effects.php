@@ -25,4 +25,5 @@ class Effects
     const PLACE_OPEN_AREAS = 'PlaceOpenAreas';
     const POUCH = 'Pouch';
     const TAKE_ALL_TILES = 'TakeAllTiles';
+    const RELOCATE = 'Relocate';
 }
