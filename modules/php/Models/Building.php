@@ -20,7 +20,8 @@ class Building extends Tile
     ['strength', 'int'],
     ['categories', 'obj'],
     ['gender', 'str'],
-    ['effect', 'obj']
+    ['effect', 'obj'],
+    ['reduction', 'obj']
   ];
   protected string $name;
   protected int $number;
@@ -36,6 +37,7 @@ class Building extends Tile
   protected array $categories;
   protected string $gender;
   protected array $effect;
+  protected array $reduction;
 
   public function countIcon($icon)
   {

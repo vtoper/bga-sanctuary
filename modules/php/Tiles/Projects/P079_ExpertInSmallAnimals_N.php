@@ -17,6 +17,6 @@ class P079_ExpertInSmallAnimals_N extends \Bga\Games\Sanctuary\Models\Project
     $this->gender = 'N';
     $this->effect = [Effects::TAKE_TILE => Icons::SMALL_ANIMALS];
     //effect = 'immediate take 1 small animal from the display####ongoingplay small animal tile with 1 less action strength';
-
+    $this->reduction = [Icons::SMALL_ANIMALS => 1];
   }
 }

@@ -24,7 +24,7 @@ class Animal extends Tile
     ['strength', 'int'],
     ['categories', 'obj'],
     ['effect', 'obj'],
-
+    ['reduction', 'obj']
   ];
   protected string $name;
   protected int $number;
@@ -37,6 +37,7 @@ class Animal extends Tile
   protected array $continents = [];
   protected array $openAreas = [];
   protected array $effect = [];
+  protected array $reduction = [];
 
   public function getIcons()
   {
@@ -46,23 +47,6 @@ class Animal extends Tile
     );
   }
 
-  public function checkConditions($player, $icons, $nCanIgnore = 0)
-  {
-    if ($player->hasPlayedCard('S263_WazaLargeAnimalProgram') && $this->isLarge()) {
-      $nCanIgnore++;
-    }
-    if ($player->canUseMap(6)) {
-      $nCanIgnore++;
-    }
-    // MW : Camouflage
-    $nCanIgnore += Globals::getEffectCamouflage();
-    // MW : bonus tile
-    if ($player->hasKeptBonusTile(BONUS_IGNORE_CONDITION)) {
-      $nCanIgnore += 3;
-    }
-
-    return parent::checkConditions($player, $icons, $nCanIgnore);
-  }
 
   public function getContinent()
   {
@@ -85,9 +69,17 @@ class Animal extends Tile
   /**
    * Whether this animal can be played given the state constraints (max strength and required habitat)
    */
-  public function matchesPlayConstraints(int $maxStrength, ?string $habitat): bool
+  public function matchesPlayConstraints(int $maxStrength, ?string $habitat, array $reduction = []): bool
   {
-    if ($this->getStrength() > $maxStrength) {
+    $strength = $this->getStrength();
+    $icons = $this->getIcons();
+    foreach ($reduction as $type => $value) {
+      if (isset($icons[$type])) {
+        $strength -= $value;
+      }
+    }
+
+    if ($strength > $maxStrength) {
       return false;
     }
 

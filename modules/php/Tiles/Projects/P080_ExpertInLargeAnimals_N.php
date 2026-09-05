@@ -18,6 +18,6 @@ class P080_ExpertInLargeAnimals_N extends \Bga\Games\Sanctuary\Models\Project
     $this->effect = [Effects::TAKE_TILE => Icons::LARGE_ANIMALS];
 
     //effect = 'immediate take 1 large animal from the display####ongoingplay large animal tile with 1 less action strength';
-
+    $this->reduction = [Icons::LARGE_ANIMALS => 1];
   }
 }

@@ -83,10 +83,11 @@ class Project extends ActionStateWithRevert
         if (empty($locations)) {
             return [];
         }
+        $playerReductions = $player->getReductions();
 
         $result = [];
         foreach ($player->getHand(Tile::TILE_PROJECT) as $tileId => $project) {
-            if ($project->matchesPlayConstraints($maxStrength)) {
+            if ($project->matchesPlayConstraints($maxStrength, $playerReductions)) {
                 $newLocations = $locations;
                 $result[$tileId] = $newLocations;
 

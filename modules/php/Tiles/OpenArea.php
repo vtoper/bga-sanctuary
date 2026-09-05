@@ -13,7 +13,9 @@ class OpenArea extends Tile
         'type',
         'name',
         ['appeal', 'int'],
+        ['reduction', 'obj'],
     ];
     protected string $name;
     protected int $appeal = 1;
+    protected array $reduction = [];
 }

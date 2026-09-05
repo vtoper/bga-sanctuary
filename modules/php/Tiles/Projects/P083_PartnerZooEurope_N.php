@@ -18,5 +18,6 @@ class P083_PartnerZooEurope_N extends \Bga\Games\Sanctuary\Models\Project
     //effect = 'immediate take 1 europe tile from the display####ongoingplay europe tile with 2 less action strength';
     $this->continents = [Icons::EUROPE];
     $this->effect = [Effects::TAKE_TILE => Icons::EUROPE];
+    $this->reduction = [Icons::EUROPE => 2];
   }
 }

@@ -18,5 +18,6 @@ class P085_PartnerZooAustralia_N extends \Bga\Games\Sanctuary\Models\Project
     //effect = 'immediate take 1 australia tile from the display####ongoingplay australia tile with 2 less action strength';
     $this->continents = [Icons::AUSTRALIA];
     $this->effect = [Effects::TAKE_TILE => Icons::AUSTRALIA];
+    $this->reduction = [Icons::AUSTRALIA => 2];
   }
 }

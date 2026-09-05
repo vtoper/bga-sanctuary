@@ -24,7 +24,7 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
     'pId' => ['player_id', 'int'],
     'extraDatas' => ['extra_datas', 'obj'],
     'x' => ['x', 'int'],
-    'y' => ['y', 'int']
+    'y' => ['y', 'int'],
   ];
   protected $id;
   protected $location;
@@ -126,35 +126,6 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
     return $cost;
   }
 
-  public function checkConditions($player, $icons, $nCanIgnore = 0)
-  {
-    $conditions = [];
-    $ignored = 0;
-    foreach ($this->getPrerequisites() as $prerequisite => $amount) {
-      $satisfied = true;
-      $ignoredToAdd = 1;
-      switch ($prerequisite) {
-        default:
-          $satisfied = $icons[$prerequisite] >= $amount;
-          $ignoredToAdd = $amount - $icons[$prerequisite];
-      }
-
-      $conditions[$prerequisite] = $satisfied;
-      if (!$satisfied) {
-        $ignored += $ignoredToAdd;
-      }
-    }
-
-    $conditions['ignored'] = $ignored;
-    $conditions['valid'] = $ignored <= $nCanIgnore;
-    return $conditions;
-  }
-
-  public function canBePlayed($player, $icons, $nCanIgnore = 0)
-  {
-    $status = $this->checkConditions($player, $icons, $nCanIgnore);
-    return $status['valid'];
-  }
 
   // /**
   //  * Scores functions

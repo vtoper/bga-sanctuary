@@ -18,5 +18,6 @@ class P082_PartnerZooAsia_N extends \Bga\Games\Sanctuary\Models\Project
     //effect = 'immediate take 1 asia tile from the display####ongoingplay asia tile with 2 less action strength';
     $this->continents = [Icons::ASIA];
     $this->effect = [Effects::TAKE_TILE => Icons::ASIA];
+    $this->reduction = [Icons::ASIA => 2];
   }
 }

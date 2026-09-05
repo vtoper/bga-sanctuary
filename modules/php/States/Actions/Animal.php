@@ -140,10 +140,11 @@ class Animal extends ActionStateWithRevert
             return [[], []];
         }
 
+        $playerReductions = $player->getReductions();
         $result = [];
         $openAreasByTile = [];
         foreach ($player->getHand(Tile::TILE_ANIMAL) as $tileId => $animal) {
-            if ($animal->matchesPlayConstraints($maxStrength, $habitat)) {
+            if ($animal->matchesPlayConstraints($maxStrength, $habitat, $playerReductions)) {
                 $newLocations = $locations;
                 $openAreasByTile[$tileId] = [];
                 if ($animal->getOpenAreas() !== []) {

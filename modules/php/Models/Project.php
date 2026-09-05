@@ -24,6 +24,7 @@ class Project extends Tile
     ['categories', 'obj'],
     ['gender', 'str'],
     ['effect', 'obj'],
+    ['reduction', 'obj']
   ];
   protected string $name;
   protected int $number;
@@ -41,6 +42,7 @@ class Project extends Tile
   protected bool $release = false;
   protected string $releaseIcon = '';
   protected array $effect = [];
+  protected array $reduction = [];
 
 
 
@@ -49,9 +51,15 @@ class Project extends Tile
     return $this->getPlayer()->countCardIcon($icon);
   }
 
-  public function matchesPlayConstraints(int $maxStrength): bool
+  public function matchesPlayConstraints(int $maxStrength, array $reduction = []): bool
   {
-    if ($this->getStrength() > $maxStrength) {
+    $strength = $this->getStrength();
+    foreach ($reduction as $type => $value) {
+      if (isset($this->getIcons()[$type])) {
+        $strength -= $value;
+      }
+    }
+    if ($strength > $maxStrength) {
       return false;
     }
     return true;

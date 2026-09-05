@@ -344,6 +344,21 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
         return $icons[$icon] ?? 0;
     }
 
+    public function getReductions()
+    {
+        $reductions = [];
+        $cards = $this->getPlayedCards();
+        foreach ($cards as $card) {
+            foreach ($card->getReduction() as $type => $n) {
+                if (!isset($reductions[$type])) {
+                    $reductions[$type] = 0;
+                }
+                $reductions[$type] += $n;
+            }
+        }
+        return $reductions;
+    }
+
     public function countCardIcons($onlyNonZero = false, $toKeep = null)
     {
         $icons = [];

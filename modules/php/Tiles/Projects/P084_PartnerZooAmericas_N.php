@@ -18,5 +18,6 @@ class P084_PartnerZooAmericas_N extends \Bga\Games\Sanctuary\Models\Project
     //effect = 'immediate take 1 americas tile from the display####ongoingplay americas tile with 2 less action strength';
     $this->continents = [Icons::AMERICAS];
     $this->effect = [Effects::TAKE_TILE => Icons::AMERICAS];
+    $this->reduction = [Icons::AMERICAS => 2];
   }
 }

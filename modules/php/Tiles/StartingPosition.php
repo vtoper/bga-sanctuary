@@ -13,6 +13,8 @@ class StartingPosition extends Tile
         'type',
         'name',
         ['appeal', 'int'],
+        ['reduction', 'obj'],
     ];
     protected string $name;
+    protected array $reduction = [];
 }
