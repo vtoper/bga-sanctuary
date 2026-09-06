@@ -9,6 +9,7 @@ use Bga\Games\sanctuary\Game;
 use Bga\Games\sanctuary\Managers\Players;
 use Bga\Games\sanctuary\Framework\Models\Player;
 use Bga\Games\Sanctuary\FlowConvertor;
+use Bga\Games\Sanctuary\Managers\Tiles;
 
 
 class AutomaticActionState extends \Bga\GameFramework\States\GameState
@@ -72,7 +73,10 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
 
     public function getSource()
     {
-        return $this->getNode()->getInfo()['source'] ?? null;
+        if ($this->getSourceId() !== null) {
+            return Tiles::get($this->getSourceId());
+        }
+        return null;
     }
 
     public function getSourceId()
@@ -187,5 +191,46 @@ class AutomaticActionState extends \Bga\GameFramework\States\GameState
             Engine::checkpoint();
         }
         // Engine::proceed();
+    }
+
+    public function getClassName()
+    {
+        $classname = get_class($this);
+        if ($pos = strrpos($classname, '\\')) {
+            return substr($classname, $pos + 1);
+        }
+        return $classname;
+    }
+
+    protected function checkListeners($method, $player, $args = [])
+    {
+        $event = array_merge(
+            [
+                'pId' => $player->getId(),
+                'type' => 'action',
+                'action' => $this->getClassName(),
+                'method' => $method,
+            ],
+            $args
+        );
+
+        $reaction = Tiles::getReaction($event);
+        Engine::insertOrUpdateParallelChilds($reaction);
+    }
+
+    protected function checkIconsListeners($icons, $player)
+    {
+        list($immediateReaction, $afterReaction) = Tiles::getIconsReaction($icons, $player, true);
+        Engine::insertOrUpdateParallelChilds($immediateReaction);
+        Engine::pushAfterFinishingChilds($afterReaction);
+    }
+
+    public function checkAfterListeners($player, $args = [], $duringActionListener = true)
+    {
+        if ($duringActionListener) {
+            $this->checkListeners($this->getClassName(), $player, $args);
+        }
+        $this->checkListeners('ImmediatelyAfter' . $this->getClassName(), $player, $args);
+        $this->checkListeners('After' . $this->getClassName(), $player, $args);
     }
 }

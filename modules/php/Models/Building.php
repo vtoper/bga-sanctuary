@@ -21,7 +21,9 @@ class Building extends Tile
     ['categories', 'obj'],
     ['gender', 'str'],
     ['effect', 'obj'],
-    ['reduction', 'obj']
+    ['reduction', 'obj'],
+    ['listeningIcon', 'str'],
+    ['listeningBonuses', 'obj']
   ];
   protected string $name;
   protected int $number;
@@ -30,7 +32,7 @@ class Building extends Tile
   protected array $prerequisites;
   protected array $continents;
   protected array $effects;
-  protected ?array $listeningIcon = null;
+  protected ?string $listeningIcon = null;
   protected string $listeningMode = self::MY_ZOO;
   protected ?array $listeningBonuses = null;
   protected int $strength;

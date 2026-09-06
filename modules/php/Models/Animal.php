@@ -24,7 +24,8 @@ class Animal extends Tile
     ['strength', 'int'],
     ['categories', 'obj'],
     ['effect', 'obj'],
-    ['reduction', 'obj']
+    ['reduction', 'obj'],
+    ['listeningIcon', 'str']
   ];
   protected string $name;
   protected int $number;

@@ -233,15 +233,21 @@ class Animal extends ActionStateWithRevert
             $this->insertBonusesFlow([$abilities], '', '', $playedAnimal->getId());
         }
 
-        // throw new \feException(print_r(Globals::getEngine()));
-        // Reactions to insert
-        //Tiles::applyEffects($player, 'AnimalPlayed', $effectArgs);
-
+        // Duplicate before the reactions as the node could have been updated
         $actions = $this->getPreviousActions();
         $actions[] = [$tileId => $playedAnimal->getStrength()];
         if (count($actions) < $this->getNodeArgs('nb', 1)) {
             $this->duplicateAction(['previous' => $actions]);
         }
+
+
+        // Reactions to insert
+        // Check if we have reaction from listeners
+        $eventData = [
+            'animal' => $playedAnimal->getId(),
+        ];
+        $this->checkListeners('Animals', $player, $eventData);
+        $this->checkIconsListeners($animal->getIcons(), $player);
 
         return $this->resolve(['tileId' => $tileId]);
     }

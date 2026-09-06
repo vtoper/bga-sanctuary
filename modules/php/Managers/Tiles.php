@@ -8,6 +8,7 @@ use Bga\Games\sanctuary\Game;
 use Bga\Games\sanctuary\Models\Assignment;
 use Bga\Games\sanctuary\Models\Tile;
 use Bga\Games\sanctuary\Models\Player;
+use Bga\Games\Sanctuary\FlowConvertor;
 
 class Tiles extends CachedPieces
 {
@@ -400,38 +401,20 @@ class Tiles extends CachedPieces
    */
   public static function getIconsReaction($icons, $player, $splitImmediateAndAfter = false)
   {
-    $cards = self::getInLocation('inPlay')->filter(function ($card) {
+    $cards = self::getInLocation('board')->filter(function ($card) {
       return \method_exists($card, 'getIconsReaction');
     });
-    $immediateChilds = [];
-    $afterChilds = [];
+    $immediate = [];
+    $after = [];
     foreach ($cards as $card) {
       $bonuses = $card->getIconsReaction($icons, $player->getId() == $card->getPId());
       if (empty($bonuses)) {
         continue;
       }
-
-      $child = [
-        'action' => ACTIVATE_CARD,
-        'pId' => $player->getId(),
-        'args' => [
-          'cardId' => $card->getId(),
-          'event' => [
-            'icons' => $icons,
-            'method' => 'playIcons',
-          ],
-        ],
-      ];
-
-      if (in_array($card->getId(), ['S214_ExpertOnAfrica', 'S268_ConferenceOnEurope'])) {
-        $child['afterFinishing'] = true;
-        $afterChilds[] = $child;
-      } else {
-        $immediateChilds[] = $child;
-      }
+      list($immediate, $after) = FlowConvertor::getFlow($bonuses, '', '', $card->getId());
     }
 
-    return $splitImmediateAndAfter ? [$immediateChilds, $afterChilds] : array_merge($immediateChilds, $afterChilds);
+    return $splitImmediateAndAfter ? [$immediate, $after] : array_merge($immediate, $after);
   }
 
   /**
@@ -439,7 +422,7 @@ class Tiles extends CachedPieces
    */
   public static function getAllCardsWithMethod($methodName)
   {
-    return self::getInLocation('inPlay')->filter(function ($card) use ($methodName) {
+    return self::getInLocation('board')->filter(function ($card) use ($methodName) {
       return \method_exists($card, 'on' . $methodName) ||
         \method_exists($card, 'onPlayer' . $methodName) ||
         \method_exists($card, 'onOpponent' . $methodName);

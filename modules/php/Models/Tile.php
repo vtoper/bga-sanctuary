@@ -33,6 +33,9 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
   protected $extraDatas;
   protected $x;
   protected $y;
+  protected ?string $listeningIcon = null;
+  protected string $listeningMode = self::MY_ZOO;
+  protected ?array $listeningBonuses = null;
 
   protected array $staticAttributes = [
     ['supported', 'obj'],
@@ -160,6 +163,34 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
   //   return Meeples::getTokensOnCard($this->pId, $this->id);
   // }
 
+  public function getIconsReaction($icons, $isOwnZoo)
+  {
+    // Must be listening to one icon
+    if (is_null($this->listeningIcon)) {
+      return [];
+    }
+    // If listening only to icons in my zoo, make sure it was added in my zoo
+    if (!$isOwnZoo && $this->listeningMode == MY_ZOO) {
+      return [];
+    }
+    // How many icons of that type ?
+    $n = $icons[$this->listeningIcon] ?? 0;
+    if ($n == 0) {
+      return [];
+    }
+
+    // Now multiply the effect of each bonus by that multiplier
+    $bonuses = [];
+    foreach ($this->listeningBonuses as $bonus) {
+      $bonus['pId'] = $this->pId;
+      $type = array_keys($bonus)[0];
+      $bonus[$type] *= $n;
+      $bonuses[] = $bonus;
+    }
+
+    return $bonuses;
+  }
+
   /*
    ██████╗ ██████╗ ███╗   ██╗███████╗████████╗ █████╗ ███╗   ██╗████████╗███████╗
   ██╔════╝██╔═══██╗████╗  ██║██╔════╝╚══██╔══╝██╔══██╗████╗  ██║╚══██╔══╝██╔════╝
@@ -175,4 +206,6 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
   const TILE_PROJECT = 'project';
   const TILE_OPEN_AREA = 'openArea';
   const TILE_STARTING_POSITION = 'startingPosition';
+  const MY_ZOO = 'my-zoo';
+  const ALL_ZOO = 'all-zoo';
 }

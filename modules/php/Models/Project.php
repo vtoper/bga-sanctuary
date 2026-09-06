@@ -24,7 +24,9 @@ class Project extends Tile
     ['categories', 'obj'],
     ['gender', 'str'],
     ['effect', 'obj'],
-    ['reduction', 'obj']
+    ['reduction', 'obj'],
+    ['listeningIcon', 'str'],
+    ['listeningBonuses', 'obj']
   ];
   protected string $name;
   protected int $number;
@@ -33,7 +35,7 @@ class Project extends Tile
   protected array $prerequisites;
   protected array $continents;
   protected array $effects;
-  protected ?array $listeningIcon = null;
+  protected ?string $listeningIcon = null;
   protected string $listeningMode = self::MY_ZOO;
   protected ?array $listeningBonuses = null;
   protected int $strength;
@@ -125,18 +127,9 @@ class Project extends Tile
     foreach ($this->listeningBonuses as $bonus) {
       $bonus['pId'] = $this->pId;
 
-      // Cant do easy multiplication for some sponsor
-      if (in_array($this->id, ['S270_MarineResearchExpedition'])) {
-        for ($i = 0; $i < $n; $i++) {
-          $bonuses[] = $bonus;
-        }
-      }
-      // General case : *$n
-      else {
-        $type = array_keys($bonus)[0];
-        $bonus[$type] *= $n;
-        $bonuses[] = $bonus;
-      }
+      $type = array_keys($bonus)[0];
+      $bonus[$type] *= $n;
+      $bonuses[] = $bonus;
     }
 
     return $bonuses;

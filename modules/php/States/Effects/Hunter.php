@@ -57,50 +57,27 @@ class Hunter extends ActionStateWithRevert
     public function getCustomStateDescription()
     {
         if (!is_null($this->getSource())) {
-            if ($this->getNodeArgs('inRange', false)) {
-                return [
-                    "description" => clienttranslate('${actplayer} must take ${n} tile (${source})'),
-                    "descriptionMyTurn" => clienttranslate('${you} must take ${n} tile (${source})'),
-                ];
-            }
             return [
-                "description" => clienttranslate('${actplayer} must take ${n} tile in range (${source})'),
-                "descriptionMyTurn" => clienttranslate('${you} must take ${n} tile in range (${source})'),
+                "description" => clienttranslate('${actplayer} must draw ${n} tile and keep 1 animal (${source})'),
+                "descriptionMyTurn" => clienttranslate('${you} must draw ${n} tile and keep 1 animal (${source})'),
             ];
         }
-        return null;
+        return "toto";
     }
 
     public function getDescription()
     {
         if (!is_null($this->getSource())) {
-            if ($this->getNodeArgs('inRange', false)) {
-                return [
-                    "log" => clienttranslate('Take ${n} tile (${source})'),
-                    "args" => [
-                        "source" => $this->getSource() ?? "",
-                        "n" => $this->getNodeArgs("max", 1)
-                    ]
-                ];
-            }
             return [
-                "log" => clienttranslate('Take ${n} tile in range (${source})'),
+                "log" => clienttranslate('Draw ${n} tile and keep 1 animal (${source})'),
                 "args" => [
-                    "source" => $this->getSource() ?? "",
-                    "n" => $this->getNodeArgs("max", 1)
-                ]
-            ];
-        }
-        if ($this->getNodeArgs('inRange', false)) {
-            return [
-                "log" => clienttranslate('Take ${n} tile'),
-                "args" => [
+                    "source" => $this->getSource()->getName() ?? "",
                     "n" => $this->getNodeArgs("max", 1)
                 ]
             ];
         }
         return [
-            "log" => clienttranslate('Take ${n} tile in range'),
+            "log" => clienttranslate('Draw ${n} tile and keep 1 animal'),
             "args" => [
                 "n" => $this->getNodeArgs("max", 1)
             ]

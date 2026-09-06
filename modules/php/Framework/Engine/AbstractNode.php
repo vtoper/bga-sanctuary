@@ -44,7 +44,6 @@ class AbstractNode
     if ($this->parent == null) {
       return null;
     }
-
     foreach ($this->parent->getChildren() as $i => $child) {
       if ($child === $this) {
         return $i;
@@ -369,7 +368,6 @@ class AbstractNode
     }
 
     if ($this->isOptional()) {
-      throw new \feException($this->info['optional']);
       //This is a bit convoluted but here is the brakdown. If current node is optional, we add pass:
       // - if more than one child
       // - if only one child we don't want it to be non optional as player can get stuck if we automatically choose it
