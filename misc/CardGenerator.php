@@ -53,6 +53,27 @@ function replaceBracket(&$str)
     $str = str_replace("]", ">", $str);
 }
 
+/**
+ * Appeal is emitted either as a plain int, or as '<n> per [connected|adjacent] ' . Icons::<ICON>
+ */
+function formatAppeal($appeal)
+{
+    if (is_numeric($appeal)) {
+        return (int) $appeal;
+    }
+
+    $icons = ['africa', 'europe', 'asia', 'americas', 'australia', 'bird', 'predator', 'herbivore', 'bear', 'reptile', 'primate', 'rock', 'water', 'forest'];
+    if (preg_match('/^(\d+ per (?:connected |adjacent )?)([a-z]+)$/i', trim($appeal), $match) && in_array(strtolower($match[2]), $icons)) {
+        return "'" . $match[1] . "' . Icons::" . strtoupper($match[2]);
+    }
+
+    if (preg_match('/^[\d\/]+ for connected group$/i', trim($appeal))) {
+        return "'" . trim($appeal) . " of ' . Icons::PETTING_ZOO";
+    }
+
+    return "'$appeal'";
+}
+
 $o = 0;
 $i = 0;
 if (($handle = fopen("tiles.csv", "r")) !== FALSE) {
@@ -133,7 +154,7 @@ class " . $uId . " extends \Bga\Games\Sanctuary\Models\\$type
 		parent::__construct(\$row);
        \$this->id = '$uId';
        \$this->name = '" . strtoupper($name) . "';
-       \$this->appeal = " . (is_int($appeal) ? $appeal : "'$appeal'") . ";
+       \$this->appeal = " . formatAppeal($appeal) . ";
        \$this->strength = $strength;
        \$this->gender = " . (!is_null($gender) ? "'$gender'" : "'N'") . ";
        //effect = '$effect';

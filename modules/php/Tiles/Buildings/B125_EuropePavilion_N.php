@@ -14,7 +14,7 @@ class B125_EuropePavilion_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B125_EuropePavilion_N';
     $this->name = 'EUROPE PAVILION';
-    $this->appeal = '1 per connected europe';
+    $this->appeal = '1 per connected ' . Icons::EUROPE;
     $this->gender = 'N';
     //effect = '####ongoingwhen you play a europe tile, take 1 animal from the display#####prerequisite by the river';
     $this->prerequisites = [Prerequisites::BY_THE_RIVER => true];

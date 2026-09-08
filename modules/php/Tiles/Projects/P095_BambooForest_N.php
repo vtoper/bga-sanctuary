@@ -11,7 +11,7 @@ class P095_BambooForest_N extends \Bga\Games\Sanctuary\Models\Project
     parent::__construct($row);
     $this->id = 'P095_BambooForest_N';
     $this->name = 'BAMBOO FOREST';
-    $this->appeal = '4';
+    $this->appeal = 4;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = 'immediate release 1 herbivore, get 2/3 conservation tokens';

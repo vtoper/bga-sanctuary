@@ -11,7 +11,7 @@ class P090_PortCampbellNationalPark_N extends \Bga\Games\Sanctuary\Models\Projec
     parent::__construct($row);
     $this->id = 'P090_PortCampbellNationalPark_N';
     $this->name = 'PORT CAMPBELL NATIONAL PARK';
-    $this->appeal = '4';
+    $this->appeal = 4;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = 'immediate release 1 australia animal, get 2/3 conservation tokens';

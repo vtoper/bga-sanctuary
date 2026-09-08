@@ -11,7 +11,7 @@ class P071_Hydrologist_N extends \Bga\Games\Sanctuary\Models\Project
     parent::__construct($row);
     $this->id = 'P071_Hydrologist_N';
     $this->name = 'HYDROLOGIST';
-    $this->appeal = '1 per connected water';
+    $this->appeal = '1 per connected ' . Icons::WATER;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = '####ongoingplay water tile with 1 less action strength';

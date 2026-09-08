@@ -11,7 +11,7 @@ class B109_ReptileHouse_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B109_ReptileHouse_N';
     $this->name = 'REPTILE HOUSE';
-    $this->appeal = '2 per adjacent reptile';
+    $this->appeal = '2 per adjacent ' . Icons::REPTILE;
     $this->gender = 'N';
     //effect = '#####prerequisite next to 1 reptile';
     $this->prerequisites = [Icons::REPTILE => 1];

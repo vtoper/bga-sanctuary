@@ -13,7 +13,7 @@ class A009_EurasianBrownBear_N extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A009_EurasianBrownBear_N';
     $this->name = 'EURASIAN BROWN BEAR';
-    $this->appeal = '8';
+    $this->appeal = 8;
     $this->strength = 5;
     $this->gender = 'N';
     $this->effect = [Effects::TAKE_ALL_TILES => Tile::TILE_PROJECT];

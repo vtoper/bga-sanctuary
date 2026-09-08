@@ -12,7 +12,7 @@ class A044_NileCrocodile_F extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A044_NileCrocodile_F';
     $this->name = 'NILE CROCODILE';
-    $this->appeal = '6';
+    $this->appeal = 6;
     $this->strength = 4;
     $this->gender = 'F';
     //effect = 'immediate take 1 tile from the display';

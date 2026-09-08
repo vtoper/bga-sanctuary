@@ -12,7 +12,7 @@ class A062_MantledGuereza_N extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A062_MantledGuereza_N';
     $this->name = 'MANTLED GUEREZA';
-    $this->appeal = '6';
+    $this->appeal = 6;
     $this->strength = 3;
     $this->gender = 'N';
     //effect = 'immediate move 1 action to position 1';

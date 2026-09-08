@@ -13,7 +13,7 @@ class P078_Ornithologist_N extends \Bga\Games\Sanctuary\Models\Project
     parent::__construct($row);
     $this->id = 'P078_Ornithologist_N';
     $this->name = 'ORNITHOLOGIST';
-    $this->appeal = '1 per bird';
+    $this->appeal = '1 per ' . Icons::BIRD;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = '####ongoingwhen you play a bird, place 1 open area from the pile in your zoo';

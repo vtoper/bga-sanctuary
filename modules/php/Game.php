@@ -324,4 +324,9 @@ class Game extends \Bga\GameFramework\Table
     {
         return Engine::resolve(['toto']);
     }
+
+    public function debug_score()
+    {
+        throw new \feException(print_r(Players::getCurrent()->computeScore()));
+    }
 }

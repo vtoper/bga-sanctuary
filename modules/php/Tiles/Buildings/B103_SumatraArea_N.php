@@ -11,7 +11,7 @@ class B103_SumatraArea_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B103_SumatraArea_N';
     $this->name = 'SUMATRA AREA';
-    $this->appeal = '2 per connected asia';
+    $this->appeal = '2 per connected ' . Icons::ASIA;
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 asia tiles';
     $this->prerequisites = [Icons::ASIA => 2];

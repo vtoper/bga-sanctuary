@@ -545,6 +545,43 @@ class ZooMap
     return !is_null($tile) && ($tile->getIcons()[$icon] ?? 0) > 0;
   }
 
+  /**
+   * countConnectedTilesWithIcon: size of the connected group of tiles carrying $icon that $tile belongs to
+   */
+  public function countConnectedTilesWithIcon(Tile $tile, string $icon): int
+  {
+    return count($this->getConnectedGroupOf($tile, $icon));
+  }
+
+  /**
+   * getConnectedGroupOf: cell uids of the connected group of tiles carrying $icon that $tile belongs to
+   */
+  public function getConnectedGroupOf(Tile $tile, string $icon): array
+  {
+    $cell = ['x' => $tile->getX(), 'y' => $tile->getY()];
+    if (!$this->isCellValid($cell) || !$this->cellHasIcon($cell, $icon)) {
+      return [];
+    }
+    return $this->getConnectedIconGroup($cell, $icon);
+  }
+
+  /**
+   * countAdjacentIcons: number of $icon carried by the tiles adjacent to $tile
+   */
+  public function countAdjacentIcons(Tile $tile, string $icon): int
+  {
+    return $this->getNeighbourIcons(['x' => $tile->getX(), 'y' => $tile->getY()])[$icon] ?? 0;
+  }
+
+  /**
+   * countDifferentAdjacentIcons: number of distinct animal/continent icons among the tiles adjacent to $tile
+   */
+  public function countDifferentAdjacentIcons(Tile $tile): int
+  {
+    $icons = $this->getNeighbourIcons(['x' => $tile->getX(), 'y' => $tile->getY()]);
+    return count(array_intersect_key($icons, array_flip(Icons::CONTINENTS_AND_TYPES)));
+  }
+
   // Release project must be placed a top an animal card with the corresponding icons
   public function getProjectReleaseOptions(Project $project, $checkIsDoable = false, $args = [])
   {

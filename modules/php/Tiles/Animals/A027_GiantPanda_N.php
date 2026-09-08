@@ -13,7 +13,7 @@ class A027_GiantPanda_N extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A027_GiantPanda_N';
     $this->name = 'GIANT PANDA';
-    $this->appeal = '9';
+    $this->appeal = 9;
     $this->strength = 5;
     $this->gender = 'N';
     $this->effect = [Effects::TAKE_ALL_TILES => Tile::TILE_BUILDING];

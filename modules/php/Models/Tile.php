@@ -134,15 +134,123 @@ class Tile extends  \Bga\Games\sanctuary\Framework\Db\DB_Model
   //  * Scores functions
   //  */
 
-  public function score()
+  // public function score()
+  // {
+  //   $appeal = $this->getAppealScore();
+  //   if ($appeal != 0) {
+  //     $this->getPlayer()->incAppeal($appeal);
+  //   }
+
+   
+  // }
+
+  /**
+   * Appeal points brought by this tile at the end of the game.
+   * The `appeal` attribute is either a plain number, or a string of the form
+   * '<n> per [connected|adjacent] <target>'.
+   */
+  public function getAppealScore(): int
   {
-    $bonus = $this->getScoreBonus();
-    if (!is_null($bonus)) {
-      foreach ($bonus as $b => $value) {
-        $method = 'inc' . ucfirst($b);
-        $this->getPlayer()->$method($value, true, $this);
-      }
+    if (!property_exists($this, 'appeal')) {
+      return 0;
     }
+
+    $appeal = $this->getAppeal();
+    if (is_int($appeal) || is_numeric($appeal)) {
+      return (int) $appeal;
+    }
+    if (!is_string($appeal)) {
+      return 0;
+    }
+    $appeal = trim($appeal);
+
+    if (preg_match('/^([\d\/]+)\s+for\s+connected\s+group\s+of\s+(.+)$/i', $appeal, $match)) {
+      return $this->getConnectedGroupScore(
+        array_map('intval', explode('/', $match[1])),
+        self::appealTargetToIcon(trim($match[2]))
+      );
+    }
+
+    if (!preg_match('/^(\d+)\s+per\s+(connected\s+|adjacent\s+)?(.+)$/i', $appeal, $match)) {
+      return 0;
+    }
+
+    $multiplier = (int) $match[1];
+    $modifier = strtolower(trim($match[2]));
+    $target = trim($match[3]);
+
+    $count = match ($modifier) {
+      'connected' => $this->countConnectedAppealTarget($target),
+      'adjacent' => $this->countAdjacentAppealTarget($target),
+      default => $this->countAppealTarget($target),
+    };
+
+    return $multiplier * $count;
+  }
+
+  /**
+   * Size of the group of tiles carrying the target icon this tile belongs to
+   */
+  protected function countConnectedAppealTarget(string $target): int
+  {
+    $map = $this->getPlayer()->map();
+    return is_null($map) ? 0 : $map->countConnectedTilesWithIcon($this, self::appealTargetToIcon($target));
+  }
+
+  /**
+   * Score awarded once for the whole connected group of tiles carrying $icon, based on its size.
+   * Only the first tile of the group (lowest cell id) reports it, so the group is not counted several times.
+   */
+  protected function getConnectedGroupScore(array $scoreBySize, string $icon): int
+  {
+    $map = $this->getPlayer()->map();
+    if (is_null($map)) {
+      return 0;
+    }
+
+    $group = $map->getConnectedGroupOf($this, $icon);
+    if (empty($group)) {
+      return 0;
+    }
+
+    $uids = array_keys($group);
+    sort($uids, SORT_STRING);
+    if ($uids[0] !== ZooMap::getCellId(['x' => $this->getX(), 'y' => $this->getY()])) {
+      return 0;
+    }
+
+    return $scoreBySize[min(count($group), count($scoreBySize)) - 1];
+  }
+
+  protected function countAdjacentAppealTarget(string $target): int
+  {
+    $map = $this->getPlayer()->map();
+    return is_null($map) ? 0 : $map->countAdjacentIcons($this, self::appealTargetToIcon($target));
+  }
+
+  protected function countAppealTarget(string $target): int
+  {
+    $player = $this->getPlayer();
+    switch (strtolower($target)) {
+      case 'tile in hand':
+        return $player->getHand()->count();
+      case 'open area':
+        return $player->getPlayedCards(self::TILE_OPEN_AREA)->count();
+      case 'project':
+        return $player->getPlayedCards(self::TILE_PROJECT)->count();
+      case 'building':
+        return $player->getPlayedCards(self::TILE_BUILDING)->count();
+      case 'different adjacent icon':
+        $map = $player->map();
+        return is_null($map) ? 0 : $map->countDifferentAdjacentIcons($this);
+      default:
+        return $player->countCardIcon(self::appealTargetToIcon($target));
+    }
+  }
+
+  protected static function appealTargetToIcon(string $target): string
+  {
+    return ucfirst($target);
   }
 
   public function getScoreBonus()

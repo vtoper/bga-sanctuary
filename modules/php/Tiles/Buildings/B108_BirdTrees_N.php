@@ -11,7 +11,7 @@ class B108_BirdTrees_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B108_BirdTrees_N';
     $this->name = 'BIRD TREES';
-    $this->appeal = '2 per adjacent bird';
+    $this->appeal = '2 per adjacent ' . Icons::BIRD;
     $this->gender = 'N';
     //effect = '#####prerequisite next to 1 bird';
     $this->prerequisites = [Icons::BIRD => 1];

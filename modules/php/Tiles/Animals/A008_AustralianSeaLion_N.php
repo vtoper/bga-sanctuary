@@ -12,7 +12,7 @@ class A008_AustralianSeaLion_N extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A008_AustralianSeaLion_N';
     $this->name = 'AUSTRALIAN SEA LION';
-    $this->appeal = '2 per predator';
+    $this->appeal = '2 per ' . Icons::PREDATOR;
     $this->strength = 4;
     $this->gender = 'N';
     $this->effect = [Effects::HUNTER => 3];

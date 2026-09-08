@@ -11,7 +11,7 @@ class B104_OkavangoArea_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B104_OkavangoArea_N';
     $this->name = 'OKAVANGO AREA';
-    $this->appeal = '2 per connected africa';
+    $this->appeal = '2 per connected ' . Icons::AFRICA;
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 africa tiles';
     $this->prerequisites = [Icons::AFRICA => 2];

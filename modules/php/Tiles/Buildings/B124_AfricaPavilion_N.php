@@ -13,7 +13,7 @@ class B124_AfricaPavilion_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B124_AfricaPavilion_N';
     $this->name = 'AFRICA PAVILION';
-    $this->appeal = '1 per connected africa';
+    $this->appeal = '1 per connected ' . Icons::AFRICA;
     $this->gender = 'N';
     //effect = '####ongoingwhen you play an africa tile, draw 1 tile from the pile#####prerequisite by the river';
     $this->prerequisites = [Prerequisites::BY_THE_RIVER => true];

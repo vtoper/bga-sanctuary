@@ -12,7 +12,7 @@ class B113_Aquarium_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B113_Aquarium_N';
     $this->name = 'AQUARIUM';
-    $this->appeal = '8';
+    $this->appeal = 8;
     $this->gender = 'N';
     //effect = '#####prerequisite next to 4 connected water tiles';
     $this->prerequisites = [Prerequisites::CONNECT_PREFIX . Icons::WATER => 4];

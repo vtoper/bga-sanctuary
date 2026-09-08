@@ -12,7 +12,7 @@ class A054_BarbaryMacaque_M extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A054_BarbaryMacaque_M';
     $this->name = 'BARBARY MACAQUE';
-    $this->appeal = '5';
+    $this->appeal = 5;
     $this->strength = 3;
     $this->gender = 'M';
     //effect = 'immediate move 1 action to position 1';

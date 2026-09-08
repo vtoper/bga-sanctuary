@@ -12,7 +12,7 @@ class A046_GreenIguana_N extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A046_GreenIguana_N';
     $this->name = 'GREEN IGUANA';
-    $this->appeal = '4';
+    $this->appeal = 4;
     $this->strength = 3;
     $this->gender = 'N';
     //effect = 'immediate take 1 tile from the display';

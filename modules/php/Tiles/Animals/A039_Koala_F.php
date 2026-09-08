@@ -12,7 +12,7 @@ class A039_Koala_F extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A039_Koala_F';
     $this->name = 'KOALA';
-    $this->appeal = '5';
+    $this->appeal = 5;
     $this->strength = 3;
     $this->gender = 'F';
     //effect = 'immediate discard up to 2 tiles, gain 1 pouch marker for each';

@@ -11,7 +11,7 @@ class B105_AmazonArea_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B105_AmazonArea_N';
     $this->name = 'AMAZON AREA';
-    $this->appeal = '2 per connected americas';
+    $this->appeal = '2 per connected ' . Icons::AMERICAS;
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 americas tiles';
     $this->prerequisites = [Icons::AMERICAS => 2];

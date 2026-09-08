@@ -12,7 +12,7 @@ class A043_GalapagosGiantTortoise_N extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A043_GalapagosGiantTortoise_N';
     $this->name = 'GALAPAGOS GIANT TORTOISE';
-    $this->appeal = '7';
+    $this->appeal = 7;
     $this->strength = 5;
     $this->gender = 'N';
     //effect = 'immediate take 1 conservation token';

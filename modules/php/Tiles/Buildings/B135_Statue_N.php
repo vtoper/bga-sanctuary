@@ -11,7 +11,7 @@ class B135_Statue_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B135_Statue_N';
     $this->name = 'STATUE';
-    $this->appeal = '8';
+    $this->appeal = 8;
     $this->gender = 'N';
     //effect = '#####prerequisite discard 4 tiles';
     // Not a placement prerequisite: this is an action cost (discard 4 tiles), handled elsewhere

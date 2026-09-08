@@ -11,7 +11,7 @@ class P092_Savanna_N extends \Bga\Games\Sanctuary\Models\Project
     parent::__construct($row);
     $this->id = 'P092_Savanna_N';
     $this->name = 'SAVANNA';
-    $this->appeal = '4';
+    $this->appeal = 4;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = 'immediate release 1 predator, get 2/3 conservation tokens';

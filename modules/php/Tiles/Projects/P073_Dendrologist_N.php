@@ -11,7 +11,7 @@ class P073_Dendrologist_N extends \Bga\Games\Sanctuary\Models\Project
     parent::__construct($row);
     $this->id = 'P073_Dendrologist_N';
     $this->name = 'DENDROLOGIST';
-    $this->appeal = '1 per connected forest';
+    $this->appeal = '1 per connected ' . Icons::FOREST;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = '####ongoingplay forest tile with 1 less action strength';

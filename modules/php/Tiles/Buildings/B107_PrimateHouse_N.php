@@ -11,7 +11,7 @@ class B107_PrimateHouse_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B107_PrimateHouse_N';
     $this->name = 'PRIMATE HOUSE';
-    $this->appeal = '2 per adjacent primate';
+    $this->appeal = '2 per adjacent ' . Icons::PRIMATE;
     $this->gender = 'N';
     //effect = '#####prerequisite next to 1 primate';
     $this->prerequisites = [Icons::PRIMATE => 1];

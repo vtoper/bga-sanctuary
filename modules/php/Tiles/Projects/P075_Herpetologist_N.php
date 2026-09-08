@@ -12,7 +12,7 @@ class P075_Herpetologist_N extends \Bga\Games\Sanctuary\Models\Project
     parent::__construct($row);
     $this->id = 'P075_Herpetologist_N';
     $this->name = 'HERPETOLOGIST';
-    $this->appeal = '1 per reptile';
+    $this->appeal = '1 per ' . Icons::REPTILE;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = '####ongoingwhen you play a reptile, take 1 tile from the display';

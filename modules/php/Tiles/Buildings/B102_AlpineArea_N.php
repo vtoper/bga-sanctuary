@@ -11,7 +11,7 @@ class B102_AlpineArea_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B102_AlpineArea_N';
     $this->name = 'ALPINE AREA';
-    $this->appeal = '2 per connected europe';
+    $this->appeal = '2 per connected ' . Icons::EUROPE;
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 europe tiles';
     $this->prerequisites = [Icons::EUROPE => 2];

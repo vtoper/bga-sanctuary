@@ -12,7 +12,7 @@ class A052_InlandTaipan_N extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A052_InlandTaipan_N';
     $this->name = 'INLAND TAIPAN';
-    $this->appeal = '6';
+    $this->appeal = 6;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = 'immediate relocate 1 tile in your zoo';

@@ -13,7 +13,7 @@ class A036_NorthernGiraffe_F extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A036_NorthernGiraffe_F';
     $this->name = 'NORTHERN GIRAFFE';
-    $this->appeal = '7';
+    $this->appeal = 7;
     $this->strength = 4;
     $this->gender = 'F';
     //effect = 'immediate take 1 building from the display';

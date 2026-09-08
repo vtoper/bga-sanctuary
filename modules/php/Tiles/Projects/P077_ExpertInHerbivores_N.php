@@ -13,7 +13,7 @@ class P077_ExpertInHerbivores_N extends \Bga\Games\Sanctuary\Models\Project
     parent::__construct($row);
     $this->id = 'P077_ExpertInHerbivores_N';
     $this->name = 'EXPERT IN HERBIVORES';
-    $this->appeal = '1 per herbivore';
+    $this->appeal = '1 per ' . Icons::HERBIVORE;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = '####ongoingwhen you play a herbivore, take 1 building from the display';

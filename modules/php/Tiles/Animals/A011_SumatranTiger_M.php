@@ -12,7 +12,7 @@ class A011_SumatranTiger_M extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A011_SumatranTiger_M';
     $this->name = 'SUMATRAN TIGER';
-    $this->appeal = '8';
+    $this->appeal = 8;
     $this->strength = 5;
     $this->gender = 'M';
     //effect = 'immediate take 1 conservation token';

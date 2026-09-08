@@ -12,7 +12,7 @@ class A057_HamadryasBaboon_M extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A057_HamadryasBaboon_M';
     $this->name = 'HAMADRYAS BABOON';
-    $this->appeal = '8';
+    $this->appeal = 8;
     $this->strength = 4;
     $this->gender = 'M';
     //effect = 'immediate draw 1 tile from the pile';

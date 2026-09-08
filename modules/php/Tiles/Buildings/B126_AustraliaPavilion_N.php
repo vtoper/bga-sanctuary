@@ -14,7 +14,7 @@ class B126_AustraliaPavilion_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B126_AustraliaPavilion_N';
     $this->name = 'AUSTRALIA PAVILION';
-    $this->appeal = '1 per connected australia';
+    $this->appeal = '1 per connected ' . Icons::AUSTRALIA;
     $this->gender = 'N';
     //effect = '####ongoingwhen you play an australia tile, discard 1 tile to gain 1 pouch token#####prerequisite by the river';
     $this->prerequisites = [Prerequisites::BY_THE_RIVER => true];

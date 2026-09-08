@@ -12,7 +12,7 @@ class A007_Caracal_N extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A007_Caracal_N';
     $this->name = 'CARACAL';
-    $this->appeal = '3';
+    $this->appeal = 3;
     $this->strength = 2;
     $this->gender = 'N';
     $this->effect = [Effects::HUNTER => 3];

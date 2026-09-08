@@ -11,7 +11,7 @@ class P088_YellowstoneNationalPark_N extends \Bga\Games\Sanctuary\Models\Project
     parent::__construct($row);
     $this->id = 'P088_YellowstoneNationalPark_N';
     $this->name = 'YELLOWSTONE NATIONAL PARK';
-    $this->appeal = '4';
+    $this->appeal = 4;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = 'immediate release 1 americas animal, get 2/3 conservation tokens';

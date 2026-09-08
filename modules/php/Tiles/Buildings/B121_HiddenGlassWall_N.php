@@ -12,7 +12,7 @@ class B121_HiddenGlassWall_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B121_HiddenGlassWall_N';
     $this->name = 'HIDDEN GLASS WALL';
-    $this->appeal = '6';
+    $this->appeal = 6;
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 large animals';
     $this->prerequisites = [Prerequisites::NEXT_TO_LARGE_ANIMALS => 2];

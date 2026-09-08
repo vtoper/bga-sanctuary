@@ -468,80 +468,64 @@ class Tiles extends CachedPieces
     return $result;
   }
 
-  public static function applyEffect($card, $player, $methodName, &$args, $throwErrorIfNone = false)
-  {
-    $card = $card instanceof \ARK\Models\ZooCard ? $card : self::get($card);
-    $res = null;
-    $listened = true;
-    $isPlayerEvent = $player->getId() == $card->getPId();
+  // public static function applyEffect($card, $player, $methodName, &$args, $throwErrorIfNone = false)
+  // {
+  //   $card = $card instanceof \ARK\Models\ZooCard ? $card : self::get($card);
+  //   $res = null;
+  //   $listened = true;
+  //   $isPlayerEvent = $player->getId() == $card->getPId();
 
-    if ($methodName == 'playIcons') {
-      list($immediate, $after) = FlowConvertor::getFlow($card->getIconsReaction($args['icons'], $isPlayerEvent));
-      $res =
-        count($immediate) > 1
-        ? [
-          'type' => \NODE_PARALLEL,
-          'childs' => $immediate,
-        ]
-        : (empty($immediate)
-          ? $after[0] ?? null
-          : $immediate[0]);
-    } elseif ($methodName == 'getIncome') {
-      $income = $card->getIncome();
-      foreach ($income as &$bonus) {
-        $bonus['income'] = true;
-      }
-      list($immediate, $after) = FlowConvertor::getFlow($income);
-      $res =
-        count($immediate) > 1
-        ? [
-          'type' => \NODE_PARALLEL,
-          'childs' => $immediate,
-        ]
-        : (empty($immediate)
-          ? $after[0] ?? null
-          : $immediate[0]);
-    } elseif ($player != null && $isPlayerEvent && \method_exists($card, 'onPlayer' . $methodName)) {
-      $n = 'onPlayer' . $methodName;
-      $res = $card->$n($player, $args);
-    } elseif ($player != null && !$isPlayerEvent && \method_exists($card, 'onOpponent' . $methodName)) {
-      $n = 'onOpponent' . $methodName;
-      $res = $card->$n($player, $args);
-    } elseif (\method_exists($card, 'on' . $methodName)) {
-      $n = 'on' . $methodName;
-      $res = $card->$n($player, $args);
-    } else {
-      $listened = false;
-    }
+  //   if ($methodName == 'playIcons') {
+  //     list($immediate, $after) = FlowConvertor::getFlow($card->getIconsReaction($args['icons'], $isPlayerEvent));
+  //     $res =
+  //       count($immediate) > 1
+  //       ? [
+  //         'type' => \NODE_PARALLEL,
+  //         'childs' => $immediate,
+  //       ]
+  //       : (empty($immediate)
+  //         ? $after[0] ?? null
+  //         : $immediate[0]);
+  //   } elseif ($methodName == 'getIncome') {
+  //     $income = $card->getIncome();
+  //     foreach ($income as &$bonus) {
+  //       $bonus['income'] = true;
+  //     }
+  //     list($immediate, $after) = FlowConvertor::getFlow($income);
+  //     $res =
+  //       count($immediate) > 1
+  //       ? [
+  //         'type' => \NODE_PARALLEL,
+  //         'childs' => $immediate,
+  //       ]
+  //       : (empty($immediate)
+  //         ? $after[0] ?? null
+  //         : $immediate[0]);
+  //   } elseif ($player != null && $isPlayerEvent && \method_exists($card, 'onPlayer' . $methodName)) {
+  //     $n = 'onPlayer' . $methodName;
+  //     $res = $card->$n($player, $args);
+  //   } elseif ($player != null && !$isPlayerEvent && \method_exists($card, 'onOpponent' . $methodName)) {
+  //     $n = 'onOpponent' . $methodName;
+  //     $res = $card->$n($player, $args);
+  //   } elseif (\method_exists($card, 'on' . $methodName)) {
+  //     $n = 'on' . $methodName;
+  //     $res = $card->$n($player, $args);
+  //   } else {
+  //     $listened = false;
+  //   }
 
-    if ($throwErrorIfNone && !$listened) {
-      throw new \BgaVisibleSystemException(
-        'Trying to apply effect of a card without corresponding listener : ' . $methodName . ' ' . $card->getId()
-      );
-    }
-    if (!is_null($res)) {
-      Utils::tagTree($res, ['sourceId' => $card->getId()]);
-    }
+  //   if ($throwErrorIfNone && !$listened) {
+  //     throw new \BgaVisibleSystemException(
+  //       'Trying to apply effect of a card without corresponding listener : ' . $methodName . ' ' . $card->getId()
+  //     );
+  //   }
+  //   if (!is_null($res)) {
+  //     Utils::tagTree($res, ['sourceId' => $card->getId()]);
+  //   }
 
-    return $res;
-  }
+  //   return $res;
+  // }
 
-  public static function getStatuses($player)
-  {
-    // Animal statuses
-    $statuses = Animals::getPlayableStatuses($player);
-    // Project statuses
-    foreach ($player->getScoringHand() as $cId => $card) {
-      $b = $card->getScoreBonus();
-      $statuses[$cId] = [
-        'qty' => $card->getQuantity(),
-        'bonus' => is_null($b) ? 0 : $b[CONSERVATION],
-      ];
-    }
-    // TODO : SPONSORS
-
-    return $statuses;
-  }
 
   const HAND = 'hand';
   const DECK = 'deck';

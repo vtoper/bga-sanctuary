@@ -11,7 +11,7 @@ class B114_WaterPlayground_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B114_WaterPlayground_N';
     $this->name = 'WATER PLAYGROUND';
-    $this->appeal = '4';
+    $this->appeal = 4;
     $this->gender = 'N';
     //effect = '#####prerequisite next to 2 water tiles';
     $this->prerequisites = [Icons::WATER => 2];

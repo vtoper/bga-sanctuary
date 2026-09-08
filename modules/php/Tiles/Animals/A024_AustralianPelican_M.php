@@ -12,7 +12,7 @@ class A024_AustralianPelican_M extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A024_AustralianPelican_M';
     $this->name = 'AUSTRALIAN PELICAN';
-    $this->appeal = '6';
+    $this->appeal = 6;
     $this->strength = 4;
     $this->gender = 'M';
     //effect = 'immediate place 1 open area from the pile in your zoo';

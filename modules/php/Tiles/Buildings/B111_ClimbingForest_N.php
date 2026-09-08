@@ -12,7 +12,7 @@ class B111_ClimbingForest_N extends \Bga\Games\Sanctuary\Models\Building
     parent::__construct($row);
     $this->id = 'B111_ClimbingForest_N';
     $this->name = 'CLIMBING FOREST';
-    $this->appeal = '8';
+    $this->appeal = 8;
     $this->gender = 'N';
     //effect = '#####prerequisite next to 4 connected forest tiles';
     $this->prerequisites = [Prerequisites::CONNECT_PREFIX . Icons::FOREST => 4];

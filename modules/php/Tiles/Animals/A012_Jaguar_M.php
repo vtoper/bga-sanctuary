@@ -12,7 +12,7 @@ class A012_Jaguar_M extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A012_Jaguar_M';
     $this->name = 'JAGUAR';
-    $this->appeal = '7';
+    $this->appeal = 7;
     $this->strength = 4;
     $this->gender = 'M';
     $this->effect = [Effects::HUNTER => 3];

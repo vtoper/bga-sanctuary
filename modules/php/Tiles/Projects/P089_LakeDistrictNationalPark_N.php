@@ -11,7 +11,7 @@ class P089_LakeDistrictNationalPark_N extends \Bga\Games\Sanctuary\Models\Projec
     parent::__construct($row);
     $this->id = 'P089_LakeDistrictNationalPark_N';
     $this->name = 'LAKE DISTRICT NATIONAL PARK';
-    $this->appeal = '4';
+    $this->appeal = 4;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = 'immediate release 1 europe animal, get 2/3 conservation tokens';

@@ -11,7 +11,7 @@ class A004_AustralianDingo_F extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A004_AustralianDingo_F';
     $this->name = 'AUSTRALIAN DINGO';
-    $this->appeal = '1 per predator';
+    $this->appeal = '1 per ' . Icons::PREDATOR;
     $this->strength = 2;
     $this->gender = 'F';
     //effect = '';

@@ -12,7 +12,7 @@ class A051_IndianPython_F extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A051_IndianPython_F';
     $this->name = 'INDIAN PYTHON';
-    $this->appeal = '4';
+    $this->appeal = 4;
     $this->strength = 3;
     $this->gender = 'F';
     //effect = 'immediate relocate 1 tile in your zoo';

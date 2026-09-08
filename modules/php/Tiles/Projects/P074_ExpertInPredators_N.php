@@ -12,7 +12,7 @@ class P074_ExpertInPredators_N extends \Bga\Games\Sanctuary\Models\Project
     parent::__construct($row);
     $this->id = 'P074_ExpertInPredators_N';
     $this->name = 'EXPERT IN PREDATORS';
-    $this->appeal = '1 per predator';
+    $this->appeal = '1 per ' . Icons::PREDATOR;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = '####ongoingwhen you play a predator, draw 3 tiles from the pile, keep 1 animal';

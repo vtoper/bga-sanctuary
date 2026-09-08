@@ -11,7 +11,7 @@ class P094_Jungle_N extends \Bga\Games\Sanctuary\Models\Project
     parent::__construct($row);
     $this->id = 'P094_Jungle_N';
     $this->name = 'JUNGLE';
-    $this->appeal = '4';
+    $this->appeal = 4;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = 'immediate release 1 primate, get 2/3 conservation tokens';

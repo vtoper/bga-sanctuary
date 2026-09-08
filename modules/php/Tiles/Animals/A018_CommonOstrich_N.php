@@ -12,7 +12,7 @@ class A018_CommonOstrich_N extends \Bga\Games\Sanctuary\Models\Animal
     parent::__construct($row);
     $this->id = 'A018_CommonOstrich_N';
     $this->name = 'COMMON OSTRICH';
-    $this->appeal = '6';
+    $this->appeal = 6;
     $this->strength = 5;
     $this->gender = 'N';
     //effect = 'immediate place 2 open areas from the pile in your zoo';

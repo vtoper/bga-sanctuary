@@ -11,7 +11,7 @@ class P072_Geologist_N extends \Bga\Games\Sanctuary\Models\Project
     parent::__construct($row);
     $this->id = 'P072_Geologist_N';
     $this->name = 'GEOLOGIST';
-    $this->appeal = '1 per connected rock';
+    $this->appeal = '1 per connected ' . Icons::ROCK;
     $this->strength = 4;
     $this->gender = 'N';
     //effect = '####ongoingplay rock tile with 1 less action strength';

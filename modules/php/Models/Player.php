@@ -297,11 +297,6 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
         return Tiles::getPlayedCards($this->id, $type);
     }
 
-    public function getNextRescueSlot()
-    {
-        $count = Tiles::getRescuedCards($this->id)->count();
-        return $count == 3 ? null : $count;
-    }
 
     public function getPlayedAnimal($icon = null)
     {
@@ -409,5 +404,21 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
         }
 
         return $icons;
+    }
+
+    public function computeScore(bool $notify = false)
+    {
+        $score = 0;
+        $scoreDetail = [];
+        $cards = $this->getPlayedCards();
+        foreach ($cards as $card) {
+            $cardScore = $card->getAppealScore();
+            $score += $cardScore;
+            $scoreDetail[$card->getId()] = $cardScore;
+        }
+        if ($notify) {
+            // Notifications::updateScore($this->id, $score);
+        }
+        return $scoreDetail;
     }
 }
