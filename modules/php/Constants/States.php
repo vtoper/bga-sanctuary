@@ -10,7 +10,8 @@ class States
     const ST_TURN_PREPARATION = 10;
     const ST_START_ASSIGNMENT = 40;
     const ST_END_TURN_PHASE = 80;
-    const ST_END_GAME_SCORING = 90;
+    const ST_END_GAME_SCORING = 98;
+    const ST_END_GAME = 99;
 
     //SETUP STATES
     const ST_SETUP_TURN = 810;

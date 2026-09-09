@@ -94,6 +94,11 @@ class Meeples extends CachedPieces
     return self::ACHIEVEMENT_REQUIREMENTS[$type] ?? 0;
   }
 
+  public static function getEndGameMarker(int $playerId): ?Meeple
+  {
+    return self::getFilteredQuery($playerId, 'reserve', [self::END_GAME_FIRST, self::END_GAME_OTHERS])->getSingle();
+  }
+
   /**
    * Generic base query
    */

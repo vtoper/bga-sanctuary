@@ -14,6 +14,19 @@
       },
     },
   },
+  "105": {
+    "name": "Remove snake images",
+    "attribute": "disable-snake",
+    "needReload": false,
+    "values": {
+      "0": {
+        "name": "Disabled",
+      },
+      "1": {
+        "name": "Enabled",
+      },
+    },
+  },
 
   /*
   EXAMPLE:

@@ -6,8 +6,9 @@ namespace Bga\Games\Sanctuary\States;
 
 use Bga\GameFramework\StateType;
 use Bga\Games\Sanctuary\Game;
+use Bga\Games\Sanctuary\Managers\Players;
+use Bga\Games\Sanctuary\Constants\States;
 
-const ST_END_GAME = 99;
 
 class EndScore extends \Bga\GameFramework\States\GameState
 {
@@ -15,8 +16,9 @@ class EndScore extends \Bga\GameFramework\States\GameState
     function __construct(
         protected Game $game,
     ) {
-        parent::__construct($game,
-            id: 98,
+        parent::__construct(
+            $game,
+            id: States::ST_END_GAME_SCORING,
             type: StateType::GAME,
         );
     }
@@ -26,9 +28,12 @@ class EndScore extends \Bga\GameFramework\States\GameState
      *
      * The onEnteringState method of state `EndScore` is called just before the end of the game.
      */
-    public function onEnteringState() {
+    public function onEnteringState()
+    {
         // Here, we would compute scores if they are not updated live, and compute average statistics
-
-        return ST_END_GAME;
+        foreach (Players::getAll() as $pId => $player) {
+            $player->computeScore(true);
+        }
+        return States::ST_END_GAME;
     }
 }
