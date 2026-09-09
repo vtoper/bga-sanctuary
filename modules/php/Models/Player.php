@@ -410,14 +410,58 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
     {
         $score = 0;
         $scoreDetail = [];
+        // Tiles played
         $cards = $this->getPlayedCards();
         foreach ($cards as $card) {
             $cardScore = $card->getAppealScore();
             $score += $cardScore;
             $scoreDetail[$card->getId()] = $cardScore;
         }
+        // pouch markers
+        $scoreDetail['pouchMarkers'] = 2 * $this->getPouch();
+        $score += $scoreDetail['pouchMarkers'];
+
+        // Conservation markers
+        $scoreDetail['conservationMarkers'] = 2 * $this->getConservation();
+        $score += $scoreDetail['conservationMarkers'];
+
+        // Conservation Board
+        $conservationBoard = Meeples::getPlacedAchievementMarkers($this->id);
+        $conservationMap =  [
+            Meeples::ACHIEVEMENT_2 => 5,
+            Meeples::ACHIEVEMENT_3 => 7,
+            Meeples::ACHIEVEMENT_4 => 10,
+            Meeples::ACHIEVEMENT_5 => 14
+        ];
+        $scoreDetail['conservationBoard'] = 0;
+        foreach ($conservationBoard as $mId => $marker) {
+            $score += $conservationMap[$marker->getType()] ?? 0;
+            $scoreDetail['conservationBoard'] += $conservationMap[$marker->getType()] ?? 0;
+        }
+
+        // End of game trigger
+        $endOfGameMarker = Meeples::getEndGameMarker($this->id);
+        $scoreDetail['endGameMarker'] = 0;
+        if (!is_null($endOfGameMarker)) {
+            if ($endOfGameMarker->getType() == Meeples::END_GAME_FIRST) {
+                $score += 10; // Example scoring for first end game marker
+                $scoreDetail['endGameMarker'] = 10;
+            } else {
+                $score += 5; // Example scoring for other end game markers
+                $scoreDetail['endGameMarker'] = 5;
+            }
+        }
+
         if ($notify) {
-            // Notifications::updateScore($this->id, $score);
+            Game::get()->bga->notify->all(
+                'scoring',
+                clienttranslate('${player_name} scores ${score} points'),
+                [
+                    'player_name' => $this->getName(),
+                    'score' => $score,
+                    'scoreDetail' => $scoreDetail
+                ]
+            );
         }
         return $scoreDetail;
     }
