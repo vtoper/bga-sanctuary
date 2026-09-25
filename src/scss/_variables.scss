@@ -1,5 +1,11 @@
-// Hex cell size for the zoo map grid (adapted from Ark Nova's player-board.scss)
-$cellWidth: 22.6px;
+// Target outer width for the game board — market image and map board share this width
+$boardDisplayWidth: 1000px;
+$marketHeight: 222px;
+
+// Hex cell size scaled so map outer width = $boardDisplayWidth
+// Outer = $zooMapWidth + 2*10px (padding) + 2*4px (border) = $zooMapWidth + 28px
+// $zooMapWidth = 22 * $cellWidth; target = 972px → $cellWidth ≈ 44.2px
+$cellWidth: 44.2px;
 $cellHeight: 1.732050808 * $cellWidth;
 
 // Must stay in sync with ZooMap::createGrid dimensions in ZooMap.php
@@ -13,15 +19,14 @@ $zooMapRows: 2 * $zooMapGridDimY;
 $zooMapWidth: $zooMapColumns * $cellWidth;
 $zooMapHeight: $zooMapRows * $cellHeight;
 
-// Actual displayed map-hex dimensions:
-// Each cell spans 4 grid columns × 2 grid rows in the CSS grid, giving a flat-top hex
-// ratio of width:height = 4/(2√3) = 2/√3 ≈ 1.155 (wider than tall — correct for flat-top)
-$hexWidth:  4 * $cellWidth;   // 90.4px
-$hexHeight: 2 * $cellHeight;  // 78.28px
+// Actual displayed map-hex dimensions (each cell spans 4 cols × 2 rows)
+$hexWidth:  4 * $cellWidth;   // 176.8px
+$hexHeight: 2 * $cellHeight;  // 153.1px
 
-// Standalone tile sizes — same flat-top ratio as map hex, scaled up
-$poolTileWidth:  $hexWidth * 1.5;   // 135.6px
-$poolTileHeight: $hexHeight * 1.5;  // 117.42px
+// Pool tiles sized to fit market.jpg hex slot outlines (independent of map hex scale)
+$poolTileWidth:  140px;
+$poolTileHeight: 121px;  // 140 × (√3/2)
 
-$handTileWidth:  $hexWidth * 2;     // 180.8px
-$handTileHeight: $hexHeight * 2;    // 156.56px
+// Hand tiles: comfortable reading size in the floating hand drawer
+$handTileWidth:  180px;
+$handTileHeight: 156px;  // 180 × (√3/2)

@@ -3,21 +3,26 @@
 // ─── Market / Tile Pool (top of play area) ──────────────────────────────────
 
 .sanctuary-tile-pool {
-  display: block;
-  width: 100%;
+  position: relative;
+  width: $boardDisplayWidth;
+  height: $marketHeight;
   margin: 0 0 10px 0;
-  padding: 10px;
-  background: #e6e0cc;
-  border-bottom: 4px solid #666246;
-  box-sizing: border-box;
+  background-image: url('img/market.jpg');
+  background-size: 100% 100%;
+  overflow: hidden;
 }
 
+// Overlay container positioned over the 6 hex slot outlines in market.jpg
+// The arrow icons on the right side of the image occupy ~65px, so tiles end at ~935px
 .tile-pool-tiles {
+  position: absolute;
+  top: 38px; // below the green numbered strip
+  left: 15px;
+  width: 900px; // 1000 - 15 (left) - 65 (arrows on right)
+  height: 184px; // 222 - 38
   display: flex;
-  flex-wrap: nowrap;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 4px 0;
+  align-items: center;
+  justify-content: space-between;
 }
 
 // Pool tiles are proper flat-top hexagons (wider than tall), same ratio as map cells
@@ -32,17 +37,29 @@
   -webkit-clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
 
   // Fallback colors by tile type (shown when image is missing)
-  &.tile-animal    { background-color: #6eb87b; }
-  &.tile-building  { background-color: #c49a6c; }
-  &.tile-project   { background-color: #7ba3c4; }
-  &.tile-open-area { background-color: #d9c9a3; }
-  &.tile-unknown   { background-color: #b0b0b0; }
+  &.tile-animal {
+    background-color: #6eb87b;
+  }
+  &.tile-building {
+    background-color: #c49a6c;
+  }
+  &.tile-project {
+    background-color: #7ba3c4;
+  }
+  &.tile-open-area {
+    background-color: #d9c9a3;
+  }
+  &.tile-unknown {
+    background-color: #b0b0b0;
+  }
 
   // No cursor by default — only when there is an active click handler
   &.selectable {
     cursor: pointer;
     outline: 3px solid #ffe08a;
-    &:hover { outline-color: #ffd35c; }
+    &:hover {
+      outline-color: #ffd35c;
+    }
   }
 
   &.selected {
@@ -128,16 +145,28 @@
   -webkit-clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
 
   // Fallback colors by tile type
-  &.tile-animal    { background-color: #6eb87b; }
-  &.tile-building  { background-color: #c49a6c; }
-  &.tile-project   { background-color: #7ba3c4; }
-  &.tile-open-area { background-color: #d9c9a3; }
-  &.tile-unknown   { background-color: #b0b0b0; }
+  &.tile-animal {
+    background-color: #6eb87b;
+  }
+  &.tile-building {
+    background-color: #c49a6c;
+  }
+  &.tile-project {
+    background-color: #7ba3c4;
+  }
+  &.tile-open-area {
+    background-color: #d9c9a3;
+  }
+  &.tile-unknown {
+    background-color: #b0b0b0;
+  }
 
   &.selectable {
     outline: 3px solid #ffe08a;
     cursor: pointer;
-    &:hover { outline-color: #ffd35c; }
+    &:hover {
+      outline-color: #ffd35c;
+    }
   }
 
   &.selected {

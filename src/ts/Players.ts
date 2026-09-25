@@ -36,8 +36,13 @@ export class Players {
     // Market at top — created first so it appears above player boards
     this.createTilePool();
 
-    for (const playerId in this.gamedatas.players) {
-      const player = this.gamedatas.players[playerId];
+    // Current player's board first (own line), then other players after
+    const currentPlayerId = String(getCurrentPlayerId());
+    const orderedPlayers = [
+      ...Object.values(this.gamedatas.players).filter((p) => String(p.id) === currentPlayerId),
+      ...Object.values(this.gamedatas.players).filter((p) => String(p.id) !== currentPlayerId),
+    ];
+    for (const player of orderedPlayers) {
       this.createPlayerBoard(player);
       this.setupPlayerPanel(player);
     }
@@ -190,8 +195,7 @@ export class Players {
     if (!cell) return;
     cell.classList.remove('has-tile');
     cell.classList.remove('tile-animal', 'tile-building', 'tile-project', 'tile-open-area', 'tile-unknown');
-    delete cell.dataset.tileId;
-    cell.style.backgroundImage = '';
+    delete cell.dataset.id;
   }
 
   /**
@@ -219,7 +223,6 @@ export class Players {
   private createTileNode(id: string, cssClass: string, tile: SanctuaryTile): HTMLElement {
     const tileType = getTileType(tile.id);
     const node = createDivElement(id, `${cssClass} tile-${tileType}`, { id: tile.id, tileId: tile.id });
-    node.style.backgroundImage = `url(img/tiles/${tile.id}.jpg)`;
     node.title = this.getTileName(tile);
     return node;
   }
@@ -376,8 +379,7 @@ export class Players {
 
     const tileType = getTileType(tile.id);
     cell.classList.add('has-tile', `tile-${tileType}`);
-    cell.dataset.tileId = tile.id;
-    cell.style.backgroundImage = `url(img/tiles/${tile.id}.jpg)`;
+    cell.dataset.id = tile.id;
     cell.title = this.getTileName(tile);
     cell.innerText = '';
   }
