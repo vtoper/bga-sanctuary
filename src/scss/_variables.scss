@@ -1,4 +1,4 @@
-// Hex cell size for the zoo map grid, adapted from Ark Nova's player-board.scss
+// Hex cell size for the zoo map grid (adapted from Ark Nova's player-board.scss)
 $cellWidth: 22.6px;
 $cellHeight: 1.732050808 * $cellWidth;
 
@@ -13,6 +13,15 @@ $zooMapRows: 2 * $zooMapGridDimY;
 $zooMapWidth: $zooMapColumns * $cellWidth;
 $zooMapHeight: $zooMapRows * $cellHeight;
 
-// Hand tiles are the same hexagons, displayed bigger than on the map
-$handTileWidth: 3 * $cellWidth;
-$handTileHeight: 1.732050808 * $handTileWidth;
+// Actual displayed map-hex dimensions:
+// Each cell spans 4 grid columns × 2 grid rows in the CSS grid, giving a flat-top hex
+// ratio of width:height = 4/(2√3) = 2/√3 ≈ 1.155 (wider than tall — correct for flat-top)
+$hexWidth:  4 * $cellWidth;   // 90.4px
+$hexHeight: 2 * $cellHeight;  // 78.28px
+
+// Standalone tile sizes — same flat-top ratio as map hex, scaled up
+$poolTileWidth:  $hexWidth * 1.5;   // 135.6px
+$poolTileHeight: $hexHeight * 1.5;  // 117.42px
+
+$handTileWidth:  $hexWidth * 2;     // 180.8px
+$handTileHeight: $hexHeight * 2;    // 156.56px

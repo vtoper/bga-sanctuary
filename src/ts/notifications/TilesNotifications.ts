@@ -7,53 +7,95 @@ export class TilesNotifications {
     this.bga = bga;
   }
 
+  // Market refilled: replace all pool tiles
   async notif_fillPool(args) {
-    console.debug(args);
+    players.setTilePool(args.tiles ?? []);
   }
 
+  // Current player draws tiles from pool into hand
   async notif_drawTiles(args) {
-    console.debug(args);
+    // Remove drawn tiles from pool
+    for (const tileId of args.cardIds ?? []) {
+      players.getPoolTileNode(tileId)?.remove();
+    }
+    // Update hand with new tiles
+    players.setHand(args.tiles ?? []);
+    players.setHandCount(args.player_id, args.handCount ?? (args.tiles ?? []).length);
   }
 
+  // Opponent draws (tiles are hidden): remove from pool, update opponent's hand count
   async notif_pDrawCards(args) {
-    console.debug(args);
+    for (const tileId of args.cardIds ?? []) {
+      players.getPoolTileNode(tileId)?.remove();
+    }
+    if (args.handCount !== undefined) {
+      players.setHandCount(args.player_id, args.handCount);
+    }
   }
 
+  // Animal tile played from hand onto the map
   async notif_animalPlayed(args) {
-    console.debug(args);
+    players.removeHandTiles(args.player_id, [args.tile.id]);
+    players.setTileOnBoard(args.player_id, args.tile);
+    players.setHandCount(args.player_id, args.handCount ?? 0);
   }
 
+  // Open area tile placed on the map
   async notif_openAreaPlaced(args) {
-    console.debug(args);
-    // TODO: decrease deck count
+    players.removeHandTiles(args.player_id, [args.tile.id]);
+    players.setTileOnBoard(args.player_id, args.tile);
+    if (args.handCount !== undefined) {
+      players.setHandCount(args.player_id, args.handCount);
+    }
   }
 
+  // Pouch tiles gained (tiles spent → pouch token added)
   async notif_pouchGained(args) {
-    players.removeHandTiles(args.player_id, args.cardIds);
+    players.removeHandTiles(args.player_id, args.cardIds ?? []);
     players.setPouch(args.player_id, args.pouch);
   }
 
+  // Action card moved/upgraded
   async notif_actionCardMoved(args) {
     players.setActionCards(args.player_id, args.actionCards);
   }
 
+  // Building tile played from hand onto the map
   async notif_buildingPlayed(args) {
-    console.debug(args);
+    players.removeHandTiles(args.player_id, [args.tile.id]);
+    players.setTileOnBoard(args.player_id, args.tile);
+    if (args.handCount !== undefined) {
+      players.setHandCount(args.player_id, args.handCount);
+    }
   }
 
+  // Project tile played from hand onto the map
   async notif_projectPlayed(args) {
-    console.debug(args);
+    players.removeHandTiles(args.player_id, [args.tile.id]);
+    players.setTileOnBoard(args.player_id, args.tile);
+    if (args.handCount !== undefined) {
+      players.setHandCount(args.player_id, args.handCount);
+    }
   }
 
+  // Conservation marker placed (tiles spent from hand)
   async notif_conservationSupported(args) {
-    console.debug(args);
+    players.removeHandTiles(args.player_id, args.cardIds ?? []);
+    if (args.handCount !== undefined) {
+      players.setHandCount(args.player_id, args.handCount);
+    }
   }
 
+  // Upgrade token used (action cards updated)
   async notif_upgradeTokenUsed(args) {
-    console.debug(args);
+    if (args.actionCards) {
+      players.setActionCards(args.player_id, args.actionCards);
+    }
   }
 
+  // Tile relocated on the board (moved from one cell to another)
   async notif_tileRelocated(args) {
-    console.debug(args);
+    players.clearMapCell(args.player_id, args.fromX, args.fromY);
+    players.setTileOnBoard(args.player_id, args.tile);
   }
 }

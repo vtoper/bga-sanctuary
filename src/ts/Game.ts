@@ -144,10 +144,6 @@ export class Game {
     this.stateProcessor.process(args.args, args);
   }
 
-  async notif_fillPool(args) {
-    console.debug(args);
-  }
-
   // TODO: from this point and below, you can write your game notifications handling methods
 
   /*

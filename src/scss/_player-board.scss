@@ -7,15 +7,24 @@
 }
 
 .zoo-map {
-  .pouch-marker {
+  .zoo-map-header {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 5px;
+    justify-content: space-between;
     margin-bottom: 5px;
     color: #403b2b;
     font-size: 12px;
     font-weight: bold;
+  }
+
+  .zoo-map-player-name {
+    flex: 1;
+  }
+
+  .pouch-marker {
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
 
   .pouch-marker-value {
@@ -88,19 +97,17 @@
     height: $zooMapHeight;
   }
 
-  // Hexagon shape, adapted from Ark Nova's .zoo-map-cell clip-path
+  // Hexagon shape for map cells (flat-top: each cell spans 4 cols × 2 rows)
   .zoo-map-cell {
     box-sizing: border-box;
     background: #a9d18e;
     border: 1px solid #557a46;
-    text-align: center;
     clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
     -webkit-clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
 
     &.playable {
       background: #ffe08a;
       cursor: pointer;
-
       &:hover {
         background: #ffd35c;
       }
@@ -109,7 +116,6 @@
     &.selectable {
       background: #ffe08a;
       cursor: pointer;
-
       &:hover {
         background: #ffd35c;
       }
@@ -120,16 +126,175 @@
     }
 
     &.has-tile {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 15%;
-      background: #d9c9a3;
+      background-size: cover;
+      background-position: center;
       border-color: #8a7b52;
-      font-size: 6px;
-      line-height: 1.1;
-      overflow: hidden;
-      word-break: break-word;
+
+      // Fallback colors by tile type (shown when image is missing)
+      &.tile-animal {
+        background-color: #6eb87b;
+      }
+      &.tile-building {
+        background-color: #c49a6c;
+      }
+      &.tile-project {
+        background-color: #7ba3c4;
+      }
+      &.tile-open-area {
+        background-color: #d9c9a3;
+      }
+      &.tile-unknown {
+        background-color: #b0b0b0;
+      }
     }
+  }
+}
+
+// ─── Player Panel: Resource Counters ────────────────────────────────────────
+
+.sanctuary-player-info {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 4px 2px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.sanctuary-counter-holder {
+  display: flex;
+  align-items: center;
+}
+
+.sanctuary-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  line-height: 32px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.icon-energy {
+  background-color: #4a90d9;
+  background-image: url('img/icon-energy.png');
+}
+.icon-handcount {
+  background-color: #b08050;
+  background-image: url('img/icon-hand.png');
+}
+.icon-pouch {
+  background-color: #e8b45c;
+  color: #3a240d;
+  background-image: url('img/icon-pouch.png');
+}
+
+// ─── Player Panel: Icon Count Summary ───────────────────────────────────────
+
+// ─── Player Panel: Icon Count Summary ───────────────────────────────────────
+// Sprite: zoo-card-badges.jpg — 5 cols × 7 rows
+// X positions: col 0=0%, col 1=25%, col 2=50%, col 3=75%, col 4=100%
+// Y positions: row 2=33.33%, row 4=66.67%, row 5=83.33%, row 6=100%
+
+.sanctuary-icons-summary {
+  margin-top: 4px;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  padding-top: 4px;
+}
+
+.icons-row {
+  display: flex;
+  justify-content: space-around;
+  padding: 2px 0;
+}
+
+.icon-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 11px;
+  font-weight: bold;
+
+  &.empty {
+    opacity: 0.3;
+  }
+
+  .icon-badge {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    background-image: url('img/zoo-card-badges.jpg');
+    background-size: 500% 700%;
+
+    // Continents — row 2
+    &[data-type='Africa'] {
+      background-position: 0% 33.33%;
+    }
+    &[data-type='Americas'] {
+      background-position: 25% 33.33%;
+    }
+    &[data-type='Asia'] {
+      background-position: 50% 33.33%;
+    }
+    &[data-type='Australia'] {
+      background-position: 75% 33.33%;
+    }
+    &[data-type='Europe'] {
+      background-position: 100% 33.33%;
+    }
+
+    // Animal types — rows 4–5
+    &[data-type='Primate'] {
+      background-position: 0% 66.67%;
+    }
+    &[data-type='Bear'] {
+      background-position: 25% 66.67%;
+    }
+    &[data-type='Bird'] {
+      background-position: 75% 66.67%;
+    }
+    &[data-type='Predator'] {
+      background-position: 100% 66.67%;
+    }
+    &[data-type='Herbivore'] {
+      background-position: 0% 83.33%;
+    }
+    &[data-type='Reptile'] {
+      background-position: 25% 83.33%;
+    }
+    &[data-type='PettingZoo'] {
+      background-position: 50% 83.33%;
+    }
+
+    // Habitats — row 6
+    &[data-type='Rock'] {
+      background-position: 75% 100%;
+    }
+    &[data-type='Water'] {
+      background-position: 100% 100%;
+    }
+
+    // Forest and Undefined have no sprite in zoo-card-badges.jpg — color fallbacks
+    &[data-type='Forest'] {
+      background-image: none;
+      background-color: #50a050;
+    }
+    &[data-type='Undefined'] {
+      background-image: none;
+      background-color: #b0b0b0;
+    }
+  }
+
+  .icon-count {
+    line-height: 1.2;
   }
 }

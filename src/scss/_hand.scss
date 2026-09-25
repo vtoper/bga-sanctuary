@@ -1,96 +1,146 @@
 @import 'variables';
 
-.sanctuary-player-hand {
-  display: block;
-  margin: 10px;
-}
-
-.player-hand-tiles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 10px;
-  min-height: $handTileHeight;
-  background-color: #e6e0cc;
-  border: 4px solid #666246;
-  border-radius: 6px;
-}
-
-.hand-tile {
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: $handTileWidth;
-  height: $handTileHeight;
-  padding: 0 18%;
-  background: #a9d18e;
-  border: 1px solid #557a46;
-  text-align: center;
-  font-size: 11px;
-  line-height: 1.1;
-  overflow: hidden;
-  clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
-  -webkit-clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
-
-  &.selectable {
-    background: #ffe08a;
-    cursor: pointer;
-
-    &:hover {
-      background: #ffd35c;
-    }
-  }
-
-  &.selected {
-    background: #ff9f1c;
-  }
-}
+// ─── Market / Tile Pool (top of play area) ──────────────────────────────────
 
 .sanctuary-tile-pool {
   display: block;
-  margin: 10px;
+  width: 100%;
+  margin: 0 0 10px 0;
+  padding: 10px;
+  background: #e6e0cc;
+  border-bottom: 4px solid #666246;
+  box-sizing: border-box;
 }
 
 .tile-pool-tiles {
   display: flex;
   flex-wrap: nowrap;
   gap: 6px;
-  min-height: $cellHeight * 1.5;
   overflow-x: auto;
-  padding: 10px;
-  background-color: #e6e0cc;
-  border: 4px solid #666246;
-  border-radius: 6px;
+  padding: 4px 0;
 }
 
+// Pool tiles are proper flat-top hexagons (wider than tall), same ratio as map cells
 .pool-tile {
+  flex: 0 0 $poolTileWidth;
+  width: $poolTileWidth;
+  height: $poolTileHeight;
   box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 ($cellWidth * 10);
-  width: $cellWidth * 10;
-  height: $cellHeight * 1.5;
-  background: #a9d18e;
-  border: 1px solid #557a46;
-  text-align: center;
-  font-size: 10px;
-  line-height: 1.1;
-  overflow: hidden;
+  background-size: cover;
+  background-position: center;
   clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
   -webkit-clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
 
-  &.selectable {
-    background: #ffe08a;
-    cursor: pointer;
+  // Fallback colors by tile type (shown when image is missing)
+  &.tile-animal    { background-color: #6eb87b; }
+  &.tile-building  { background-color: #c49a6c; }
+  &.tile-project   { background-color: #7ba3c4; }
+  &.tile-open-area { background-color: #d9c9a3; }
+  &.tile-unknown   { background-color: #b0b0b0; }
 
-    &:hover {
-      background: #ffd35c;
-    }
+  // No cursor by default — only when there is an active click handler
+  &.selectable {
+    cursor: pointer;
+    outline: 3px solid #ffe08a;
+    &:hover { outline-color: #ffd35c; }
   }
 
   &.selected {
-    background: #ff9f1c;
+    outline: 3px solid #ff9f1c;
+  }
+}
+
+// ─── Floating Hand Drawer ────────────────────────────────────────────────────
+
+#floating-hand-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  transform: translateY(calc(100% - 50px));
+  transition: transform 0.5s;
+  background: rgba(40, 39, 36, 0.88);
+  border-top: 1px solid #7c5d45;
+  border-right: 1px solid #7c5d45;
+  border-top-right-radius: 8px;
+  box-shadow: 0 0 10px 1px rgba(200, 170, 100, 0.5);
+
+  &[data-open] {
+    transform: translateY(0);
+  }
+}
+
+#floating-hand-button-container {
+  position: absolute;
+  top: -50px;
+  left: 0;
+  display: flex;
+  z-index: 2;
+}
+
+#floating-hand-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #888;
+  border: 1px solid #333;
+  box-shadow: 2px 2px 5px black;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 5px;
+  transition: transform 0.3s;
+
+  .icon-hand {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.sanctuary-player-hand {
+  padding: 8px;
+}
+
+.player-hand-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  min-height: $handTileHeight;
+  min-width: 200px;
+}
+
+// ─── Hand Tiles ──────────────────────────────────────────────────────────────
+
+// Hand tiles are proper flat-top hexagons (wider than tall), 2× map hex size
+.hand-tile {
+  box-sizing: border-box;
+  width: $handTileWidth;
+  height: $handTileHeight;
+  background-size: cover;
+  background-position: center;
+  clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
+  -webkit-clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
+
+  // Fallback colors by tile type
+  &.tile-animal    { background-color: #6eb87b; }
+  &.tile-building  { background-color: #c49a6c; }
+  &.tile-project   { background-color: #7ba3c4; }
+  &.tile-open-area { background-color: #d9c9a3; }
+  &.tile-unknown   { background-color: #b0b0b0; }
+
+  &.selectable {
+    outline: 3px solid #ffe08a;
+    cursor: pointer;
+    &:hover { outline-color: #ffd35c; }
+  }
+
+  &.selected {
+    outline: 3px solid #ff9f1c;
   }
 }

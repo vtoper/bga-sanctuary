@@ -9,11 +9,12 @@ interface SanctuaryTile {
 }
 
 interface SanctuaryPlayer extends Player {
-  energy: number; // any information you add on each result['players']
+  energy: number;
   hand: SanctuaryTile[]; // only filled for the current player
   handCount: number;
   actionCards: SanctuaryActionCard[];
   pouch: number;
+  icons: { [iconName: string]: number }; // countCardIcons() — 16 continent/type/habitat counts
 }
 
 interface SanctuaryActionCard {
