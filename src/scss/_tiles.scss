@@ -140,14 +140,16 @@ $sanctuaryTiles: (
 // Open area tiles share a single image
 .pool-tile.tile-open-area,
 .hand-tile.tile-open-area,
-.zoo-map-cell.tile-open-area {
+.zoo-map-cell.tile-open-area,
+.tile-tooltip-image.tile-open-area {
   background-image: url('img/tiles/openArea.jpg');
 }
 
 @each $tileId in $sanctuaryTiles {
   .pool-tile[data-id='#{$tileId}'],
   .hand-tile[data-id='#{$tileId}'],
-  .zoo-map-cell[data-id='#{$tileId}'] {
+  .zoo-map-cell[data-id='#{$tileId}'],
+  .tile-tooltip-image[data-id='#{$tileId}'] {
     background-image: url('img/tiles/#{$tileId}.jpg');
   }
 }

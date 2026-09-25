@@ -173,3 +173,57 @@
     outline: 3px solid #ff9f1c;
   }
 }
+
+// ─── Tile Tooltip ─────────────────────────────────────────────────────────────
+
+.tile-tooltip {
+  display: flex;
+  gap: 16px;
+  padding: 8px;
+  min-width: 440px;
+  max-width: 600px;
+}
+
+.tile-tooltip-image {
+  flex: 0 0 300px;
+  width: 300px;
+  height: 260px; // 300 × (√3/2)
+  background-size: cover;
+  background-position: center;
+  clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
+  -webkit-clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
+
+  &.tile-animal    { background-color: #6eb87b; }
+  &.tile-building  { background-color: #c49a6c; }
+  &.tile-project   { background-color: #7ba3c4; }
+  &.tile-open-area { background-color: #d9c9a3; }
+  &.tile-unknown   { background-color: #b0b0b0; }
+}
+
+.tile-tooltip-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 120px;
+}
+
+.tile-tooltip-name {
+  font-weight: bold;
+  font-size: 13px;
+  color: #2a1f0a;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding-bottom: 4px;
+}
+
+.tile-tooltip-type {
+  font-size: 11px;
+  color: #888;
+  text-transform: capitalize;
+}
+
+.tile-tooltip-effect {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #333;
+}

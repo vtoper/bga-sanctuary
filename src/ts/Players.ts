@@ -3,6 +3,7 @@ import {
   addUpdatePlayerOrderingCallback,
   getCurrentPlayerId,
   attachRegisteredTooltips,
+  addCustomTooltip,
   createDivElement,
   insertDivElement,
 } from './framework/utils';
@@ -79,7 +80,9 @@ export class Players {
         return firstSlot - secondSlot;
       })
       .forEach((tile) => {
-        poolNode.appendChild(this.createTileNode(`pool-tile-${tile.id}`, 'pool-tile', tile));
+        const node = this.createTileNode(`pool-tile-${tile.id}`, 'pool-tile', tile);
+        poolNode.appendChild(node);
+        addCustomTooltip(node, this.buildTileTooltipHtml(tile));
       });
   }
 
@@ -129,7 +132,9 @@ export class Players {
 
     handTilesNode.innerHTML = '';
     for (const tile of tiles) {
-      handTilesNode.appendChild(this.createHandTile(tile));
+      const node = this.createHandTile(tile);
+      handTilesNode.appendChild(node);
+      addCustomTooltip(node, this.buildTileTooltipHtml(tile));
     }
   }
 
@@ -225,6 +230,28 @@ export class Players {
     const node = createDivElement(id, `${cssClass} tile-${tileType}`, { id: tile.id, tileId: tile.id });
     node.title = this.getTileName(tile);
     return node;
+  }
+
+  // TODO: populate with effect descriptions for each tile ID
+  private static readonly TILE_EFFECTS: Record<string, string> = {
+    'A001_Lion_M': 'Predator · Africa. Place in a Rock enclosure of size 3 or more.',
+    'A002_Lion_F': 'Predator · Africa. Place in a Rock enclosure of size 3 or more.',
+    'B101_OutbackArea_N': 'Australian themed area. Provides 2 Rock habitat cells for Australian animals.',
+    'P071_Hydrologist_N': 'Expert. Immediate: gain 3 Water habitat cells on your map.',
+  };
+
+  private buildTileTooltipHtml(tile: SanctuaryTile): string {
+    const tileType = getTileType(tile.id);
+    const tileName = this.getTileName(tile);
+    const effect = Players.TILE_EFFECTS[tile.id] ?? _('Effect coming soon');
+    return `<div class="tile-tooltip">
+      <div class="tile-tooltip-image tile-${tileType}" data-id="${tile.id}"></div>
+      <div class="tile-tooltip-info">
+        <div class="tile-tooltip-name">${tileName}</div>
+        <div class="tile-tooltip-type">${tileType}</div>
+        <div class="tile-tooltip-effect">${effect}</div>
+      </div>
+    </div>`;
   }
 
   // Icon groups matching PHP Icons::CONTINENTS_AND_TYPES_AND_HABITATS
@@ -380,8 +407,8 @@ export class Players {
     const tileType = getTileType(tile.id);
     cell.classList.add('has-tile', `tile-${tileType}`);
     cell.dataset.id = tile.id;
-    cell.title = this.getTileName(tile);
     cell.innerText = '';
+    addCustomTooltip(cell, this.buildTileTooltipHtml(tile));
   }
 
   /**
