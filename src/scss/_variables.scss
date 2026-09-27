@@ -45,6 +45,17 @@ $actionCardWidth: 200px;
 $actionCardHeight: 235px; // 200 × (352 / 299)
 $actionCardGap: 0px;
 
+// Selection feedback. Clickable elements stay plain until hovered; only the element
+// actually picked keeps a permanent highlight.
+$hoverHighlight: #ffd35c;
+$selectedHighlight: #ff9f1c;
+
+// Hexagons are clipped with clip-path, which also clips away outlines and box-shadows.
+// A drop-shadow filter is applied after clipping, so it traces the hexagon silhouette.
+@mixin hexHighlight($color) {
+  filter: drop-shadow(0 0 3px $color) drop-shadow(0 0 3px $color);
+}
+
 // Action bar (img/actionBar.jpg, 2752 × 242): 4 zones, one per action card slot.
 // Its zones are evenly quartered, so drawing it at the exact width of the card row
 // (gaps included) lines each zone up with the card underneath it.

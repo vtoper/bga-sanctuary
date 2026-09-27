@@ -64,14 +64,14 @@
   // No cursor by default — only when there is an active click handler
   &.selectable {
     cursor: pointer;
-    outline: 3px solid #ffe08a;
     &:hover {
-      outline-color: #ffd35c;
+      @include hexHighlight($hoverHighlight);
     }
   }
 
-  &.selected {
-    outline: 3px solid #ff9f1c;
+  &.selected,
+  &.selected:hover {
+    @include hexHighlight($selectedHighlight);
   }
 }
 
@@ -170,15 +170,15 @@
   }
 
   &.selectable {
-    outline: 3px solid #ffe08a;
     cursor: pointer;
     &:hover {
-      outline-color: #ffd35c;
+      @include hexHighlight($hoverHighlight);
     }
   }
 
-  &.selected {
-    outline: 3px solid #ff9f1c;
+  &.selected,
+  &.selected:hover {
+    @include hexHighlight($selectedHighlight);
   }
 }
 

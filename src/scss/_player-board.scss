@@ -100,16 +100,20 @@
       background-position-y: 100%;
     }
 
+    // Outlines are drawn inside the card: the cards sit edge to edge, so an outward
+    // outline would be painted over by the next card
     &.selectable {
       cursor: pointer;
-      outline: 3px solid #ffe08a;
       &:hover {
-        outline-color: #ffd35c;
+        outline: 3px solid $hoverHighlight;
+        outline-offset: -3px;
       }
     }
 
-    &.selected {
-      outline: 3px solid #ff9f1c;
+    &.selected,
+    &.selected:hover {
+      outline: 3px solid $selectedHighlight;
+      outline-offset: -3px;
     }
 
     // Card chosen for the current turn, until the cleanup puts it back in slot 1
@@ -155,24 +159,26 @@
     clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
     -webkit-clip-path: polygon(26.25% 2.5%, 73.75% 2.5%, 97.5% 50%, 73.75% 97.5%, 26.25% 97.5%, 2.5% 50%);
 
-    &.playable {
-      background: #ffe08a;
-      cursor: pointer;
-      &:hover {
-        background: #ffd35c;
-      }
-    }
-
+    // The tint is what makes empty candidate cells findable at a glance, so it stays.
+    // The hover highlight traces the hexagon, so it also shows on cells already
+    // carrying a tile — where the tile image hides any background change.
+    &.playable,
     &.selectable {
-      background: #ffe08a;
       cursor: pointer;
+      &:not(.has-tile) {
+        background: #ffe08a;
+      }
       &:hover {
-        background: #ffd35c;
+        @include hexHighlight($hoverHighlight);
       }
     }
 
-    &.selected {
-      background: #ff9f1c;
+    &.selected,
+    &.selected:hover {
+      @include hexHighlight($selectedHighlight);
+      &:not(.has-tile) {
+        background: $selectedHighlight;
+      }
     }
 
     &.has-tile {
