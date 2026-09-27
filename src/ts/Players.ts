@@ -12,6 +12,21 @@ import { formatIcon } from './format';
 // Must stay in sync with ZooMap::createGrid dimensions in ZooMap.php
 const ZOO_MAP_GRID_DIM = { x: 7, y: 4 };
 
+// Slots printed on img/market.jpg, locations `pool-1` … `pool-6` — see Tiles::fillPool
+const MARKET_SLOT_COUNT = 6;
+
+/**
+ * Market slot (1-based) of a tile located in `pool-<n>`, null when it is not in the market.
+ */
+function getPoolSlot(tile: SanctuaryTile): number | null {
+  if (!tile.location?.startsWith('pool-')) {
+    return null;
+  }
+
+  const slot = Number(tile.location.split('-')[1]);
+  return Number.isInteger(slot) && slot >= 1 && slot <= MARKET_SLOT_COUNT ? slot : null;
+}
+
 function getTileType(tileId: string): string {
   const prefix = tileId.charAt(0).toUpperCase();
   switch (prefix) {
@@ -59,31 +74,43 @@ export class Players {
     }
 
     const poolNode = createDivElement('tile-pool', 'sanctuary-tile-pool');
-    poolNode.insertAdjacentHTML('beforeend', '<div class="tile-pool-tiles" id="tile-pool-tiles"></div>');
+    const slotsHtml = Array.from(
+      { length: MARKET_SLOT_COUNT },
+      (unused, index) => `<div id="pool-slot-${index + 1}" class="pool-slot" data-slot="${index + 1}"></div>`,
+    ).join('');
+    poolNode.insertAdjacentHTML('beforeend', `<div class="tile-pool-tiles" id="tile-pool-tiles">${slotsHtml}</div>`);
     // Prepend so market appears at top
     gamePlayArea.insertBefore(poolNode, gamePlayArea.firstChild);
     this.setTilePool(this.gamedatas.tiles ?? []);
   }
 
+  /**
+   * Fill the fixed market slots: each tile goes in the slot matching its `pool-<n>` location.
+   * Slots left empty keep their place, so tiles never shift in the display.
+   */
   setTilePool(tiles: SanctuaryTile[]) {
-    const poolNode = document.getElementById('tile-pool-tiles');
-    if (!poolNode) {
-      return;
+    for (let slot = 1; slot <= MARKET_SLOT_COUNT; slot++) {
+      const slotNode = this.getPoolSlotNode(slot);
+      if (slotNode) {
+        slotNode.innerHTML = '';
+      }
     }
 
-    poolNode.innerHTML = '';
-    tiles
-      .filter((tile) => tile.location.startsWith('pool-'))
-      .sort((first, second) => {
-        const firstSlot = Number(first.location.split('-')[1]);
-        const secondSlot = Number(second.location.split('-')[1]);
-        return firstSlot - secondSlot;
-      })
-      .forEach((tile) => {
-        const node = this.createTileNode(`pool-tile-${tile.id}`, 'pool-tile', tile);
-        poolNode.appendChild(node);
-        addCustomTooltip(node, this.buildTileTooltipHtml(tile));
-      });
+    for (const tile of tiles) {
+      const slot = getPoolSlot(tile);
+      const slotNode = slot === null ? null : this.getPoolSlotNode(slot);
+      if (!slotNode) {
+        continue;
+      }
+
+      const node = this.createTileNode(`pool-tile-${tile.id}`, 'pool-tile', tile);
+      slotNode.appendChild(node);
+      addCustomTooltip(node, this.buildTileTooltipHtml(tile));
+    }
+  }
+
+  getPoolSlotNode(slot: number): HTMLElement | null {
+    return document.getElementById(`pool-slot-${slot}`);
   }
 
   getPoolTileNode(tileId: string): HTMLElement | null {

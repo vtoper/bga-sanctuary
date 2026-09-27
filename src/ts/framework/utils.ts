@@ -541,6 +541,79 @@ export const clearPossible = () => {
   });
 };
 
+export const addPrimaryActionButton = function (
+  id: string,
+  label: string,
+  callback: Function,
+  params?: {
+    color?: 'primary' | 'secondary' | 'alert';
+    id?: string;
+    classes?: string | string[];
+    destination?: HTMLElement;
+    title?: string;
+    disabled?: boolean;
+    tooltip?: string;
+    confirm?: string | (() => string | undefined | null);
+    autoclick?: boolean | { abortSignal?: AbortSignal; pausable?: boolean };
+  },
+) {
+  if ($(id)) return;
+
+  params.color = 'primary';
+  params.id = id;
+  bga.statusBar.addActionButton(label, callback, params);
+};
+
+export const addSecondaryActionButton = function (
+  id: string,
+  label: string,
+  callback: Function,
+  params?: {
+    color?: 'primary' | 'secondary' | 'alert';
+    id?: string;
+    classes?: string | string[];
+    destination?: HTMLElement;
+    title?: string;
+    disabled?: boolean;
+    tooltip?: string;
+    confirm?: string | (() => string | undefined | null);
+    autoclick?: boolean | { abortSignal?: AbortSignal; pausable?: boolean };
+  },
+) {
+  if ($(id)) return;
+
+  params.color = 'secondary';
+  params.id = id;
+  bga.statusBar.addActionButton(label, callback, params);
+};
+
+export const addDangerActionButton = function (
+  id: string,
+  label: string,
+  callback: Function,
+  params?: {
+    color?: 'primary' | 'secondary' | 'alert';
+    id?: string;
+    classes?: string | string[];
+    destination?: HTMLElement;
+    title?: string;
+    disabled?: boolean;
+    tooltip?: string;
+    confirm?: string | (() => string | undefined | null);
+    autoclick?: boolean | { abortSignal?: AbortSignal; pausable?: boolean };
+  },
+) {
+  if ($(id)) return;
+
+  params.color = 'alert';
+  params.id = id;
+  bga.statusBar.addActionButton(label, callback, params);
+};
+
+export const sleep = function (ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+};
+
 export const onSelectN = function (options: Partial<SelectNConfig>) {
   const config: SelectNConfig = {
     elements: {},
@@ -633,3 +706,62 @@ export const onSelectN = function (options: Partial<SelectNConfig>) {
     });
   });
 };
+
+// ──────────────────────────────────────────
+// Shared animation: slide element to target
+// ──────────────────────────────────────────
+
+/**
+ * Slide an element to a target container using bga-animations.
+ *
+ * @param elementId  id of the element to move
+ * @param targetId   id of the target container
+ * @param options    { from?: string, destroy?: boolean, duration?: number }
+ */
+export async function slide(
+  elementId: string,
+  targetId: string,
+  options: {
+    from?: string | null;
+    destroy?: boolean;
+    duration?: number;
+    preserveScale?: boolean;
+    fromPlaceholder?: 'on' | 'shrink' | 'off';
+    toPlaceholder?: 'on' | 'shrink' | 'off';
+  } = {},
+): Promise<void> {
+  const el = document.getElementById(elementId);
+  const target = document.getElementById(targetId);
+  if (!el || !target) return;
+
+  if (options.from) {
+    $(options.from).appendChild(el);
+  }
+
+  if (bga && (bga as any).instantaneousMode) {
+    if (options.destroy) {
+      el.remove();
+      return;
+    }
+    target.appendChild(el);
+    return;
+  }
+
+  try {
+    const { getAnimationManager } = await import('../libLoader');
+    const animManager = await getAnimationManager();
+    options.duration = options.duration || 800;
+
+    if (options.destroy) {
+      await animManager.slideOutAndDestroy(el, target, options);
+    } else {
+      await animManager.slideAndAttach(el, target, options);
+    }
+  } catch (e) {
+    if (!options.destroy) {
+      target.appendChild(el);
+    } else {
+      el.remove();
+    }
+  }
+}

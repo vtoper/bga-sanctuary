@@ -23,9 +23,17 @@ $zooMapHeight: $zooMapRows * $cellHeight;
 $hexWidth:  4 * $cellWidth;   // 176.8px
 $hexHeight: 2 * $cellHeight;  // 153.1px
 
-// Pool tiles sized to fit market.jpg hex slot outlines (independent of map hex scale)
-$poolTileWidth:  140px;
-$poolTileHeight: 121px;  // 140 × (√3/2)
+// Market slot geometry, measured on img/market.jpg (1000 × 222).
+// The 6 printed hex outlines touch point to point: their left/right vertices sit at
+// x = 6, 158, 310, 462, 614, 766, 918 — so the pitch equals the hex width, 152px.
+$marketSlotCount:     6;
+$marketFirstSlotLeft: 6px;
+$marketSlotTop:       63px;   // just below the green numbered strip
+$marketSlotPitch:     152px;
+
+// Pool tiles exactly fill their slot, so they stay glued to the printed outlines
+$poolTileWidth:  $marketSlotPitch;
+$poolTileHeight: 136px;  // printed outlines are slightly taller than a regular hex
 
 // Hand tiles: comfortable reading size in the floating hand drawer
 $handTileWidth:  180px;

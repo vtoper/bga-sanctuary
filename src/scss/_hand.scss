@@ -12,22 +12,30 @@
   overflow: hidden;
 }
 
-// Overlay container positioned over the 6 hex slot outlines in market.jpg
-// The arrow icons on the right side of the image occupy ~65px, so tiles end at ~935px
+// Overlay container spanning the whole market image. Slots inside are absolutely
+// positioned so they stay glued to the outlines printed on market.jpg.
 .tile-pool-tiles {
   position: absolute;
-  top: 38px; // below the green numbered strip
-  left: 15px;
-  width: 900px; // 1000 - 15 (left) - 65 (arrows on right)
-  height: 184px; // 222 - 38
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  inset: 0;
+}
+
+// One fixed slot per printed hex outline, matching the `pool-<n>` tile locations.
+// An emptied slot keeps its place, so the remaining tiles never shift.
+.pool-slot {
+  position: absolute;
+  top: $marketSlotTop;
+  width: $poolTileWidth;
+  height: $poolTileHeight;
+
+  @for $slot from 1 through $marketSlotCount {
+    &[data-slot='#{$slot}'] {
+      left: $marketFirstSlotLeft + ($slot - 1) * $marketSlotPitch;
+    }
+  }
 }
 
 // Pool tiles are proper flat-top hexagons (wider than tall), same ratio as map cells
 .pool-tile {
-  flex: 0 0 $poolTileWidth;
   width: $poolTileWidth;
   height: $poolTileHeight;
   box-sizing: border-box;
