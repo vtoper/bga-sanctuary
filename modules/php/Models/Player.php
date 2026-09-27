@@ -457,7 +457,7 @@ class Player extends \Bga\Games\sanctuary\Framework\Models\Player
                 'scoring',
                 clienttranslate('${player_name} scores ${score} points'),
                 [
-                    'player_name' => $this->getName(),
+                    'player' => $this, // the notify decorator expands this into player_id + player_name
                     'score' => $score,
                     'scoreDetail' => $scoreDetail
                 ]

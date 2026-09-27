@@ -73,30 +73,28 @@ class Project extends ActionStateWithRevert
      * Compute, for each project tile in the player's hand that satisfies the strength constraints,
      * the list of locations on the ZooMap where it could be placed.
      *
+     * A release project is never placed on an empty cell: it replaces an animal tile already on
+     * the map that carries its release icon. It is therefore unplayable when no such animal is
+     * present, even if the map still has free cells (and playable when the map is full).
+     *
      * @return array<string, array<array{x:int,y:int}>> map of tile id => list of locations
      */
     protected function getPlayableTilesAndLocations(Player $player): array
     {
         $maxStrength = $this->getNodeArgs("strength", 1);
         $map = $player->map();
-        $locations = $map->getAvailableLocations();
-        if (empty($locations)) {
-            return [];
-        }
+        $freeLocations = $map->getAvailableLocations();
         $playerReductions = $player->getReductions();
 
         $result = [];
         foreach ($player->getHand(Tile::TILE_PROJECT) as $tileId => $project) {
-            if ($project->matchesPlayConstraints($maxStrength, $playerReductions)) {
-                $newLocations = $locations;
-                $result[$tileId] = $newLocations;
+            if (!$project->matchesPlayConstraints($maxStrength, $playerReductions)) {
+                continue;
+            }
 
-                if ($project->isRelease()) {
-                    $possible = $map->getProjectReleaseOptions($project);
-                    if (!empty($possible)) {
-                        $result[$tileId] = $possible;
-                    }
-                }
+            $locations = $project->isRelease() ? $map->getProjectReleaseOptions($project) : $freeLocations;
+            if (!empty($locations)) {
+                $result[$tileId] = $locations;
             }
         }
         return $result;

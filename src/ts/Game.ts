@@ -5,6 +5,7 @@ import {
   clearPersistantActionButtonsNode,
   clearRestartActionButtonsNode,
   debug,
+  getCurrentPlayerId,
   getRestartActionButtonsNode,
   initUtils,
 } from './framework/utils';
@@ -136,6 +137,13 @@ export class Game {
         $('gameaction_status').innerHTML = '';
       },
     });
+
+    // Public/private pairs: the player concerned only handles the private notification,
+    // which carries the actual tiles instead of a count.
+    const notifqueue = (this.bga.gameui as any).notifqueue;
+    for (const publicNotif of ['drawTiles', 'discardCards']) {
+      notifqueue.setIgnoreNotificationCheck(publicNotif, (notif) => notif.args.player_id == getCurrentPlayerId());
+    }
   }
 
   onEnteringState(stateName: string, args: Gamestate) {

@@ -1,5 +1,9 @@
 import { players } from '../Players';
 
+/**
+ * Handlers for every tile-related notification sent by the PHP side.
+ * The name after `notif_` must match the string passed to `$this->notify->all(...)`.
+ */
 export class TilesNotifications {
   bga: ExtendedBga;
 
@@ -7,95 +11,83 @@ export class TilesNotifications {
     this.bga = bga;
   }
 
-  // Market refilled: replace all pool tiles
+  // Tiles::fillPool — `pool` holds the whole market after sliding left and drawing
   async notif_fillPool(args) {
-    players.setTilePool(args.tiles ?? []);
+    players.setTilePool(args.pool ?? []);
   }
 
-  // Current player draws tiles from pool into hand
+  // TakeTile::actTakeTile — tiles slide from their market slot into the player's hand
+  async notif_takeTiles(args) {
+    await players.takeTilesFromPool(args.player_id, args.cards ?? []);
+  }
+
+  // Tiles::draw, public part — only the number of tiles is public
   async notif_drawTiles(args) {
-    // Remove drawn tiles from pool
-    for (const tileId of args.cardIds ?? []) {
-      players.getPoolTileNode(tileId)?.remove();
-    }
-    // Update hand with new tiles
-    players.setHand(args.tiles ?? []);
-    players.setHandCount(args.player_id, args.handCount ?? (args.tiles ?? []).length);
+    players.incHandCount(args.player_id, args.n ?? 0);
   }
 
-  // Opponent draws (tiles are hidden): remove from pool, update opponent's hand count
+  // Tiles::draw, private part — the drawing player also gets the actual tiles
   async notif_pDrawCards(args) {
-    for (const tileId of args.cardIds ?? []) {
-      players.getPoolTileNode(tileId)?.remove();
-    }
-    if (args.handCount !== undefined) {
-      players.setHandCount(args.player_id, args.handCount);
-    }
+    players.addTilesToHand(args.player_id, args.cards ?? []);
   }
 
-  // Animal tile played from hand onto the map
+  // Tiles::notificationDiscardCards, public part — only the number of tiles is public
+  async notif_discardCards(args) {
+    players.incHandCount(args.player_id, -(args.n ?? 0));
+  }
+
+  // Tiles::notificationDiscardCards, private part — the discarding player gets the actual tiles
+  async notif_pDiscardCards(args) {
+    const tileIds = (args.cards ?? []).map((tile) => tile.id);
+    players.removeHandTiles(args.player_id, tileIds);
+    players.incHandCount(args.player_id, -tileIds.length);
+  }
+
+  // Administration::actDiscard — tiles discarded down to the hand limit
+  async notif_discardTiles(args) {
+    const tileIds = (args.cards ?? []).map((tile) => tile.id);
+    players.removeHandTiles(args.player_id, tileIds);
+    players.incHandCount(args.player_id, -tileIds.length);
+  }
+
+  // Administration::finishAdministration — discard pile shuffled back into the deck
+  // TODO: nothing to update yet, the deck is not displayed. `args.deckCount` holds the new size.
+  async notif_deckReformed(args) {}
+
+  // Animal::actPlayAnimal — animal tile played from hand onto the map
   async notif_animalPlayed(args) {
-    players.removeHandTiles(args.player_id, [args.tile.id]);
-    players.setTileOnBoard(args.player_id, args.tile);
-    players.setHandCount(args.player_id, args.handCount ?? 0);
+    players.playTileFromHand(args.player_id, args.animal);
   }
 
-  // Open area tile placed on the map
-  async notif_openAreaPlaced(args) {
-    players.removeHandTiles(args.player_id, [args.tile.id]);
-    players.setTileOnBoard(args.player_id, args.tile);
-    if (args.handCount !== undefined) {
-      players.setHandCount(args.player_id, args.handCount);
-    }
-  }
-
-  // Pouch tiles gained (tiles spent → pouch token added)
-  async notif_pouchGained(args) {
-    players.removeHandTiles(args.player_id, args.cardIds ?? []);
-    players.setPouch(args.player_id, args.pouch);
-  }
-
-  // Action card moved/upgraded
-  async notif_actionCardMoved(args) {
-    players.setActionCards(args.player_id, args.actionCards);
-  }
-
-  // Building tile played from hand onto the map
+  // Building::actPlayBuilding and Project::actPlayProject (non-release projects)
   async notif_buildingPlayed(args) {
-    players.removeHandTiles(args.player_id, [args.tile.id]);
-    players.setTileOnBoard(args.player_id, args.tile);
-    if (args.handCount !== undefined) {
-      players.setHandCount(args.player_id, args.handCount);
-    }
+    players.playTileFromHand(args.player_id, args.building ?? args.project);
   }
 
-  // Project tile played from hand onto the map
-  async notif_projectPlayed(args) {
-    players.removeHandTiles(args.player_id, [args.tile.id]);
-    players.setTileOnBoard(args.player_id, args.tile);
-    if (args.handCount !== undefined) {
-      players.setHandCount(args.player_id, args.handCount);
+  // Project::actPlayProject — release project replaces a tile already on the map
+  async notif_projectReleased(args) {
+    if (args.existingId) {
+      players.removeTileFromBoard(args.player_id, args.existingId);
     }
+    players.playTileFromHand(args.player_id, args.project);
   }
 
-  // Conservation marker placed (tiles spent from hand)
-  async notif_conservationSupported(args) {
-    players.removeHandTiles(args.player_id, args.cardIds ?? []);
-    if (args.handCount !== undefined) {
-      players.setHandCount(args.player_id, args.handCount);
-    }
+  // PlaceOpenAreas::actPlaceOpenArea — open area tile placed on the map
+  async notif_openAreaPlaced(args) {
+    players.playTileFromHand(args.player_id, args.openArea);
   }
 
-  // Upgrade token used (action cards updated)
-  async notif_upgradeTokenUsed(args) {
-    if (args.actionCards) {
-      players.setActionCards(args.player_id, args.actionCards);
-    }
-  }
-
-  // Tile relocated on the board (moved from one cell to another)
+  // Relocate::actRelocate — tile moved from one cell of the map to another
   async notif_tileRelocated(args) {
     players.clearMapCell(args.player_id, args.fromX, args.fromY);
     players.setTileOnBoard(args.player_id, args.tile);
+  }
+
+  // Pouch::actPouch — tiles spent from hand in exchange for pouch markers
+  async notif_pouchGained(args) {
+    const tileIds = args.cardIds ?? [];
+    players.removeHandTiles(args.player_id, tileIds);
+    players.incHandCount(args.player_id, -tileIds.length);
+    players.setPouch(args.player_id, args.pouch);
   }
 }

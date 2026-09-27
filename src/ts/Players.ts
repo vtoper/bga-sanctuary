@@ -6,6 +6,7 @@ import {
   addCustomTooltip,
   createDivElement,
   insertDivElement,
+  slide,
 } from './framework/utils';
 import { formatIcon } from './format';
 
@@ -169,6 +170,84 @@ export class Players {
     return this.createTileNode(`hand-tile-${tile.id}`, 'hand-tile', tile);
   }
 
+  /**
+   * Append tiles to the current player's hand. Opponents' hands are not rendered,
+   * only their hand counter is kept in sync.
+   */
+  addTilesToHand(playerId: string | number, tiles: SanctuaryTile[]) {
+    const handTilesNode = document.getElementById(`hand-tiles-${playerId}`);
+    if (handTilesNode) {
+      for (const tile of tiles) {
+        const node = this.createHandTile(tile);
+        handTilesNode.appendChild(node);
+        addCustomTooltip(node, this.buildTileTooltipHtml(tile));
+      }
+    }
+
+    this.incHandCount(playerId, tiles.length);
+  }
+
+  /**
+   * Move tiles from the market to a player's hand. The market slot is simply emptied,
+   * so the tiles left in the display keep their position.
+   */
+  async takeTilesFromPool(playerId: string | number, tiles: SanctuaryTile[]) {
+    const handTilesNode = document.getElementById(`hand-tiles-${playerId}`);
+
+    for (const tile of tiles) {
+      if (!this.getPoolTileNode(tile.id)) {
+        continue;
+      }
+
+      if (!handTilesNode) {
+        // Opponents have no visible hand: send the tile towards their player panel
+        await slide(`pool-tile-${tile.id}`, `player_board_${playerId}`, { destroy: true });
+        continue;
+      }
+
+      await slide(`pool-tile-${tile.id}`, handTilesNode.id);
+      // The element is now in the hand: turn the pool tile into a hand tile
+      const node = this.getPoolTileNode(tile.id);
+      if (node) {
+        node.id = `hand-tile-${tile.id}`;
+        node.classList.replace('pool-tile', 'hand-tile');
+      }
+    }
+
+    this.incHandCount(playerId, tiles.length);
+  }
+
+  removePoolTiles(tileIds: string[]) {
+    for (const tileId of tileIds) {
+      this.getPoolTileNode(tileId)?.remove();
+    }
+  }
+
+  /**
+   * A tile leaves the hand and lands on the player's map.
+   */
+  playTileFromHand(playerId: string | number, tile: SanctuaryTile) {
+    if (!tile) {
+      return;
+    }
+
+    this.removeHandTiles(playerId, [tile.id]);
+    this.incHandCount(playerId, -1);
+    this.setTileOnBoard(playerId, tile);
+  }
+
+  /**
+   * Clear the map cell holding a given tile (a release project covering an existing tile).
+   */
+  removeTileFromBoard(playerId: string | number, tileId: string) {
+    const cell = document.querySelector(`#zoo-board-${playerId} .zoo-map-cell[data-id='${tileId}']`);
+    if (!cell) {
+      return;
+    }
+
+    this.clearMapCell(playerId, Number((cell as HTMLElement).dataset.x), Number((cell as HTMLElement).dataset.y));
+  }
+
   getHandTileIds(): string[] {
     const handTilesNode = document.getElementById(`hand-tiles-${getCurrentPlayerId()}`);
     if (!handTilesNode) {
@@ -216,6 +295,51 @@ export class Players {
     if (counter) {
       counter.toValue(handCount);
     }
+  }
+
+  incHandCount(playerId: string | number, delta: number) {
+    const counter = this.counters.get(`${playerId}-handCount`);
+    if (counter) {
+      counter.incValue(delta);
+    }
+  }
+
+  /**
+   * Re-render everything from a fresh getAllDatas payload (sent by `refreshUI` after an undo).
+   */
+  refreshUI(data: SanctuaryGamedatas) {
+    if (!this.gamedatas) {
+      return;
+    }
+
+    this.gamedatas.players = data.players;
+    this.gamedatas.tiles = data.tiles ?? [];
+
+    this.setTilePool(this.gamedatas.tiles);
+
+    for (const playerId in this.gamedatas.players) {
+      const player = this.gamedatas.players[playerId];
+      this.setEnergy(playerId, player.energy ?? 0);
+      this.setHandCount(playerId, player.handCount ?? 0);
+      this.setPouch(playerId, player.pouch ?? 0);
+      this.setActionCards(playerId, player.actionCards ?? []);
+      this.setIcons(playerId, player.icons ?? {});
+      this.clearPlayerMap(playerId);
+      this.setBoardTiles(playerId);
+    }
+
+    const currentPlayer = this.gamedatas.players[getCurrentPlayerId()];
+    if (currentPlayer) {
+      this.setHand(currentPlayer.hand ?? []);
+    }
+  }
+
+  private clearPlayerMap(playerId: string | number) {
+    document.querySelectorAll(`#zoo-board-${playerId} .zoo-map-cell`).forEach((node) => {
+      const cell = node as HTMLElement;
+      cell.classList.remove('has-tile', 'tile-animal', 'tile-building', 'tile-project', 'tile-open-area', 'tile-unknown');
+      delete cell.dataset.id;
+    });
   }
 
   getMapCellNode(playerId: string | number, x: number, y: number): HTMLElement | null {
@@ -408,10 +532,40 @@ export class Players {
           cardId: `${card.id}`,
           position: `${card.strength}`,
           type: card.type,
+          level: `${card.level}`,
         });
+        cardNode.classList.toggle('active', (card as any).status == 1);
         cardNode.innerHTML = `<span class="action-card-type">${card.type}</span><span class="action-card-position">${card.level == 2 ? card.strength + 1 : card.strength}</span>`;
         actionCardsNode.appendChild(cardNode);
       });
+  }
+
+  getActionCardNode(playerId: string | number, cardId: number | string): HTMLElement | null {
+    return document.getElementById(`action-card-${playerId}-${cardId}`);
+  }
+
+  /**
+   * Status 1 marks the action card chosen for the current turn, 0 releases it.
+   */
+  setActionCardStatus(playerId: string | number, cardId: number | string, status: number) {
+    this.getActionCardNode(playerId, cardId)?.classList.toggle('active', status == 1);
+  }
+
+  /**
+   * A level II card acts one position further than its slot.
+   */
+  setActionCardLevel(playerId: string | number, cardId: number | string, level: number) {
+    const cardNode = this.getActionCardNode(playerId, cardId);
+    if (!cardNode) {
+      return;
+    }
+
+    cardNode.dataset.level = `${level}`;
+    const strength = Number(cardNode.dataset.position);
+    const positionNode = cardNode.querySelector('.action-card-position');
+    if (positionNode) {
+      positionNode.textContent = `${level == 2 ? strength + 1 : strength}`;
+    }
   }
 
   /**

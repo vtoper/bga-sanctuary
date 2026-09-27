@@ -73,6 +73,17 @@
       background: #1bba0a;
       border-color: #ff9f1c;
     }
+
+    // Card chosen for the current turn, until the cleanup puts it back in slot 1
+    &.active {
+      border-color: #ff9f1c;
+      box-shadow: 0 0 6px 1px rgba(255, 159, 28, 0.8);
+    }
+
+    // Upgraded card: acts one position further than its slot
+    &[data-level='2'] .action-card-position {
+      color: #b5651d;
+    }
   }
 
   .action-card-type {
