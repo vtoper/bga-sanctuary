@@ -48,30 +48,57 @@
     border-radius: 6px;
   }
 
+  // Centered under the map, which is $boardDisplayWidth wide
   .action-cards {
-    box-sizing: border-box;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
-    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: $actionCardGap;
+    width: $boardDisplayWidth;
     margin-top: 8px;
   }
 
+  // One cell of the actionCards.jpg sprite: 4 columns × 2 rows.
+  // X: Rock 0%, Forest 33.33%, Project 66.67%, Water 100% (offset = column × 100% / 3).
+  // Y: level I 0%, level II 100%.
   .action-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-width: 0;
-    padding: 5px 7px;
-    background: #f4ead1;
+    position: relative;
+    box-sizing: border-box;
+    width: $actionCardWidth;
+    height: $actionCardHeight;
     border: 2px solid #666246;
-    border-radius: 4px;
-    color: #403b2b;
-    font-size: 11px;
-    line-height: 1.2;
+    border-radius: 6px;
+    background-image: url('img/actionCards.jpg');
+    background-size: 400% 200%;
+    background-position: 0 0;
+
+    &[data-type='Rock'] {
+      background-position-x: 0%;
+    }
+    &[data-type='Forest'] {
+      background-position-x: 33.3333%;
+    }
+    &[data-type='Project'] {
+      background-position-x: 66.6667%;
+    }
+    &[data-type='Water'] {
+      background-position-x: 100%;
+    }
+
+    // Upgraded card: second row of the sprite
+    &[data-level='2'] {
+      background-position-y: 100%;
+    }
+
+    &.selectable {
+      cursor: pointer;
+      outline: 3px solid #ffe08a;
+      &:hover {
+        outline-color: #ffd35c;
+      }
+    }
+
     &.selected {
-      background: #1bba0a;
-      border-color: #ff9f1c;
+      outline: 3px solid #ff9f1c;
     }
 
     // Card chosen for the current turn, until the cleanup puts it back in slot 1
@@ -79,23 +106,25 @@
       border-color: #ff9f1c;
       box-shadow: 0 0 6px 1px rgba(255, 159, 28, 0.8);
     }
-
-    // Upgraded card: acts one position further than its slot
-    &[data-level='2'] .action-card-position {
-      color: #b5651d;
-    }
   }
 
-  .action-card-type {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .action-card-position {
-    flex: 0 0 auto;
-    margin-left: 4px;
+  // Slot the card acts at, badged over the top right corner of the art
+  .action-card-strength {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: grid;
+    place-items: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 4px;
+    background: #f4ead1;
+    border: 2px solid #403b2b;
+    border-radius: 50%;
+    color: #403b2b;
+    font-size: 15px;
     font-weight: bold;
+    line-height: 1;
   }
 
   .zoo-board {

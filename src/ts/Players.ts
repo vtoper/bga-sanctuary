@@ -577,10 +577,17 @@ export class Players {
           type: card.type,
           level: `${card.level}`,
         });
-        cardNode.classList.toggle('active', (card as any).status == 1);
-        cardNode.innerHTML = `<span class="action-card-type">${card.type}</span><span class="action-card-position">${card.level == 2 ? card.strength + 1 : card.strength}</span>`;
+        cardNode.classList.toggle('active', card.status == 1);
+        cardNode.innerHTML = `<span class="action-card-strength">${Players.getCurrentStrength(card)}</span>`;
         actionCardsNode.appendChild(cardNode);
       });
+  }
+
+  /**
+   * Slot the card acts at: an upgraded (level II) card acts one slot further than the one it sits in.
+   */
+  private static getCurrentStrength(card: SanctuaryActionCard): number {
+    return card.level == 2 ? card.strength + 1 : card.strength;
   }
 
   getActionCardNode(playerId: string | number, cardId: number | string): HTMLElement | null {
@@ -595,7 +602,7 @@ export class Players {
   }
 
   /**
-   * A level II card acts one position further than its slot.
+   * A level II card shows the second row of the sprite and acts one slot further.
    */
   setActionCardLevel(playerId: string | number, cardId: number | string, level: number) {
     const cardNode = this.getActionCardNode(playerId, cardId);
@@ -605,9 +612,9 @@ export class Players {
 
     cardNode.dataset.level = `${level}`;
     const strength = Number(cardNode.dataset.position);
-    const positionNode = cardNode.querySelector('.action-card-position');
-    if (positionNode) {
-      positionNode.textContent = `${level == 2 ? strength + 1 : strength}`;
+    const strengthNode = cardNode.querySelector('.action-card-strength');
+    if (strengthNode) {
+      strengthNode.textContent = `${level == 2 ? strength + 1 : strength}`;
     }
   }
 

@@ -38,3 +38,9 @@ $poolTileHeight: 136px;  // printed outlines are slightly taller than a regular 
 // Hand tiles: comfortable reading size in the floating hand drawer
 $handTileWidth:  180px;
 $handTileHeight: 156px;  // 180 × (√3/2)
+
+// Action cards sprite: img/actionCards.jpg, 4 columns × 2 rows of 299 × 352 cards.
+// Columns: Rock, Forest, Project, Water. Rows: level I, level II.
+$actionCardWidth:  200px;
+$actionCardHeight: 235px;  // 200 × (352 / 299)
+$actionCardGap:    8px;

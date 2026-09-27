@@ -19,9 +19,10 @@ interface SanctuaryPlayer extends Player {
 
 interface SanctuaryActionCard {
   id: number;
-  strength: number;
-  type: string;
-  level: number;
+  strength: number; // slot the card sits in, 1 to 4
+  type: string; // Rock | Forest | Project | Water — drives the actionCards.jpg sprite column
+  level: number; // 1 or 2, upgraded cards act one slot further
+  status: number; // 1 while the card is the one chosen for the current turn
 }
 
 interface SanctuaryGamedatas extends Gamedatas<SanctuaryPlayer> {
