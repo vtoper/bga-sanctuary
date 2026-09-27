@@ -552,6 +552,7 @@ export class Players {
         <div class="zoo-map-board">
           <div class="zoo-board" id="zoo-board-${player.id}"></div>
         </div>
+        <div class="action-bar" id="action-bar-${player.id}"></div>
         <div class="action-cards" id="action-cards-${player.id}"></div>
       </div>`,
     );

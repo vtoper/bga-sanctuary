@@ -48,13 +48,24 @@
     border-radius: 6px;
   }
 
+  // Slot strengths, sitting directly on top of the cards. Painted at the card row's exact
+  // width and centered like it, so every zone border meets a card border.
+  .action-bar {
+    width: $boardDisplayWidth;
+    height: $actionBarHeight;
+    margin-top: 8px;
+    background-image: url('img/actionBar.jpg');
+    background-size: $actionCardsRowWidth $actionBarHeight;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
   // Centered under the map, which is $boardDisplayWidth wide
   .action-cards {
     display: flex;
     justify-content: center;
     gap: $actionCardGap;
     width: $boardDisplayWidth;
-    margin-top: 8px;
   }
 
   // One cell of the actionCards.jpg sprite: 4 columns × 2 rows.

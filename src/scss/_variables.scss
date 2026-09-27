@@ -20,27 +20,33 @@ $zooMapWidth: $zooMapColumns * $cellWidth;
 $zooMapHeight: $zooMapRows * $cellHeight;
 
 // Actual displayed map-hex dimensions (each cell spans 4 cols × 2 rows)
-$hexWidth:  4 * $cellWidth;   // 176.8px
-$hexHeight: 2 * $cellHeight;  // 153.1px
+$hexWidth: 4 * $cellWidth; // 176.8px
+$hexHeight: 2 * $cellHeight; // 153.1px
 
 // Market slot geometry, measured on img/market.jpg (1000 × 222).
 // The 6 printed hex outlines touch point to point: their left/right vertices sit at
 // x = 6, 158, 310, 462, 614, 766, 918 — so the pitch equals the hex width, 152px.
-$marketSlotCount:     6;
+$marketSlotCount: 6;
 $marketFirstSlotLeft: 6px;
-$marketSlotTop:       63px;   // just below the green numbered strip
-$marketSlotPitch:     152px;
+$marketSlotTop: 63px; // just below the green numbered strip
+$marketSlotPitch: 152px;
 
 // Pool tiles exactly fill their slot, so they stay glued to the printed outlines
-$poolTileWidth:  $marketSlotPitch;
-$poolTileHeight: 136px;  // printed outlines are slightly taller than a regular hex
+$poolTileWidth: $marketSlotPitch;
+$poolTileHeight: 136px; // printed outlines are slightly taller than a regular hex
 
 // Hand tiles: comfortable reading size in the floating hand drawer
-$handTileWidth:  180px;
-$handTileHeight: 156px;  // 180 × (√3/2)
+$handTileWidth: 180px;
+$handTileHeight: 156px; // 180 × (√3/2)
 
 // Action cards sprite: img/actionCards.jpg, 4 columns × 2 rows of 299 × 352 cards.
 // Columns: Rock, Forest, Project, Water. Rows: level I, level II.
-$actionCardWidth:  200px;
-$actionCardHeight: 235px;  // 200 × (352 / 299)
-$actionCardGap:    8px;
+$actionCardWidth: 200px;
+$actionCardHeight: 235px; // 200 × (352 / 299)
+$actionCardGap: 0px;
+
+// Action bar (img/actionBar.jpg, 2752 × 242): 4 zones, one per action card slot.
+// Its zones are evenly quartered, so drawing it at the exact width of the card row
+// (gaps included) lines each zone up with the card underneath it.
+$actionCardsRowWidth: 4 * $actionCardWidth + 3 * $actionCardGap; // 824px
+$actionBarHeight: 72px; // 824 × (242 / 2752)
