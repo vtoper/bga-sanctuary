@@ -225,15 +225,58 @@ export class Players {
 
   /**
    * A tile leaves the hand and lands on the player's map.
+   * The current player sees their own hand tile fly to the cell; the other players' hands are
+   * hidden, so for them the tile flies in from the top bar instead.
    */
-  playTileFromHand(playerId: string | number, tile: SanctuaryTile) {
+  async playTileFromHand(playerId: string | number, tile: SanctuaryTile) {
     if (!tile) {
       return;
+    }
+
+    const cell = this.getMapCellNode(playerId, tile.x, tile.y);
+    if (cell) {
+      const handNode = this.getHandTileNode(tile.id);
+      await (handNode ? slide(handNode.id, cell.id, { destroy: true }) : this.slideTileFromTopBar(tile, cell));
     }
 
     this.removeHandTiles(playerId, [tile.id]);
     this.incHandCount(playerId, -1);
     this.setTileOnBoard(playerId, tile);
+  }
+
+  /**
+   * Fly a tile from the top bar to a map cell, for tiles the player never saw in a hand.
+   *
+   * The flying tile is fixed-positioned on the body rather than appended to the title bar:
+   * both the framework and our own notification hooks rewrite the title innerHTML, which would
+   * drop the node during the `await` before the animation even starts.
+   */
+  private async slideTileFromTopBar(tile: SanctuaryTile, cell: HTMLElement) {
+    const origin = Players.getTopBarPosition();
+    const flyingNode = this.createTileNode(`flying-tile-${tile.id}`, 'hand-tile', tile);
+    flyingNode.style.position = 'fixed';
+    flyingNode.style.zIndex = '1000';
+    flyingNode.style.top = `${origin.top}px`;
+    document.body.appendChild(flyingNode);
+    flyingNode.style.left = `${origin.centerX - flyingNode.offsetWidth / 2}px`;
+
+    await slide(flyingNode.id, cell.id, { destroy: true });
+  }
+
+  /**
+   * Screen position the tiles played by the other players fly from. The title bar is not always
+   * laid out (a hidden element measures 0×0, which would make the tile take off from the very
+   * corner of the viewport), so fall back to the next candidate, then to the top of the screen.
+   */
+  private static getTopBarPosition(): { centerX: number; top: number } {
+    for (const id of ['pagemaintitletext', 'maintitlebar_content', 'page-title']) {
+      const rect = document.getElementById(id)?.getBoundingClientRect();
+      if (rect?.width) {
+        return { centerX: rect.left + rect.width / 2, top: rect.top };
+      }
+    }
+
+    return { centerX: window.innerWidth / 2, top: 0 };
   }
 
   /**

@@ -56,12 +56,12 @@ export class TilesNotifications {
 
   // Animal::actPlayAnimal — animal tile played from hand onto the map
   async notif_animalPlayed(args) {
-    players.playTileFromHand(args.player_id, args.animal);
+    await players.playTileFromHand(args.player_id, args.animal);
   }
 
   // Building::actPlayBuilding and Project::actPlayProject (non-release projects)
   async notif_buildingPlayed(args) {
-    players.playTileFromHand(args.player_id, args.building ?? args.project);
+    await players.playTileFromHand(args.player_id, args.building ?? args.project);
   }
 
   // Project::actPlayProject — release project replaces a tile already on the map
@@ -69,12 +69,12 @@ export class TilesNotifications {
     if (args.existingId) {
       players.removeTileFromBoard(args.player_id, args.existingId);
     }
-    players.playTileFromHand(args.player_id, args.project);
+    await players.playTileFromHand(args.player_id, args.project);
   }
 
   // PlaceOpenAreas::actPlaceOpenArea — open area tile placed on the map
   async notif_openAreaPlaced(args) {
-    players.playTileFromHand(args.player_id, args.openArea);
+    await players.playTileFromHand(args.player_id, args.openArea);
   }
 
   // Relocate::actRelocate — tile moved from one cell of the map to another
